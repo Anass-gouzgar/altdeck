@@ -148,7 +148,7 @@ document.querySelectorAll('.theme-chip').forEach(chip => {
 });
 
 // ==========================================================================
-// Multi-Language Support (i18n: English, Français, Español)
+// Multi-Language Support (i18n: Arabic, Français, English)
 // ==========================================================================
 const I18N = {
   en: {
@@ -181,26 +181,38 @@ const I18N = {
     notifTestTitle: 'Hub de Notifications PC',
     manageActionsTitle: 'Gérer les Boutons Personnalisés'
   },
-  es: {
-    navDeck: 'Stream Deck',
-    navTrackpad: 'Panel Táctil',
-    navNumpad: 'Teclado Numérico',
-    navConfig: 'Configuración',
-    navPairing: 'Conexión y QR',
-    customActionsTitle: 'Acciones y Macros Personalizadas',
-    themeTitle: 'Temas y Apariencia',
-    langTitle: 'Idioma y Respuesta',
-    langLabel: 'Idioma de la Interfaz',
-    soundLabel: 'Sonido de Notificación',
-    hapticLabel: 'Vibración Háptica',
-    notifTestTitle: 'Centro de Notificaciones PC',
-    manageActionsTitle: 'Gestionar Botones Personalizados'
+  ar: {
+    navDeck: 'لوحة التحكم',
+    navTrackpad: 'لوحة اللمس',
+    navNumpad: 'لوحة الأرقام',
+    navConfig: 'الإعدادات',
+    navPairing: 'الربط والرمز',
+    customActionsTitle: 'أزرار واختصارات مخصصة',
+    themeTitle: 'المظهر والسمات',
+    langTitle: 'اللغة والتنبيهات',
+    langLabel: 'لغة الواجهة',
+    soundLabel: 'صوت التنبيهات',
+    hapticLabel: 'الاهتزاز اللمسي',
+    notifTestTitle: 'مركز إشعارات الكمبيوتر',
+    manageActionsTitle: 'إدارة الأزرار المخصصة'
   }
 };
 
 function applyLanguage(lang) {
+  if (lang !== 'en' && lang !== 'fr' && lang !== 'ar') {
+    lang = 'en';
+  }
   state.lang = lang;
   localStorage.setItem('tabdeck_lang', lang);
+
+  if (lang === 'ar') {
+    document.documentElement.setAttribute('dir', 'rtl');
+    document.documentElement.setAttribute('lang', 'ar');
+  } else {
+    document.documentElement.setAttribute('dir', 'ltr');
+    document.documentElement.setAttribute('lang', lang);
+  }
+
   const dict = I18N[lang] || I18N.en;
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');

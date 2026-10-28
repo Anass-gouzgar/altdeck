@@ -1448,3 +1448,31 @@ body.theme-gold {
   margin-top: 14px;
 }
 
+/* ==========================================================================
+   Arabic & RTL (Right-to-Left) Typography & Layout
+   ========================================================================== */
+
+html[lang="ar"],
+html[dir="rtl"] {
+  font-family: 'Segoe UI', Tahoma, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+}
+
+html[dir="rtl"] .modal-box,
+html[dir="rtl"] .action-form-group {
+  text-align: right;
+}
+
+html[dir="rtl"] .notif-drawer {
+  right: auto;
+  left: -360px;
+  border-left: none;
+  border-right: 1px solid var(--border-glow);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html[dir="rtl"] .notif-drawer.show {
+  right: auto;
+  left: 0;
+}
+
+
