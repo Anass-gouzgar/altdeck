@@ -121,7 +121,8 @@ const MIME_TYPES = {
   '.json': 'application/json; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
-  '.ico': 'image/x-icon'
+  '.ico': 'image/x-icon',
+  '.mp4': 'video/mp4'
 };
 
 const ACTIONS_FILE = path.join(__dirname, 'custom-actions.json');

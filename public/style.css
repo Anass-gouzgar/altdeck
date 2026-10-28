@@ -191,6 +191,19 @@ body {
   transform: translateY(-1px);
 }
 
+.btn-icon.active {
+  background: rgba(0, 240, 255, 0.15) !important;
+  color: var(--neon-cyan) !important;
+  border-color: var(--neon-cyan) !important;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  animation: pulse-wakelock 2.5s infinite ease-in-out;
+}
+
+@keyframes pulse-wakelock {
+  0%, 100% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.65); }
+}
+
 /* ==========================================================================
    Navigation Tabs
    ========================================================================== */

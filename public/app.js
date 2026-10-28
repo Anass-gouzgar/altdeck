@@ -259,68 +259,126 @@ setInterval(updateClock, 1000);
 updateClock();
 
 // ==========================================================================
-// Screen WakeLock (NoSleep engine for Android Tablets)
+// Multi-Layer Resilient Screen Keep-Awake Engine for Tablets
 // ==========================================================================
-let noSleepInstance = null;
-state.wakeLockActive = false;
+const keepAwakeVideo = document.getElementById('keep-awake-video');
+let keepAwakeWatchdog = null;
+let lastVideoTime = -1;
+state.wakeLockActive = true; // Auto-enabled by default for dedicated tablet controller
 
-function getNoSleep() {
-  if (!noSleepInstance && typeof NoSleep !== 'undefined') {
-    noSleepInstance = new NoSleep();
-  }
-  return noSleepInstance;
-}
-
-['click', 'touchstart'].forEach(evt => {
-  document.addEventListener(evt, () => {
-    getNoSleep();
-  }, { once: true, passive: true });
-});
-
-async function toggleWakeLock() {
-  triggerHaptic();
+async function activateKeepAwake(quiet = false) {
   const btn = document.getElementById('wakelock-btn');
-
-  if (state.wakeLockActive) {
-    state.wakeLockActive = false;
-    btn.style.color = '';
-    btn.style.boxShadow = '';
-    if (state.wakeLock) {
-      try { await state.wakeLock.release(); } catch (e) {}
-      state.wakeLock = null;
-    }
-    const ns = getNoSleep();
-    if (ns) {
-      try { ns.disable(); } catch(e) {}
-    }
-    showToast('Keep-Awake Deactivated');
-    return;
+  state.wakeLockActive = true;
+  if (btn) {
+    btn.classList.add('active');
   }
 
-  state.wakeLockActive = true;
-  btn.style.color = 'var(--neon-cyan)';
-  btn.style.boxShadow = '0 0 15px rgba(0, 240, 255, 0.4)';
-
+  // Layer 1: Native Screen WakeLock API (if HTTPS / supported)
   if ('wakeLock' in navigator && window.isSecureContext) {
     try {
-      state.wakeLock = await navigator.wakeLock.request('screen');
-      showToast('Galaxy Tab Screen will stay awake!');
-      return;
+      if (!state.wakeLock) {
+        state.wakeLock = await navigator.wakeLock.request('screen');
+        state.wakeLock.addEventListener('release', () => {
+          state.wakeLock = null;
+        });
+      }
     } catch (e) {}
   }
 
-  const ns = getNoSleep();
-  if (ns) {
+  // Layer 2: Dedicated Video Media Stream (Android OS FLAG_KEEP_SCREEN_ON)
+  if (keepAwakeVideo) {
     try {
-      ns.enable();
-      showToast('Galaxy Tab Screen will stay awake!');
-      return;
-    } catch(e) {}
+      keepAwakeVideo.muted = true;
+      if (keepAwakeVideo.paused) {
+        const p = keepAwakeVideo.play();
+        if (p && p.catch) p.catch(() => {});
+      }
+    } catch (e) {}
   }
 
-  showToast('Galaxy Tab Screen will stay awake!');
+  // Layer 3: Heartbeat Audio Pipeline (prevents Android browser sleep)
+  if (audioCtx && audioCtx.state === 'suspended') {
+    try { audioCtx.resume(); } catch (e) {}
+  }
+
+  // Start active watchdog if not running
+  if (!keepAwakeWatchdog) {
+    keepAwakeWatchdog = setInterval(() => {
+      if (!state.wakeLockActive) return;
+
+      // Re-trigger video playback if paused or stalled
+      if (keepAwakeVideo) {
+        if (keepAwakeVideo.paused || keepAwakeVideo.ended) {
+          keepAwakeVideo.play().catch(() => {});
+        } else if (keepAwakeVideo.currentTime === lastVideoTime) {
+          keepAwakeVideo.currentTime = 0;
+          keepAwakeVideo.play().catch(() => {});
+        }
+        lastVideoTime = keepAwakeVideo.currentTime;
+      }
+
+      // Re-acquire native wakelock if released
+      if ('wakeLock' in navigator && window.isSecureContext && !state.wakeLock) {
+        navigator.wakeLock.request('screen').then(lock => {
+          state.wakeLock = lock;
+        }).catch(() => {});
+      }
+    }, 2500);
+  }
+
+  if (!quiet) {
+    showToast(state.lang === 'ar' ? 'تم تفعيل إبقاء الشاشة مضاءة دائماً!' : 'Screen will stay awake indefinitely!');
+  }
+}
+
+function deactivateKeepAwake() {
+  const btn = document.getElementById('wakelock-btn');
+  state.wakeLockActive = false;
+  if (btn) {
+    btn.classList.remove('active');
+  }
+  if (state.wakeLock) {
+    try { state.wakeLock.release(); } catch (e) {}
+    state.wakeLock = null;
+  }
+  if (keepAwakeVideo) {
+    try { keepAwakeVideo.pause(); } catch (e) {}
+  }
+  if (keepAwakeWatchdog) {
+    clearInterval(keepAwakeWatchdog);
+    keepAwakeWatchdog = null;
+  }
+  showToast(state.lang === 'ar' ? 'تم إيقاف إبقاء الشاشة مضاءة' : 'Keep-Awake Deactivated');
+}
+
+function toggleWakeLock() {
+  triggerHaptic();
+  if (state.wakeLockActive) {
+    deactivateKeepAwake();
+  } else {
+    activateKeepAwake(false);
+  }
 }
 document.getElementById('wakelock-btn').addEventListener('click', toggleWakeLock);
+
+// Automatically engage on ANY first user touch or tap
+['click', 'touchstart', 'pointerdown'].forEach(evt => {
+  document.addEventListener(evt, () => {
+    if (state.wakeLockActive) {
+      activateKeepAwake(true);
+    }
+  }, { passive: true });
+});
+
+// Re-arm immediately when returning from sleep or switching tabs
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && state.wakeLockActive) {
+    activateKeepAwake(true);
+  }
+});
+window.addEventListener('focus', () => {
+  if (state.wakeLockActive) activateKeepAwake(true);
+});
 
 // Fullscreen Toggle
 document.getElementById('fullscreen-btn').addEventListener('click', () => {
@@ -946,12 +1004,3 @@ async function loadInfo() {
 }
 loadInfo();
 
-// Auto request WakeLock on first user tap
-window.addEventListener('click', () => {
-  if (!state.wakeLock && 'wakeLock' in navigator) {
-    navigator.wakeLock.request('screen').then(lock => {
-      state.wakeLock = lock;
-      document.getElementById('wakelock-btn').style.color = 'var(--neon-cyan)';
-    }).catch(() => {});
-  }
-}, { once: true });
