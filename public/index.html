@@ -70,6 +70,9 @@
       <button class="btn-icon" id="wakelock-btn" title="Keep Screen Awake">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
       </button>
+      <button class="btn-icon" id="btn-install-pwa" title="Install Fullscreen App (PWA)" style="display: none; color: var(--neon-cyan); border-color: rgba(0, 240, 255, 0.5);">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/><polyline points="9 9 12 12 15 9"/><line x1="12" y1="6" x2="12" y2="12"/></svg>
+      </button>
       <button class="btn-icon" id="fullscreen-btn" title="Toggle Fullscreen">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
       </button>
@@ -343,6 +346,10 @@
           </div>
 
         </div>
+        <button class="btn-preset" id="btn-browse-detected" style="width: 100%; margin-top: 12px; border-color: rgba(0, 240, 255, 0.4); color: var(--neon-cyan); display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span data-i18n="browseDetectedApps">🔍 Browse Auto-Detected PC Apps...</span>
+        </button>
       </section>
 
       <!-- CARD 3.5: CUSTOM ACTIONS & MACROS (Added from Deck) -->
@@ -487,23 +494,62 @@
 
   <!-- TAB 4: PAIRING & QR CODE -->
   <section class="tab-content" id="tab-pairing">
-    <div class="card qr-card">
-      <div class="card-title" style="margin-bottom: 8px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/></svg>
-        Instant Tablet Pairing
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; max-width: 960px; margin: 0 auto;">
+      <!-- QR Card -->
+      <div class="card qr-card" style="margin: 0;">
+        <div class="card-title" style="margin-bottom: 8px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/></svg>
+          <span data-i18n="navPairing">Connect & QR</span>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 14px;">
+          Scan this QR code with your Android tablet camera or type this URL into Google Chrome:
+        </p>
+
+        <div class="connection-url" id="display-url">http://192.168.100.101:3000</div>
+
+        <div class="qr-frame" id="qr-container">
+          <!-- Live SVG QR Code loaded from server -->
+        </div>
       </div>
-      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 14px;">
-        Scan this QR code with your Android tablet camera or type this URL into Google Chrome:
-      </p>
 
-      <div class="connection-url" id="display-url">http://192.168.100.101:3000</div>
+      <!-- PWA Fullscreen Card -->
+      <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div class="card-header" style="margin-bottom: 14px;">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              <span data-i18n="pwaInstallTitle">Fullscreen Tablet App (PWA)</span>
+            </div>
+            <span class="badge-value" style="background: rgba(0, 240, 255, 0.15); color: var(--neon-cyan); border-color: var(--neon-cyan);">PWA Ready</span>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px; line-height: 1.5;">
+            Transform your Galaxy Tab or Android tablet into a dedicated, borderless Stream Deck hardware display without browser address bars!
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+            <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; color: #cbd5e1;">
+              <span style="background: var(--neon-cyan); color: #000; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">1</span>
+              <span>Tap the <strong>Install App</strong> button below, or tap Chrome menu <code>⋮</code> &rarr; <strong>"Install app"</strong> / <strong>"Add to Home screen"</strong>.</span>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; color: #cbd5e1;">
+              <span style="background: #8B5CF6; color: #fff; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">2</span>
+              <span>Launch from your tablet home screen. It automatically runs in <strong>100% borderless fullscreen</strong> mode.</span>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; color: #cbd5e1;">
+              <span style="background: #10B981; color: #000; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">3</span>
+              <span>Keep Screen Awake (sun icon) is automatically active to ensure your display never sleeps!</span>
+            </div>
+          </div>
+        </div>
 
-      <div class="qr-frame" id="qr-container">
-        <!-- Live SVG QR Code loaded from server -->
-      </div>
-
-      <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; max-width: 380px;">
-        💡 <strong>Pro Tip:</strong> On your Android tablet, tap the 3 dots in Chrome and choose <strong>"Add to Home Screen"</strong> to run TabDeck as a full-screen, borderless app!
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="btn-preset pwa-primary-btn" id="pairing-install-btn" style="background: linear-gradient(135deg, #00f0ff, #3b82f6); color: #000; font-weight: 800; padding: 14px; border-radius: 12px; font-size: 1rem; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span data-i18n="pwaInstallBtn">📱 Install as Fullscreen App</span>
+          </button>
+          <button class="btn-preset" id="pairing-fullscreen-btn" style="border-color: #8B5CF6; color: #8B5CF6; font-weight: 700; padding: 10px; border-radius: 10px;">
+            <span data-i18n="pwaFullscreenBtn">⛶ Switch to Fullscreen Mode</span>
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -626,6 +672,36 @@
           <!-- Rendered list of custom actions -->
         </div>
       </div>
+
+      <!-- 5. AUTO-DETECTED INSTALLED PC APPS -->
+      <div class="card" style="grid-column: 1 / -1;" id="detected-apps-card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span data-i18n="detectedAppsTitle">Auto-Detected Installed PC Apps</span>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <span class="badge-value" id="detected-apps-count">Scanning PC...</span>
+            <button class="btn-preset" id="btn-refresh-detected-apps" style="border-color: var(--neon-cyan); color: var(--neon-cyan); font-size: 0.8rem; padding: 4px 10px;">
+              🔄 <span data-i18n="detectedAppsRefresh">Refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">
+          Automatically detected from Windows Start Menu and Apps. Click <strong>Launch</strong> to test on PC, or <strong>+ Add to Deck</strong> to place an instant shortcut button on your Stream Deck!
+        </p>
+
+        <div style="position: relative; margin-bottom: 14px;">
+          <input type="text" id="detected-apps-search" class="action-input" placeholder="Search installed PC apps (e.g. Spotify, Discord, Steam, VS Code, Photoshop)..." style="width: 100%; padding-left: 36px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+
+        <div class="detected-apps-container" id="detected-apps-container">
+          <!-- Rendered list of detected apps -->
+          <div style="text-align: center; color: var(--text-muted); padding: 30px 0;">Scanning installed apps on PC...</div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -642,9 +718,17 @@
       <div class="action-form-group">
         <label class="action-form-label">Action Type</label>
         <select id="action-form-type" class="action-input">
+          <option value="app">Launch Installed PC App</option>
           <option value="url">Open URL (Browser)</option>
           <option value="copy">Copy Text to PC Clipboard</option>
           <option value="command">Run Terminal Command (PC)</option>
+        </select>
+      </div>
+
+      <div class="action-form-group" id="action-app-select-group">
+        <label class="action-form-label">Select Detected App</label>
+        <select id="action-form-app-select" class="action-input">
+          <option value="">-- Choose Installed PC App --</option>
         </select>
       </div>
 

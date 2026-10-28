@@ -167,11 +167,21 @@ if (fs.existsSync(configPath)) {
   }
 }
 
-function launchApp(appId) {
-  const app = APPS[appId];
+function launchApp(appId, customAppId) {
+  const targetId = customAppId || appId;
+  const app = APPS[targetId] || APPS[appId];
   if (app && app.launch) {
     app.launch();
     return { status: 'ok', app: app.name };
+  }
+  // Support direct Windows AppID / shell launch (e.g. from Auto-Detected PC Apps)
+  if (targetId) {
+    const target = targetId.startsWith('shell:') ? targetId : `shell:AppsFolder\\${targetId}`;
+    const escaped = target.replace(/'/g, "''");
+    exec(`powershell -NoProfile -Command "Start-Process '${escaped}'"`, (err) => {
+      if (err) console.error('Failed to launch detected app:', err.message);
+    });
+    return { status: 'ok', app: targetId };
   }
   return { status: 'error', message: 'App not found: ' + appId };
 }

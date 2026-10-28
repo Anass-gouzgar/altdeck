@@ -164,7 +164,14 @@ const I18N = {
     soundLabel: 'Notification Sound',
     hapticLabel: 'Haptic Vibration',
     notifTestTitle: 'PC Notifications Hub',
-    manageActionsTitle: 'Manage Custom Deck Buttons'
+    manageActionsTitle: 'Manage Custom Deck Buttons',
+    pwaInstallTitle: 'Fullscreen Tablet App (PWA)',
+    pwaInstallBtn: '📱 Install as Fullscreen App',
+    pwaFullscreenBtn: '⛶ Switch to Fullscreen Mode',
+    detectedAppsTitle: 'Auto-Detected Installed PC Apps',
+    detectedAppsRefresh: 'Refresh',
+    browseDetectedApps: '🔍 Browse Auto-Detected PC Apps...',
+    appAddedToDeck: 'App added to your Stream Deck!'
   },
   fr: {
     navDeck: 'Stream Deck',
@@ -179,7 +186,14 @@ const I18N = {
     soundLabel: 'Son de Notification',
     hapticLabel: 'Vibration Haptique',
     notifTestTitle: 'Hub de Notifications PC',
-    manageActionsTitle: 'Gérer les Boutons Personnalisés'
+    manageActionsTitle: 'Gérer les Boutons Personnalisés',
+    pwaInstallTitle: 'Application Tablette Plein Écran (PWA)',
+    pwaInstallBtn: '📱 Installer en application plein écran',
+    pwaFullscreenBtn: '⛶ Passer en plein écran',
+    detectedAppsTitle: 'Applications PC Détectées',
+    detectedAppsRefresh: 'Actualiser',
+    browseDetectedApps: '🔍 Parcourir les applications PC détectées...',
+    appAddedToDeck: 'Application ajoutée à votre Stream Deck !'
   },
   ar: {
     navDeck: 'لوحة التحكم',
@@ -194,7 +208,14 @@ const I18N = {
     soundLabel: 'صوت التنبيهات',
     hapticLabel: 'الاهتزاز اللمسي',
     notifTestTitle: 'مركز إشعارات الكمبيوتر',
-    manageActionsTitle: 'إدارة الأزرار المخصصة'
+    manageActionsTitle: 'إدارة الأزرار المخصصة',
+    pwaInstallTitle: 'تطبيق التابلت ملء الشاشة (PWA)',
+    pwaInstallBtn: '📱 تثبيت كتطبيق ملء الشاشة',
+    pwaFullscreenBtn: '⛶ التبديل إلى وضع ملء الشاشة',
+    detectedAppsTitle: 'تطبيقات الكمبيوتر المكتشفة تلقائياً',
+    detectedAppsRefresh: 'تحديث',
+    browseDetectedApps: '🔍 تصفح تطبيقات الكمبيوتر المكتشفة...',
+    appAddedToDeck: 'تمت إضافة التطبيق إلى لوحة التحكم بنجاح!'
   }
 };
 
@@ -599,6 +620,9 @@ function getActionIconSvg(iconName) {
       return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>';
     case 'music':
       return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+    case 'app':
+    case 'rocket':
+      return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4.5c1.45-1.47 4.5-2 4.5-2"/><path d="M12 15v5s3.03-.55 4.5-2c1.47-1.45 2-4.5 2-4.5"/></svg>';
     default:
       return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
   }
@@ -642,7 +666,8 @@ function renderCustomActions(actions) {
         sendAction({ type: 'command', command: action.payload.command });
         showToast(`Executed: ${action.label}`);
       } else if (action.type === 'app') {
-        sendAction({ type: 'app', action: action.id });
+        const targetApp = (action.payload && action.payload.appId) ? action.payload.appId : (action.action || action.id);
+        sendAction({ type: 'app', action: targetApp, target: targetApp });
         showToast(`Launching: ${action.label}`);
       }
     });
@@ -678,13 +703,18 @@ function renderCustomActions(actions) {
 }
 
 // Action Creator Modal Handling
+const actionAppSelectGroup = document.getElementById('action-app-select-group');
+const actionFormAppSelect = document.getElementById('action-form-app-select');
+
 function openActionModal() {
   triggerHaptic();
   actionFormLabel.value = '';
   actionFormVal.value = '';
-  actionFormType.value = 'url';
-  actionValLabel.textContent = 'Target URL';
-  actionFormVal.placeholder = 'https://...';
+  actionFormType.value = 'app';
+  if (actionAppSelectGroup) actionAppSelectGroup.style.display = 'block';
+  if (actionFormAppSelect) actionFormAppSelect.value = '';
+  actionValLabel.textContent = 'App ID / Executable Path';
+  actionFormVal.placeholder = 'Choose from list or enter AppID';
   actionModal.classList.add('show');
 }
 
@@ -702,17 +732,35 @@ btnCancelAction.addEventListener('click', closeActionModal);
 
 actionFormType.addEventListener('change', () => {
   const val = actionFormType.value;
-  if (val === 'url') {
-    actionValLabel.textContent = 'Target URL';
-    actionFormVal.placeholder = 'https://...';
-  } else if (val === 'copy') {
-    actionValLabel.textContent = 'Text to Copy to PC Clipboard';
-    actionFormVal.placeholder = 'e.g. MySecretToken123';
-  } else if (val === 'command') {
-    actionValLabel.textContent = 'Terminal Command';
-    actionFormVal.placeholder = 'e.g. git pull || wt.exe';
+  if (val === 'app') {
+    if (actionAppSelectGroup) actionAppSelectGroup.style.display = 'block';
+    actionValLabel.textContent = 'App ID / Executable Path';
+    actionFormVal.placeholder = 'e.g. Microsoft.WindowsCalculator_8wekyb3d8bbwe!App';
+  } else {
+    if (actionAppSelectGroup) actionAppSelectGroup.style.display = 'none';
+    if (val === 'url') {
+      actionValLabel.textContent = 'Target URL';
+      actionFormVal.placeholder = 'https://...';
+    } else if (val === 'copy') {
+      actionValLabel.textContent = 'Text to Copy to PC Clipboard';
+      actionFormVal.placeholder = 'e.g. MySecretToken123';
+    } else if (val === 'command') {
+      actionValLabel.textContent = 'Terminal Command';
+      actionFormVal.placeholder = 'e.g. git pull || wt.exe';
+    }
   }
 });
+
+if (actionFormAppSelect) {
+  actionFormAppSelect.addEventListener('change', () => {
+    const selectedOpt = actionFormAppSelect.options[actionFormAppSelect.selectedIndex];
+    if (selectedOpt && selectedOpt.value) {
+      actionFormLabel.value = selectedOpt.dataset.name || selectedOpt.textContent;
+      actionFormVal.value = selectedOpt.value;
+      actionFormColor.value = getRandomColor(selectedOpt.dataset.name || selectedOpt.value);
+    }
+  });
+}
 
 document.querySelectorAll('.color-pick').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -735,13 +783,14 @@ btnSaveAction.addEventListener('click', async () => {
   if (type === 'url') payload.url = val;
   if (type === 'copy') payload.text = val;
   if (type === 'command') payload.command = val;
+  if (type === 'app') payload.appId = val;
 
   const newAction = {
     id: 'act-' + Date.now(),
     label,
     type,
     color,
-    icon: type,
+    icon: type === 'app' ? 'rocket' : type,
     payload
   };
 
@@ -1000,7 +1049,261 @@ async function loadInfo() {
       state.customActions = data.customActions;
       renderCustomActions(data.customActions);
     }
+    if (data.hostname && pcHostname) {
+      pcHostname.textContent = `${data.hostname} • Windows`;
+    }
   } catch (e) {}
+  // Pre-load detected PC apps
+  fetchDetectedApps();
 }
 loadInfo();
+
+// ==========================================================================
+// PWA Service Worker & Fullscreen Install Engine
+// ==========================================================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => {
+        console.log('[TabDeck PWA] Service Worker registered:', reg.scope);
+      })
+      .catch(err => {
+        console.warn('[TabDeck PWA] Service Worker registration failed:', err);
+      });
+  });
+}
+
+let deferredPrompt = null;
+const btnInstallPwa = document.getElementById('btn-install-pwa');
+const pairingInstallBtn = document.getElementById('pairing-install-btn');
+const pairingFullscreenBtn = document.getElementById('pairing-fullscreen-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (btnInstallPwa) {
+    btnInstallPwa.style.display = 'inline-flex';
+  }
+});
+
+async function triggerPwaInstall() {
+  triggerHaptic();
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      showToast(state.lang === 'ar' ? 'جاري تثبيت TabDeck...' : 'Installing TabDeck as Fullscreen App...');
+    }
+    deferredPrompt = null;
+    if (btnInstallPwa) btnInstallPwa.style.display = 'none';
+  } else {
+    // If running in browser or prompt not available
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                         window.matchMedia('(display-mode: fullscreen)').matches ||
+                         window.navigator.standalone === true;
+    if (isStandalone) {
+      showToast(state.lang === 'ar' ? 'التطبيق مثبت ويعمل بملء الشاشة بالفعل!' : 'TabDeck is running in Fullscreen App mode!');
+    } else {
+      const msg = state.lang === 'ar'
+        ? '📱 لتثبيت التطبيق بملء الشاشة على تابلت سامسونج / أندرويد:\n1. اضغط على القائمة (⋮) أعلى متصفح Chrome.\n2. اختر "تثبيت التطبيق" أو "الإضافة إلى الشاشة الرئيسية".\n3. افتح TabDeck من شاشة جهازك ليعمل بملء الشاشة بدون أي أشرطة!'
+        : (state.lang === 'fr'
+          ? '📱 Pour installer TabDeck en plein écran sur votre tablette:\n1. Ouvrez le menu (⋮) de Google Chrome.\n2. Sélectionnez "Installer l\'application" ou "Ajouter à l\'écran d\'accueil".\n3. Lancez TabDeck depuis l\'écran d\'accueil sans barre d\'adresse !'
+          : '📱 To install TabDeck as a Fullscreen App on your tablet:\n1. Tap the Chrome menu (⋮) in the top-right corner.\n2. Tap "Install app" or "Add to Home screen".\n3. Open TabDeck from your home screen to enjoy 100% borderless fullscreen!');
+      alert(msg);
+    }
+  }
+}
+
+if (btnInstallPwa) btnInstallPwa.addEventListener('click', triggerPwaInstall);
+if (pairingInstallBtn) pairingInstallBtn.addEventListener('click', triggerPwaInstall);
+
+if (pairingFullscreenBtn) {
+  pairingFullscreenBtn.addEventListener('click', () => {
+    triggerHaptic();
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+      showToast(state.lang === 'ar' ? 'تم تفعيل ملء الشاشة' : 'Entered Fullscreen Mode');
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  showToast(state.lang === 'ar' ? 'تم تثبيت TabDeck بنجاح!' : 'TabDeck installed successfully!');
+  deferredPrompt = null;
+  if (btnInstallPwa) btnInstallPwa.style.display = 'none';
+});
+
+// ==========================================================================
+// Auto-Detected Installed PC Apps Engine
+// ==========================================================================
+state.detectedApps = [];
+
+const detectedAppsContainer = document.getElementById('detected-apps-container');
+const detectedAppsCount = document.getElementById('detected-apps-count');
+const detectedAppsSearch = document.getElementById('detected-apps-search');
+const btnRefreshDetectedApps = document.getElementById('btn-refresh-detected-apps');
+const btnBrowseDetected = document.getElementById('btn-browse-detected');
+
+function getRandomColor(str) {
+  const colors = ['#00F0FF', '#6366F1', '#EC4899', '#10B981', '#F59E0B', '#8B5CF6', '#38BDF8'];
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+}
+
+function renderDetectedApps(apps) {
+  if (!detectedAppsContainer) return;
+  detectedAppsContainer.innerHTML = '';
+
+  if (apps.length === 0) {
+    detectedAppsContainer.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 30px 0;">${
+      state.lang === 'ar' ? 'لا توجد تطبيقات مطابقة' : 'No matching applications found'
+    }</div>`;
+    return;
+  }
+
+  apps.forEach(app => {
+    const card = document.createElement('div');
+    card.className = 'detected-app-card';
+    const color = getRandomColor(app.name);
+    const initial = (app.name || 'A').trim().charAt(0).toUpperCase();
+
+    card.innerHTML = `
+      <div class="detected-app-icon" style="background: linear-gradient(135deg, ${color}22, ${color}55); border-color: ${color}; color: ${color};">${initial}</div>
+      <div class="detected-app-info">
+        <div class="detected-app-name" title="${escapeHtml(app.name)}">${escapeHtml(app.name)}</div>
+        <div class="detected-app-id" title="${escapeHtml(app.appId)}">${escapeHtml(app.appId)}</div>
+      </div>
+      <div class="detected-app-actions">
+        <button class="btn-app-launch" title="Launch on PC">🚀</button>
+        <button class="btn-app-add" title="Add to Stream Deck">+ Deck</button>
+      </div>
+    `;
+
+    // Launch on PC
+    card.querySelector('.btn-app-launch').addEventListener('click', (e) => {
+      e.stopPropagation();
+      triggerHaptic();
+      sendAction({ type: 'app', action: app.appId, target: app.appId });
+      showToast(state.lang === 'ar' ? `جاري تشغيل ${app.name} على الكمبيوتر...` : `Launching ${app.name} on PC...`);
+    });
+
+    // Add directly to Deck
+    card.querySelector('.btn-app-add').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      triggerHaptic();
+      const newAction = {
+        id: 'app-' + Date.now(),
+        label: app.name,
+        type: 'app',
+        color: color,
+        icon: 'rocket',
+        payload: {
+          appId: app.appId
+        }
+      };
+
+      try {
+        const res = await fetch('/api/custom-actions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newAction)
+        });
+        const data = await res.json();
+        if (data.status === 'ok') {
+          state.customActions = data.actions;
+          renderCustomActions(data.actions);
+          showToast(state.lang === 'ar' ? 'تمت إضافة التطبيق إلى لوحة التحكم!' : `Added "${app.name}" to Stream Deck!`);
+        }
+      } catch (err) {
+        showToast('Error adding action');
+      }
+    });
+
+    detectedAppsContainer.appendChild(card);
+  });
+}
+
+function updateAppSelectDropdown(apps) {
+  const select = document.getElementById('action-form-app-select');
+  if (!select) return;
+  select.innerHTML = '<option value="">-- Choose Installed PC App --</option>';
+  apps.forEach(app => {
+    const opt = document.createElement('option');
+    opt.value = app.appId;
+    opt.textContent = `${app.name} (${app.appId.length > 30 ? app.appId.slice(0, 27) + '...' : app.appId})`;
+    opt.dataset.name = app.name;
+    select.appendChild(opt);
+  });
+}
+
+async function fetchDetectedApps(forceRefresh = false) {
+  if (detectedAppsCount) {
+    detectedAppsCount.textContent = state.lang === 'ar' ? 'جاري الفحص...' : 'Scanning PC...';
+  }
+  try {
+    const res = await fetch(`/api/detected-apps${forceRefresh ? '?refresh=1' : ''}`);
+    const data = await res.json();
+    if (data.status === 'ok' && Array.isArray(data.apps)) {
+      state.detectedApps = data.apps;
+      if (detectedAppsCount) {
+        detectedAppsCount.textContent = state.lang === 'ar'
+          ? `${data.apps.length} تطبيق مكتشف`
+          : `${data.apps.length} Apps Detected`;
+      }
+      renderDetectedApps(state.detectedApps);
+      updateAppSelectDropdown(state.detectedApps);
+    }
+  } catch (err) {
+    if (detectedAppsCount) detectedAppsCount.textContent = 'Scan Error';
+  }
+}
+
+if (btnRefreshDetectedApps) {
+  btnRefreshDetectedApps.addEventListener('click', () => {
+    triggerHaptic();
+    fetchDetectedApps(true);
+    showToast(state.lang === 'ar' ? 'جاري تحديث تطبيقات الكمبيوتر...' : 'Refreshing detected PC apps...');
+  });
+}
+
+if (detectedAppsSearch) {
+  detectedAppsSearch.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    if (!q) {
+      renderDetectedApps(state.detectedApps);
+      return;
+    }
+    const filtered = state.detectedApps.filter(app => 
+      (app.name && app.name.toLowerCase().includes(q)) || 
+      (app.appId && app.appId.toLowerCase().includes(q))
+    );
+    renderDetectedApps(filtered);
+  });
+}
+
+if (btnBrowseDetected) {
+  btnBrowseDetected.addEventListener('click', () => {
+    triggerHaptic();
+    // Switch to tab-config
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    const cfgTab = document.querySelector('[data-tab="tab-config"]');
+    if (cfgTab) cfgTab.classList.add('active');
+    const cfgContent = document.getElementById('tab-config');
+    if (cfgContent) cfgContent.classList.add('active');
+    const card = document.getElementById('detected-apps-card');
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth' });
+    }
+    if (detectedAppsSearch) {
+      setTimeout(() => detectedAppsSearch.focus(), 300);
+    }
+  });
+}
+
 

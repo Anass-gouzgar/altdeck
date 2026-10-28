@@ -166,12 +166,40 @@ function broadcastNotification(notification) {
   }
 }
 
+let detectedAppsCache = null;
+let detectedAppsCacheTime = 0;
+
+function getDetectedApps(forceRefresh = false) {
+  return new Promise((resolve) => {
+    const now = Date.now();
+    if (!forceRefresh && detectedAppsCache && (now - detectedAppsCacheTime < 10 * 60 * 1000)) {
+      return resolve({ apps: detectedAppsCache, cached: true });
+    }
+    const scriptPath = path.join(__dirname, 'scripts', 'get-apps.ps1');
+    execFile('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', scriptPath], { maxBuffer: 10 * 1024 * 1024 }, (err, stdout) => {
+      if (err) {
+        console.error('Error detecting apps:', err.message);
+        return resolve({ apps: detectedAppsCache || [], error: err.message, cached: !!detectedAppsCache });
+      }
+      try {
+        const apps = JSON.parse(stdout.trim());
+        detectedAppsCache = apps;
+        detectedAppsCacheTime = Date.now();
+        resolve({ apps, cached: false });
+      } catch (e) {
+        console.error('Failed to parse detected apps output:', e.message);
+        resolve({ apps: detectedAppsCache || [], error: e.message, cached: !!detectedAppsCache });
+      }
+    });
+  });
+}
+
 async function executeAction(payload) {
   const { type, action, value } = payload;
   let result = { status: 'ok' };
 
   if (type === 'app') {
-    result = launchApp(action);
+    result = launchApp(action, payload.appId || payload.target);
   } else if (type === 'url') {
     const url = payload.url || value || '';
     if (url) exec(`start "" "${url}"`);
@@ -258,6 +286,14 @@ const server = http.createServer(async (req, res) => {
     const status = await getFullStatus();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify(status));
+  }
+
+  // Auto-Detected Installed PC Apps API
+  if (url.pathname === '/api/detected-apps' && req.method === 'GET') {
+    const refresh = url.searchParams.get('refresh') === '1' || url.searchParams.get('refresh') === 'true';
+    const data = await getDetectedApps(refresh);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ status: 'ok', count: data.apps.length, cached: data.cached, apps: data.apps }));
   }
 
   // Custom Actions API
@@ -382,7 +418,12 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(500);
         return res.end('Server error loading file');
       }
-      res.writeHead(200, { 'Content-Type': contentType });
+      const headers = { 'Content-Type': contentType };
+      if (url.pathname === '/sw.js') {
+        headers['Service-Worker-Allowed'] = '/';
+        headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+      }
+      res.writeHead(200, headers);
       res.end(content);
     });
   });
