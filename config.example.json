@@ -1,0 +1,34 @@
+{
+  "port": 3000,
+  "theme": "obsidian-cyber",
+  "customApps": {
+    "spotify": {
+      "name": "Spotify",
+      "icon": "spotify",
+      "category": "Media",
+      "color": "#1DB954",
+      "command": "start spotify:"
+    },
+    "steam": {
+      "name": "Steam",
+      "icon": "steam",
+      "category": "Gaming",
+      "color": "#171A21",
+      "command": "start steam:"
+    },
+    "terminal": {
+      "name": "Windows Terminal",
+      "icon": "terminal",
+      "category": "Development",
+      "color": "#4D4D4D",
+      "command": "start wt.exe"
+    },
+    "github": {
+      "name": "GitHub",
+      "icon": "globe",
+      "category": "Web",
+      "color": "#F0F6FC",
+      "url": "https://github.com"
+    }
+  }
+}

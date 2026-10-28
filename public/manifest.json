@@ -1,0 +1,17 @@
+{
+  "name": "TabDeck PC Controller",
+  "short_name": "TabDeck",
+  "description": "Touchscreen Stream Deck and PC Remote for Android Tablets",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080a10",
+  "theme_color": "#0e1320",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

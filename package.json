@@ -1,0 +1,34 @@
+{
+  "name": "tabdeck-pc-controller",
+  "version": "1.0.0",
+  "description": "Transform any Android tablet, iPad, or smartphone into a low-latency PC Stream Deck & hardware controller over local Wi-Fi.",
+  "main": "server.js",
+  "keywords": [
+    "stream-deck",
+    "android-tablet",
+    "remote-control",
+    "volume-control",
+    "brightness-control",
+    "trackpad",
+    "numpad",
+    "pwa",
+    "websocket",
+    "windows-controller",
+    "streamdeck-alternative"
+  ],
+  "author": "Anass & Contributors",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build:helper": "powershell -ExecutionPolicy Bypass -File build-helper.ps1"
+  },
+  "dependencies": {
+    "nosleep.js": "^0.12.0",
+    "qrcode": "^1.5.3",
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
