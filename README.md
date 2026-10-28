@@ -27,6 +27,9 @@ Most Stream Deck alternatives either require installing proprietary APKs on your
 - **Sub-10ms Hardware Latency**: Communicates over binary/JSON WebSockets directly with a high-performance native C# companion that taps into Windows CoreAudio COM (`IAudioEndpointVolume`) and WMI.
 - **Universal Tablet Keep-Awake**: Built-in `NoSleep.js` fallback keeps your tablet screen awake 24/7 on local Wi-Fi without requiring HTTPS certificates.
 - **4-in-1 Workspace**: Stream Deck + Wireless Touchpad + PC Numpad + Safe Power Center.
+- **Custom Actions & Macros**: Create interactive buttons to open URLs, run terminal commands, or copy text directly to your PC clipboard.
+- **Real-Time PC-to-Tablet Notifications**: Stream build alerts, dev notifications, and task status from PC to tablet with pleasant audio chimes.
+- **8 Curated Themes & Multi-Language**: Obsidian, Midnight OLED, Ocean, Ember, Forest, Rose, Frost, Gold; English, Français, and Español.
 
 ---
 
@@ -38,17 +41,36 @@ Most Stream Deck alternatives either require installing proprietary APKs on your
 - **Hardware Display Brightness**: Direct WMI screen brightness slider (0-100%) and quick presets.
 - **Dell & Laptop Lighting**: Quick launcher for Windows Mobility Center backlight controls.
 - **One-Tap App Launchpad**: Launch your favorite tools with official vector branding (Discord, Claude, 3uTools, Chrome, Edge, VS Code, Antigravity IDE, File Explorer, classic Sticky Notes, Windows Settings).
+- **⚡ Custom Actions & Macros (Dynamic)**:
+  - **Open URLs**: Launch websites on your PC (GitHub, YouTube Music, Discord, ChatGPT).
+  - **Copy to PC Clipboard**: Tap a button on your tablet to paste API keys, SSH tokens, boilerplate snippets directly into Windows clipboard.
+  - **Run Terminal Commands**: Execute shell scripts, `git pull`, `wt.exe`, Docker restarts from your tablet.
 - **Windows Navigation**: Alt+Tab app switcher, Task View (Win+Tab), Desktop toggle (Win+D), Snipping Tool (Win+Shift+S), and Active Window Close (Alt+F4).
 
-### 2. 🖱️ Wireless Trackpad Mode
+### 2. 🔔 Real-Time PC-to-Tablet Notifications
+- Push alerts from command line, build scripts, or terminal:
+  ```bash
+  npm run notify -- "Build Complete" "All test suites passed!" success
+  ```
+- Or via HTTP:
+  ```bash
+  curl -X POST http://localhost:3000/api/notify -H "Content-Type: application/json" -d "{\"title\":\"Done\",\"level\":\"success\"}"
+  ```
+- Instant sliding glass banner on tablet screen + pleasant Web Audio synth chime + notification history drawer.
+
+### 3. 🎨 8 Themes & Multi-Language (i18n)
+- **8 Themes**: Obsidian Cyber, Midnight OLED, Ocean Deep, Ember Sunset, Forest Emerald, Rose Synthwave, Frost Ice, Luxury Gold.
+- **3 Languages**: English, Français, Español.
+
+### 4. 🖱️ Wireless Trackpad Mode
 - Converts your tablet into a multi-touch PC touchpad.
 - Left-click, right-click, smooth mouse pointer motion, and two-finger vertical scrolling.
 
-### 3. 🔢 Wireless PC Numpad Mode
+### 5. 🔢 Wireless PC Numpad Mode
 - Full numeric keypad with arithmetic operators, Enter, Backspace, and Clear.
 - Ideal for compact 60% / 65% / tenkeyless laptop keyboards.
 
-### 4. ⚡ Safe Power Management
+### 6. ⚡ Safe Power Management
 - Lock workstation (`Win + L`) and low-power Sleep.
 - Safe Restart & Shutdown with a **30-second emergency countdown modal** and an instant **CANCEL** button to prevent accidental clicks.
 

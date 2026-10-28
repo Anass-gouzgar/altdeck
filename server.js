@@ -124,13 +124,107 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon'
 };
 
+const ACTIONS_FILE = path.join(__dirname, 'custom-actions.json');
+
+function loadCustomActions() {
+  try {
+    if (fs.existsSync(ACTIONS_FILE)) {
+      return JSON.parse(fs.readFileSync(ACTIONS_FILE, 'utf8'));
+    }
+  } catch (e) {
+    console.error('Error reading custom actions:', e.message);
+  }
+  return [];
+}
+
+function saveCustomActions(actions) {
+  try {
+    fs.writeFileSync(ACTIONS_FILE, JSON.stringify(actions, null, 2), 'utf8');
+    broadcastCustomActions();
+    return true;
+  } catch (e) {
+    console.error('Error saving custom actions:', e.message);
+    return false;
+  }
+}
+
+function broadcastCustomActions() {
+  if (!wss || wss.clients.size === 0) return;
+  const actions = loadCustomActions();
+  const msg = JSON.stringify({ event: 'custom-actions', data: actions });
+  for (const client of wss.clients) {
+    if (client.readyState === 1) client.send(msg);
+  }
+}
+
+function broadcastNotification(notification) {
+  if (!wss || wss.clients.size === 0) return;
+  const msg = JSON.stringify({ event: 'notification', data: notification });
+  for (const client of wss.clients) {
+    if (client.readyState === 1) client.send(msg);
+  }
+}
+
+async function executeAction(payload) {
+  const { type, action, value } = payload;
+  let result = { status: 'ok' };
+
+  if (type === 'app') {
+    result = launchApp(action);
+  } else if (type === 'url') {
+    const url = payload.url || value || '';
+    if (url) exec(`start "" "${url}"`);
+    result = { status: 'ok', url };
+  } else if (type === 'copy') {
+    const text = payload.text || value || '';
+    if (text) {
+      const child = exec('powershell -NoProfile -Command "$input | Set-Clipboard"');
+      child.stdin.write(text);
+      child.stdin.end();
+    }
+    result = { status: 'ok', copied: text.slice(0, 50) };
+  } else if (type === 'command') {
+    const cmd = payload.command || value || '';
+    if (cmd) {
+      exec(cmd, (err) => {
+        if (err) console.error('Exec error:', err.message);
+      });
+    }
+    result = { status: 'ok', command: cmd };
+  } else if (type === 'volume') {
+    if (action === 'set') {
+      result = await runNative(['volume', 'set', String(value)]);
+    } else if (action === 'mute') {
+      result = await runNative(['volume', 'mute', String(value)]);
+    } else if (action === 'up' || action === 'down') {
+      result = await runNative(['volume', action, String(value || 5)]);
+    }
+    broadcastState();
+  } else if (type === 'brightness') {
+    result = await runNative(['brightness', 'set', String(value)]);
+    broadcastState();
+  } else if (type === 'media') {
+    result = await runNative(['media', action]);
+  } else if (type === 'window') {
+    result = await runNative(['window', action]);
+  } else if (type === 'keyboard') {
+    result = await runNative(['keyboard', action]);
+  } else if (type === 'system') {
+    result = await runNative(['system', action, String(value || '')]);
+  } else if (type === 'mouse') {
+    result = await runNative(['mouse', action, String(payload.dx || payload.p1 || 0), String(payload.dy || payload.p2 || 0)]);
+  }
+
+  return result;
+}
+
 // Create HTTP server
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
@@ -154,7 +248,8 @@ const server = http.createServer(async (req, res) => {
         name: APPS[k].name,
         category: APPS[k].category,
         color: APPS[k].color
-      }))
+      })),
+      customActions: loadCustomActions()
     }));
   }
 
@@ -164,41 +259,95 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify(status));
   }
 
+  // Custom Actions API
+  if (url.pathname === '/api/custom-actions') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify(loadCustomActions()));
+    }
+
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', () => {
+        try {
+          const action = JSON.parse(body || '{}');
+          if (!action.label) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            return res.end(JSON.stringify({ error: 'Action label is required' }));
+          }
+          const actions = loadCustomActions();
+          const existingIdx = actions.findIndex(a => a.id === action.id);
+          if (existingIdx >= 0) {
+            actions[existingIdx] = action;
+          } else {
+            action.id = action.id || 'act-' + Date.now();
+            actions.push(action);
+          }
+          saveCustomActions(actions);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok', actions }));
+        } catch (e) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: e.message }));
+        }
+      });
+      return;
+    }
+
+    if (req.method === 'DELETE') {
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', () => {
+        try {
+          const id = url.searchParams.get('id') || (body ? JSON.parse(body).id : null);
+          let actions = loadCustomActions();
+          actions = actions.filter(a => a.id !== id);
+          saveCustomActions(actions);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok', actions }));
+        } catch (e) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: e.message }));
+        }
+      });
+      return;
+    }
+  }
+
+  // Real-Time Notification API (POST /api/notify or POST /notify)
+  if ((url.pathname === '/api/notify' || url.pathname === '/notify') && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const notification = {
+          id: 'notif-' + Date.now(),
+          title: payload.title || 'TabDeck Notification',
+          message: payload.message || '',
+          level: payload.level || 'info', // 'success', 'warning', 'error', 'info'
+          timestamp: Date.now()
+        };
+        broadcastNotification(notification);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ status: 'ok', notification, deliveredTo: (wss ? wss.clients.size : 0) }));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid JSON payload' }));
+      }
+    });
+    return;
+  }
+
+  // Unified Action API
   if (url.pathname === '/api/action' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', async () => {
       try {
         const payload = JSON.parse(body || '{}');
-        const { type, action, value } = payload;
-        let result = { status: 'ok' };
-
-        if (type === 'app') {
-          result = launchApp(action);
-        } else if (type === 'volume') {
-          if (action === 'set') {
-            result = await runNative(['volume', 'set', String(value)]);
-          } else if (action === 'mute') {
-            result = await runNative(['volume', 'mute', String(value)]);
-          } else if (action === 'up' || action === 'down') {
-            result = await runNative(['volume', action, String(value || 5)]);
-          }
-          broadcastState();
-        } else if (type === 'brightness') {
-          result = await runNative(['brightness', 'set', String(value)]);
-          broadcastState();
-        } else if (type === 'media') {
-          result = await runNative(['media', action]);
-        } else if (type === 'window') {
-          result = await runNative(['window', action]);
-        } else if (type === 'keyboard') {
-          result = await runNative(['keyboard', action]);
-        } else if (type === 'system') {
-          result = await runNative(['system', action, String(value || '')]);
-        } else if (type === 'mouse') {
-          result = await runNative(['mouse', action, String(payload.dx || payload.p1 || 0), String(payload.dy || payload.p2 || 0)]);
-        }
-
+        const result = await executeAction(payload);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(result));
       } catch (err) {
@@ -253,40 +402,15 @@ async function broadcastState() {
 }
 
 wss.on('connection', async (ws) => {
-  // Send current status immediately upon connection
+  // Send current status and custom actions immediately upon connection
   const status = await getFullStatus();
   ws.send(JSON.stringify({ event: 'status', data: status }));
+  ws.send(JSON.stringify({ event: 'custom-actions', data: loadCustomActions() }));
 
   ws.on('message', async (message) => {
     try {
       const payload = JSON.parse(message.toString());
-      const { type, action, value } = payload;
-
-      if (type === 'app') {
-        launchApp(action);
-      } else if (type === 'volume') {
-        if (action === 'set') {
-          await runNative(['volume', 'set', String(value)]);
-        } else if (action === 'mute') {
-          await runNative(['volume', 'mute', String(value)]);
-        } else if (action === 'up' || action === 'down') {
-          await runNative(['volume', action, String(value || 5)]);
-        }
-        broadcastState();
-      } else if (type === 'brightness') {
-        await runNative(['brightness', 'set', String(value)]);
-        broadcastState();
-      } else if (type === 'media') {
-        await runNative(['media', action]);
-      } else if (type === 'window') {
-        await runNative(['window', action]);
-      } else if (type === 'keyboard') {
-        await runNative(['keyboard', action]);
-      } else if (type === 'system') {
-        await runNative(['system', action, String(value || '')]);
-      } else if (type === 'mouse') {
-        await runNative(['mouse', action, String(payload.dx || payload.p1 || 0), String(payload.dy || payload.p2 || 0)]);
-      }
+      await executeAction(payload);
     } catch (e) {
       console.error('WS error:', e.message);
     }

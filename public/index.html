@@ -22,6 +22,18 @@
 </head>
 <body>
 
+  <!-- Floating Real-Time PC Notification Banner -->
+  <div id="notification-banner" class="notification-banner">
+    <div class="notif-icon-wrap" id="notif-icon-wrap">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </div>
+    <div class="notif-content">
+      <div class="notif-title" id="notif-title">TabDeck Alert</div>
+      <div class="notif-message" id="notif-msg">Notification message</div>
+    </div>
+    <button class="notif-close" id="notif-close-btn">&times;</button>
+  </div>
+
   <!-- Top Navigation & System Status Header -->
   <header class="app-header">
     <div class="brand">
@@ -48,6 +60,10 @@
     </div>
 
     <div class="header-actions">
+      <button class="btn-icon" id="notif-bell-btn" title="Notification History" style="position: relative;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-badge" id="notif-badge" style="display: none;">0</span>
+      </button>
       <button class="btn-icon" id="wakelock-btn" title="Keep Screen Awake">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
       </button>
@@ -61,19 +77,23 @@
   <nav class="nav-tabs">
     <button class="nav-tab active" data-tab="tab-deck">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-      Stream Deck
+      <span data-i18n="navDeck">Stream Deck</span>
     </button>
     <button class="nav-tab" data-tab="tab-trackpad">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="4"/><line x1="12" y1="7" x2="12" y2="11"/></svg>
-      Wireless Trackpad
+      <span data-i18n="navTrackpad">Trackpad</span>
     </button>
     <button class="nav-tab" data-tab="tab-numpad">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="8" cy="8" r="1"/><circle cx="12" cy="8" r="1"/><circle cx="16" cy="8" r="1"/><circle cx="8" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="16" cy="12" r="1"/><circle cx="12" cy="16" r="1"/></svg>
-      Numpad & Shortcuts
+      <span data-i18n="navNumpad">Numpad</span>
+    </button>
+    <button class="nav-tab" data-tab="tab-config">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span data-i18n="navConfig">Config</span>
     </button>
     <button class="nav-tab" data-tab="tab-pairing">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-      Connect & QR
+      <span data-i18n="navPairing">Connect & QR</span>
     </button>
   </nav>
 
@@ -322,6 +342,22 @@
         </div>
       </section>
 
+      <!-- CARD 3.5: CUSTOM ACTIONS & MACROS (Added from Deck) -->
+      <section class="card" style="grid-column: 1 / -1;">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span data-i18n="customActionsTitle">Custom Actions & Macros</span>
+          </div>
+          <button class="btn-preset" id="btn-quick-add-action" style="padding: 6px 12px; font-size: 0.75rem; border-color: var(--neon-cyan); color: var(--neon-cyan);">
+            + Add Action
+          </button>
+        </div>
+        <div class="custom-actions-grid" id="custom-actions-grid">
+          <!-- Dynamically populated from custom-actions.json -->
+        </div>
+      </section>
+
       <!-- CARD 4: WINDOWS QUICK ACTIONS -->
       <section class="card">
         <div class="card-header">
@@ -467,7 +503,184 @@
         💡 <strong>Pro Tip:</strong> On your Android tablet, tap the 3 dots in Chrome and choose <strong>"Add to Home Screen"</strong> to run TabDeck as a full-screen, borderless app!
       </div>
     </div>
+  <!-- TAB 5: CONFIG & SETTINGS (Themes, Language, Action Manager, Audio) -->
+  <section class="tab-content" id="tab-config">
+    <div class="config-layout">
+      <!-- 1. Themes (8 Choices) -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 0 0 0 14v6"/></svg>
+            <span data-i18n="themeTitle">Themes & Appearance</span>
+          </div>
+          <span style="font-size: 0.8rem; color: var(--neon-cyan);">8 Color Schemes</span>
+        </div>
+        <div class="theme-grid">
+          <div class="theme-chip active" data-theme="theme-obsidian">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #00f0ff, #8b5cf6);"></div>
+            <span>Obsidian</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-midnight">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #64748b, #000000);"></div>
+            <span>Midnight</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-ocean">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #00d2ff, #0040ff);"></div>
+            <span>Ocean</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-ember">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #ff6b35, #f72585);"></div>
+            <span>Ember</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-forest">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #10b981, #064e3b);"></div>
+            <span>Forest</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-rose">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #ec4899, #831843);"></div>
+            <span>Rose</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-frost">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #38bdf8, #94a3b8);"></div>
+            <span>Frost</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-gold">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #f59e0b, #78350f);"></div>
+            <span>Gold</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Language & Feedback Settings -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span data-i18n="langTitle">Language & Feedback</span>
+          </div>
+        </div>
+        <div class="settings-list">
+          <div class="setting-row">
+            <div>
+              <div style="font-weight: 600;" data-i18n="langLabel">Interface Language</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary);">English, Français, Español</div>
+            </div>
+            <div class="lang-selector">
+              <button class="btn-lang active" data-lang="en">EN</button>
+              <button class="btn-lang" data-lang="fr">FR</button>
+              <button class="btn-lang" data-lang="es">ES</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div style="font-weight: 600;" data-i18n="soundLabel">Notification Sound</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary);">Synth chime when PC sends alert</div>
+            </div>
+            <input type="checkbox" id="toggle-sound" checked class="toggle-switch">
+          </div>
+          <div class="setting-row">
+            <div>
+              <div style="font-weight: 600;" data-i18n="hapticLabel">Haptic Vibration</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary);">Tactile motor feedback on touch</div>
+            </div>
+            <input type="checkbox" id="toggle-haptic" checked class="toggle-switch">
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. PC Notifications & Testing -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span data-i18n="notifTestTitle">PC Notifications Hub</span>
+          </div>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.4;">
+          Send alerts from your PC using <code>npm run notify -- "Title" "Message" success</code> or POST to <code>/api/notify</code>.
+        </p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn-preset" id="test-notif-success" style="border-color: #10B981; color: #10B981;">Test Success</button>
+          <button class="btn-preset" id="test-notif-warning" style="border-color: #F59E0B; color: #F59E0B;">Test Warning</button>
+          <button class="btn-preset" id="test-notif-error" style="border-color: #EF4444; color: #EF4444;">Test Error</button>
+        </div>
+      </div>
+
+      <!-- 4. Action Manager -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <span data-i18n="manageActionsTitle">Manage Custom Deck Buttons</span>
+          </div>
+          <button class="btn-preset" id="btn-open-create-modal" style="border-color: var(--neon-cyan); color: var(--neon-cyan);">
+            + Create New Action
+          </button>
+        </div>
+        <div id="config-actions-list" class="config-actions-list">
+          <!-- Rendered list of custom actions -->
+        </div>
+      </div>
+    </div>
   </section>
+
+  <!-- CUSTOM ACTION MODAL (CREATE / EDIT) -->
+  <div class="modal-backdrop" id="action-modal">
+    <div class="modal-box" style="max-width: 440px; text-align: left;">
+      <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 16px; color: #fff;" id="action-modal-title">Create Custom Button</h2>
+      
+      <div class="action-form-group">
+        <label class="action-form-label">Button Label / Name</label>
+        <input type="text" id="action-form-label" class="action-input" placeholder="e.g. GitHub, Copy Token, Deploy">
+      </div>
+
+      <div class="action-form-group">
+        <label class="action-form-label">Action Type</label>
+        <select id="action-form-type" class="action-input">
+          <option value="url">Open URL (Browser)</option>
+          <option value="copy">Copy Text to PC Clipboard</option>
+          <option value="command">Run Terminal Command (PC)</option>
+        </select>
+      </div>
+
+      <div class="action-form-group">
+        <label class="action-form-label" id="action-val-label">Target URL</label>
+        <input type="text" id="action-form-val" class="action-input" placeholder="https://...">
+      </div>
+
+      <div class="action-form-group">
+        <label class="action-form-label">Button Accent Color</label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <input type="color" id="action-form-color" value="#00f0ff" style="width: 44px; height: 38px; border: none; border-radius: 6px; cursor: pointer; background: transparent;">
+          <button type="button" class="btn-preset color-pick" data-color="#00F0FF" style="color: #00F0FF; border-color: #00F0FF;">Cyan</button>
+          <button type="button" class="btn-preset color-pick" data-color="#10B981" style="color: #10B981; border-color: #10B981;">Emerald</button>
+          <button type="button" class="btn-preset color-pick" data-color="#EC4899" style="color: #EC4899; border-color: #EC4899;">Pink</button>
+          <button type="button" class="btn-preset color-pick" data-color="#F59E0B" style="color: #F59E0B; border-color: #F59E0B;">Amber</button>
+          <button type="button" class="btn-preset color-pick" data-color="#8B5CF6" style="color: #8B5CF6; border-color: #8B5CF6;">Purple</button>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 24px;">
+        <button class="btn-modal btn-cancel" id="btn-cancel-action">Cancel</button>
+        <button class="btn-modal" id="btn-save-action" style="background: var(--neon-cyan); color: #000; font-weight: 800;">Save Action</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION HISTORY DRAWER -->
+  <div class="notif-drawer-backdrop" id="notif-drawer-backdrop"></div>
+  <div class="notif-drawer" id="notif-drawer">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 12px;">
+      <div style="font-weight: 700; font-size: 1.1rem; color: #fff;">Notifications History</div>
+      <button class="notif-close" id="btn-close-notif-drawer">&times;</button>
+    </div>
+    <div class="notif-history-list" id="notif-history-list">
+      <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 40px 0;">
+        No notifications yet
+      </div>
+    </div>
+    <button class="btn-preset" id="btn-clear-notifs" style="margin-top: 10px; width: 100%;">Clear All Notifications</button>
+  </div>
 
   <!-- SAFETY CONFIRMATION MODAL (SHUTDOWN / RESTART) -->
   <div class="modal-backdrop" id="safety-modal">

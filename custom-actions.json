@@ -1,0 +1,42 @@
+[
+  {
+    "id": "act-1",
+    "label": "GitHub",
+    "type": "url",
+    "color": "#5865F2",
+    "icon": "globe",
+    "payload": {
+      "url": "https://github.com"
+    }
+  },
+  {
+    "id": "act-2",
+    "label": "Copy SSH Key",
+    "type": "copy",
+    "color": "#10B981",
+    "icon": "key",
+    "payload": {
+      "text": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyForTabDeckUser"
+    }
+  },
+  {
+    "id": "act-3",
+    "label": "Terminal",
+    "type": "command",
+    "color": "#06B6D4",
+    "icon": "terminal",
+    "payload": {
+      "command": "start wt.exe || start cmd.exe"
+    }
+  },
+  {
+    "id": "act-4",
+    "label": "YouTube Music",
+    "type": "url",
+    "color": "#EF4444",
+    "icon": "music",
+    "payload": {
+      "url": "https://music.youtube.com"
+    }
+  }
+]

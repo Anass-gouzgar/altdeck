@@ -10,7 +10,13 @@ const state = {
   wakeLock: null,
   activePowerAction: null,
   powerTimer: null,
-  powerCountdown: 30
+  powerCountdown: 30,
+  customActions: [],
+  notifications: [],
+  soundEnabled: localStorage.getItem('tabdeck_sound') !== 'false',
+  hapticEnabled: localStorage.getItem('tabdeck_haptic') !== 'false',
+  theme: localStorage.getItem('tabdeck_theme') || 'theme-obsidian',
+  lang: localStorage.getItem('tabdeck_lang') || 'en'
 };
 
 // Elements
@@ -32,10 +38,36 @@ const qrContainer = document.getElementById('qr-container');
 const displayUrl = document.getElementById('display-url');
 const pcHostname = document.getElementById('pc-hostname');
 
-// Subtle synthetic tactile sound via Web Audio API
+// Notifications & Custom Action Elements
+const notifBanner = document.getElementById('notification-banner');
+const notifTitle = document.getElementById('notif-title');
+const notifMsg = document.getElementById('notif-msg');
+const notifCloseBtn = document.getElementById('notif-close-btn');
+const notifBellBtn = document.getElementById('notif-bell-btn');
+const notifBadge = document.getElementById('notif-badge');
+const notifDrawer = document.getElementById('notif-drawer');
+const notifDrawerBackdrop = document.getElementById('notif-drawer-backdrop');
+const notifHistoryList = document.getElementById('notif-history-list');
+const btnClearNotifs = document.getElementById('btn-clear-notifs');
+const btnCloseNotifDrawer = document.getElementById('btn-close-notif-drawer');
+
+// Modal Elements
+const actionModal = document.getElementById('action-modal');
+const btnCancelAction = document.getElementById('btn-cancel-action');
+const btnSaveAction = document.getElementById('btn-save-action');
+const actionFormLabel = document.getElementById('action-form-label');
+const actionFormType = document.getElementById('action-form-type');
+const actionFormVal = document.getElementById('action-form-val');
+const actionValLabel = document.getElementById('action-val-label');
+const actionFormColor = document.getElementById('action-form-color');
+
+// ==========================================================================
+// Web Audio API Synthesizer (Click & Notification Chimes)
+// ==========================================================================
 const audioCtx = (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null;
+
 function playClickSound() {
-  if (!audioCtx) return;
+  if (!state.soundEnabled || !audioCtx) return;
   try {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const osc = audioCtx.createOscillator();
@@ -52,8 +84,29 @@ function playClickSound() {
   } catch (e) {}
 }
 
+function playNotificationChime() {
+  if (!state.soundEnabled || !audioCtx) return;
+  try {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+    notes.forEach((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.1);
+      gain.gain.setValueAtTime(0, audioCtx.currentTime + i * 0.1);
+      gain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + i * 0.1 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.1 + 0.28);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(audioCtx.currentTime + i * 0.1);
+      osc.stop(audioCtx.currentTime + i * 0.1 + 0.3);
+    });
+  } catch (e) {}
+}
+
 function triggerHaptic() {
-  if (navigator.vibrate) {
+  if (state.hapticEnabled && navigator.vibrate) {
     try { navigator.vibrate(25); } catch (e) {}
   }
   playClickSound();
@@ -68,6 +121,123 @@ function showToast(text) {
   }, 2200);
 }
 
+function escapeHtml(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ==========================================================================
+// Themes Management (8 Glassmorphic Themes)
+// ==========================================================================
+function applyTheme(themeName) {
+  document.body.classList.remove('theme-obsidian', 'theme-midnight', 'theme-ocean', 'theme-ember', 'theme-forest', 'theme-rose', 'theme-frost', 'theme-gold');
+  document.body.classList.add(themeName);
+  state.theme = themeName;
+  localStorage.setItem('tabdeck_theme', themeName);
+  document.querySelectorAll('.theme-chip').forEach(chip => {
+    chip.classList.toggle('active', chip.getAttribute('data-theme') === themeName);
+  });
+}
+applyTheme(state.theme);
+
+document.querySelectorAll('.theme-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    triggerHaptic();
+    applyTheme(chip.getAttribute('data-theme'));
+    showToast(`Theme switched to ${chip.querySelector('span').textContent}`);
+  });
+});
+
+// ==========================================================================
+// Multi-Language Support (i18n: English, Français, Español)
+// ==========================================================================
+const I18N = {
+  en: {
+    navDeck: 'Stream Deck',
+    navTrackpad: 'Trackpad',
+    navNumpad: 'Numpad',
+    navConfig: 'Config',
+    navPairing: 'Connect & QR',
+    customActionsTitle: 'Custom Actions & Macros',
+    themeTitle: 'Themes & Appearance',
+    langTitle: 'Language & Feedback',
+    langLabel: 'Interface Language',
+    soundLabel: 'Notification Sound',
+    hapticLabel: 'Haptic Vibration',
+    notifTestTitle: 'PC Notifications Hub',
+    manageActionsTitle: 'Manage Custom Deck Buttons'
+  },
+  fr: {
+    navDeck: 'Stream Deck',
+    navTrackpad: 'Pavé Tactile',
+    navNumpad: 'Pavé Numérique',
+    navConfig: 'Configuration',
+    navPairing: 'Connexion & QR',
+    customActionsTitle: 'Actions & Macros Personnalisées',
+    themeTitle: 'Thèmes & Apparence',
+    langTitle: 'Langue & Audio',
+    langLabel: 'Langue de l\'Interface',
+    soundLabel: 'Son de Notification',
+    hapticLabel: 'Vibration Haptique',
+    notifTestTitle: 'Hub de Notifications PC',
+    manageActionsTitle: 'Gérer les Boutons Personnalisés'
+  },
+  es: {
+    navDeck: 'Stream Deck',
+    navTrackpad: 'Panel Táctil',
+    navNumpad: 'Teclado Numérico',
+    navConfig: 'Configuración',
+    navPairing: 'Conexión y QR',
+    customActionsTitle: 'Acciones y Macros Personalizadas',
+    themeTitle: 'Temas y Apariencia',
+    langTitle: 'Idioma y Respuesta',
+    langLabel: 'Idioma de la Interfaz',
+    soundLabel: 'Sonido de Notificación',
+    hapticLabel: 'Vibración Háptica',
+    notifTestTitle: 'Centro de Notificaciones PC',
+    manageActionsTitle: 'Gestionar Botones Personalizados'
+  }
+};
+
+function applyLanguage(lang) {
+  state.lang = lang;
+  localStorage.setItem('tabdeck_lang', lang);
+  const dict = I18N[lang] || I18N.en;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.textContent = dict[key];
+  });
+  document.querySelectorAll('.btn-lang').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+  });
+}
+applyLanguage(state.lang);
+
+document.querySelectorAll('.btn-lang').forEach(btn => {
+  btn.addEventListener('click', () => {
+    triggerHaptic();
+    applyLanguage(btn.getAttribute('data-lang'));
+  });
+});
+
+// Sound and Haptic toggles
+const toggleSound = document.getElementById('toggle-sound');
+if (toggleSound) {
+  toggleSound.checked = state.soundEnabled;
+  toggleSound.addEventListener('change', () => {
+    state.soundEnabled = toggleSound.checked;
+    localStorage.setItem('tabdeck_sound', String(state.soundEnabled));
+  });
+}
+
+const toggleHaptic = document.getElementById('toggle-haptic');
+if (toggleHaptic) {
+  toggleHaptic.checked = state.hapticEnabled;
+  toggleHaptic.addEventListener('change', () => {
+    state.hapticEnabled = toggleHaptic.checked;
+    localStorage.setItem('tabdeck_haptic', String(state.hapticEnabled));
+  });
+}
+
 // Clock updates
 function updateClock() {
   const now = new Date();
@@ -76,7 +246,9 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// Universal Screen Keep-Awake for Android Tablets (Official NoSleep Engine)
+// ==========================================================================
+// Screen WakeLock (NoSleep engine for Android Tablets)
+// ==========================================================================
 let noSleepInstance = null;
 state.wakeLockActive = false;
 
@@ -87,7 +259,6 @@ function getNoSleep() {
   return noSleepInstance;
 }
 
-// Pre-init on first touch
 ['click', 'touchstart'].forEach(evt => {
   document.addEventListener(evt, () => {
     getNoSleep();
@@ -100,20 +271,17 @@ async function toggleWakeLock() {
 
   if (state.wakeLockActive) {
     state.wakeLockActive = false;
-    btn.style.color = 'var(--text-secondary)';
-    btn.style.boxShadow = 'none';
-
+    btn.style.color = '';
+    btn.style.boxShadow = '';
     if (state.wakeLock) {
-      try { await state.wakeLock.release(); } catch(e) {}
+      try { await state.wakeLock.release(); } catch (e) {}
       state.wakeLock = null;
     }
-
     const ns = getNoSleep();
     if (ns) {
       try { ns.disable(); } catch(e) {}
     }
-
-    showToast('Screen Keep-Awake Disabled');
+    showToast('Keep-Awake Deactivated');
     return;
   }
 
@@ -121,7 +289,6 @@ async function toggleWakeLock() {
   btn.style.color = 'var(--neon-cyan)';
   btn.style.boxShadow = '0 0 15px rgba(0, 240, 255, 0.4)';
 
-  // 1. Try native WakeLock API if HTTPS
   if ('wakeLock' in navigator && window.isSecureContext) {
     try {
       state.wakeLock = await navigator.wakeLock.request('screen');
@@ -130,16 +297,13 @@ async function toggleWakeLock() {
     } catch (e) {}
   }
 
-  // 2. Official NoSleep Engine for Android Tablets over local Wi-Fi HTTP
   const ns = getNoSleep();
   if (ns) {
     try {
       ns.enable();
       showToast('Galaxy Tab Screen will stay awake!');
       return;
-    } catch(e) {
-      console.warn('NoSleep enable error:', e);
-    }
+    } catch(e) {}
   }
 
   showToast('Galaxy Tab Screen will stay awake!');
@@ -169,7 +333,9 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
   });
 });
 
-// WebSocket Connection
+// ==========================================================================
+// WebSocket Connection & Real-Time Sync
+// ==========================================================================
 let ws = null;
 function connectWS() {
   const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -189,6 +355,11 @@ function connectWS() {
       const msg = JSON.parse(event.data);
       if (msg.event === 'status') {
         applyStatus(msg.data);
+      } else if (msg.event === 'custom-actions') {
+        state.customActions = msg.data || [];
+        renderCustomActions(state.customActions);
+      } else if (msg.event === 'notification') {
+        showNotification(msg.data);
       }
     } catch (e) {}
   };
@@ -211,7 +382,6 @@ function sendAction(payload) {
   if (ws && ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify(payload));
   } else {
-    // Fallback to HTTP POST
     fetch('/api/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -246,7 +416,290 @@ function applyStatus(data) {
   }
 }
 
-// Master Volume Slider Events
+// ==========================================================================
+// Real-Time PC Notifications (From PC to Tablet)
+// ==========================================================================
+function showNotification(notif) {
+  notifTitle.textContent = notif.title || 'TabDeck Alert';
+  notifMsg.textContent = notif.message || '';
+  notifBanner.className = `notification-banner show level-${notif.level || 'info'}`;
+  playNotificationChime();
+
+  state.notifications.unshift(notif);
+  if (state.notifications.length > 30) state.notifications.pop();
+  updateNotificationDrawer();
+
+  clearTimeout(notifBanner._timer);
+  notifBanner._timer = setTimeout(() => {
+    notifBanner.classList.remove('show');
+  }, 5000);
+}
+
+notifCloseBtn.addEventListener('click', () => {
+  notifBanner.classList.remove('show');
+});
+
+function updateNotificationDrawer() {
+  if (!notifHistoryList) return;
+  if (state.notifications.length > 0) {
+    notifBadge.style.display = 'flex';
+    notifBadge.textContent = String(state.notifications.length);
+  } else {
+    notifBadge.style.display = 'none';
+  }
+
+  if (state.notifications.length === 0) {
+    notifHistoryList.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 40px 0;">No notifications yet</div>';
+    return;
+  }
+
+  notifHistoryList.innerHTML = '';
+  state.notifications.forEach(n => {
+    const item = document.createElement('div');
+    item.className = 'config-action-item';
+    item.style.borderColor = n.level === 'success' ? '#10B981' : n.level === 'error' ? '#EF4444' : n.level === 'warning' ? '#F59E0B' : 'var(--border-glass)';
+    item.innerHTML = `
+      <div>
+        <div style="font-weight: 700; color: #fff; font-size: 0.85rem;">${escapeHtml(n.title)}</div>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">${escapeHtml(n.message)}</div>
+      </div>
+      <span style="font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono);">${new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+    `;
+    notifHistoryList.appendChild(item);
+  });
+}
+
+notifBellBtn.addEventListener('click', () => {
+  triggerHaptic();
+  notifDrawer.classList.add('show');
+  notifDrawerBackdrop.classList.add('show');
+});
+
+function closeNotifDrawer() {
+  notifDrawer.classList.remove('show');
+  notifDrawerBackdrop.classList.remove('show');
+}
+btnCloseNotifDrawer.addEventListener('click', closeNotifDrawer);
+notifDrawerBackdrop.addEventListener('click', closeNotifDrawer);
+
+btnClearNotifs.addEventListener('click', () => {
+  state.notifications = [];
+  updateNotificationDrawer();
+  showToast('Notifications Cleared');
+});
+
+// Test Notification Buttons
+document.getElementById('test-notif-success').addEventListener('click', () => {
+  fetch('/api/notify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: 'Build Successful', message: 'Production assets compiled in 1.4s', level: 'success' })
+  });
+});
+
+document.getElementById('test-notif-warning').addEventListener('click', () => {
+  fetch('/api/notify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: 'High CPU Load', message: 'PC CPU usage reached 92%', level: 'warning' })
+  });
+});
+
+document.getElementById('test-notif-error').addEventListener('click', () => {
+  fetch('/api/notify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: 'Deployment Failed', message: 'Process exited with error code 1', level: 'error' })
+  });
+});
+
+// ==========================================================================
+// Custom Actions Rendering & Builder
+// ==========================================================================
+function getActionIconSvg(iconName) {
+  switch (iconName) {
+    case 'globe':
+    case 'url':
+      return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>';
+    case 'key':
+    case 'copy':
+      return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    case 'terminal':
+    case 'command':
+      return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>';
+    case 'music':
+      return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+    default:
+      return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
+  }
+}
+
+function renderCustomActions(actions) {
+  const grid = document.getElementById('custom-actions-grid');
+  const configList = document.getElementById('config-actions-list');
+  if (!grid) return;
+
+  grid.innerHTML = '';
+  if (configList) configList.innerHTML = '';
+
+  if (actions.length === 0) {
+    grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 20px; font-size: 0.85rem;">No custom buttons yet. Tap "+ Add Action" to configure one!</div>';
+    if (configList) configList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 12px;">No custom actions configured.</div>';
+    return;
+  }
+
+  actions.forEach(action => {
+    const tile = document.createElement('div');
+    tile.className = 'custom-action-tile';
+    tile.style.setProperty('--action-color', action.color || 'var(--neon-cyan)');
+    
+    const iconSvg = getActionIconSvg(action.icon || action.type);
+    tile.innerHTML = `
+      <div class="custom-action-icon">${iconSvg}</div>
+      <div class="custom-action-title">${escapeHtml(action.label)}</div>
+      <div class="custom-action-type">${action.type}</div>
+    `;
+
+    tile.addEventListener('click', () => {
+      triggerHaptic();
+      if (action.type === 'url') {
+        sendAction({ type: 'url', url: action.payload.url });
+        showToast(`Opened: ${action.label}`);
+      } else if (action.type === 'copy') {
+        sendAction({ type: 'copy', text: action.payload.text });
+        showToast(`Copied to PC: ${action.label}`);
+      } else if (action.type === 'command') {
+        sendAction({ type: 'command', command: action.payload.command });
+        showToast(`Executed: ${action.label}`);
+      } else if (action.type === 'app') {
+        sendAction({ type: 'app', action: action.id });
+        showToast(`Launching: ${action.label}`);
+      }
+    });
+    grid.appendChild(tile);
+
+    if (configList) {
+      const row = document.createElement('div');
+      row.className = 'config-action-item';
+      row.innerHTML = `
+        <div class="config-action-info">
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: ${action.color || '#00f0ff'};"></div>
+          <div>
+            <div style="font-weight: 700; color: #fff; font-size: 0.9rem;">${escapeHtml(action.label)}</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted);">${action.type.toUpperCase()}: ${escapeHtml(action.payload.url || action.payload.text || action.payload.command || '')}</div>
+          </div>
+        </div>
+        <div class="config-action-btns">
+          <button class="btn-action-test" data-id="${action.id}">Test</button>
+          <button class="btn-action-del" data-id="${action.id}">Delete</button>
+        </div>
+      `;
+      row.querySelector('.btn-action-test').addEventListener('click', () => {
+        tile.click();
+      });
+      row.querySelector('.btn-action-del').addEventListener('click', async () => {
+        if (confirm(`Delete "${action.label}"?`)) {
+          await fetch(`/api/custom-actions?id=${action.id}`, { method: 'DELETE' });
+        }
+      });
+      configList.appendChild(row);
+    }
+  });
+}
+
+// Action Creator Modal Handling
+function openActionModal() {
+  triggerHaptic();
+  actionFormLabel.value = '';
+  actionFormVal.value = '';
+  actionFormType.value = 'url';
+  actionValLabel.textContent = 'Target URL';
+  actionFormVal.placeholder = 'https://...';
+  actionModal.classList.add('show');
+}
+
+function closeActionModal() {
+  actionModal.classList.remove('show');
+}
+
+const btnQuickAdd = document.getElementById('btn-quick-add-action');
+if (btnQuickAdd) btnQuickAdd.addEventListener('click', openActionModal);
+
+const btnOpenCreate = document.getElementById('btn-open-create-modal');
+if (btnOpenCreate) btnOpenCreate.addEventListener('click', openActionModal);
+
+btnCancelAction.addEventListener('click', closeActionModal);
+
+actionFormType.addEventListener('change', () => {
+  const val = actionFormType.value;
+  if (val === 'url') {
+    actionValLabel.textContent = 'Target URL';
+    actionFormVal.placeholder = 'https://...';
+  } else if (val === 'copy') {
+    actionValLabel.textContent = 'Text to Copy to PC Clipboard';
+    actionFormVal.placeholder = 'e.g. MySecretToken123';
+  } else if (val === 'command') {
+    actionValLabel.textContent = 'Terminal Command';
+    actionFormVal.placeholder = 'e.g. git pull || wt.exe';
+  }
+});
+
+document.querySelectorAll('.color-pick').forEach(btn => {
+  btn.addEventListener('click', () => {
+    actionFormColor.value = btn.getAttribute('data-color');
+  });
+});
+
+btnSaveAction.addEventListener('click', async () => {
+  const label = actionFormLabel.value.trim();
+  const type = actionFormType.value;
+  const val = actionFormVal.value.trim();
+  const color = actionFormColor.value;
+
+  if (!label || !val) {
+    showToast('Please fill all fields');
+    return;
+  }
+
+  const payload = {};
+  if (type === 'url') payload.url = val;
+  if (type === 'copy') payload.text = val;
+  if (type === 'command') payload.command = val;
+
+  const newAction = {
+    id: 'act-' + Date.now(),
+    label,
+    type,
+    color,
+    icon: type,
+    payload
+  };
+
+  try {
+    await fetch('/api/custom-actions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newAction)
+    });
+    closeActionModal();
+    showToast(`Added "${label}" to Deck!`);
+  } catch (e) {
+    showToast('Error saving action');
+  }
+});
+
+// Load Initial Custom Actions
+fetch('/api/custom-actions')
+  .then(res => res.json())
+  .then(actions => {
+    state.customActions = actions;
+    renderCustomActions(actions);
+  })
+  .catch(() => {});
+
+// ==========================================================================
+// Master Volume & Media
+// ==========================================================================
 let volDebounce = null;
 volumeSlider.addEventListener('input', (e) => {
   const val = parseInt(e.target.value, 10);
@@ -257,10 +710,14 @@ volumeSlider.addEventListener('input', (e) => {
   }, 40);
 });
 
-// Volume Presets & Mute
-document.querySelectorAll('[data-volume]').forEach(btn => {
+muteBtn.addEventListener('click', () => {
+  const next = !state.muted;
+  sendAction({ type: 'volume', action: 'mute', value: next ? 1 : 0 });
+});
+
+document.querySelectorAll('[data-vol]').forEach(btn => {
   btn.addEventListener('click', () => {
-    const val = parseInt(btn.getAttribute('data-volume'), 10);
+    const val = parseInt(btn.getAttribute('data-vol'), 10);
     volumeSlider.value = val;
     volumeBadge.textContent = `${val}%`;
     sendAction({ type: 'volume', action: 'set', value: val });
@@ -268,21 +725,6 @@ document.querySelectorAll('[data-volume]').forEach(btn => {
   });
 });
 
-muteBtn.addEventListener('click', () => {
-  sendAction({ type: 'volume', action: 'mute', value: 'toggle' });
-  state.muted = !state.muted;
-  if (state.muted) {
-    muteBtn.classList.add('active');
-    muteBtn.textContent = 'MUTED';
-    showToast('Sound Muted');
-  } else {
-    muteBtn.classList.remove('active');
-    muteBtn.textContent = 'MUTE';
-    showToast('Sound Unmuted');
-  }
-});
-
-// Playback Buttons
 document.getElementById('btn-prev').addEventListener('click', () => {
   sendAction({ type: 'media', action: 'prev' });
   showToast('Previous Track');
@@ -298,7 +740,9 @@ document.getElementById('btn-next').addEventListener('click', () => {
   showToast('Next Track');
 });
 
-// Brightness Slider Events
+// ==========================================================================
+// Brightness & Dell Lighting
+// ==========================================================================
 let brightDebounce = null;
 brightnessSlider.addEventListener('input', (e) => {
   const val = parseInt(e.target.value, 10);
@@ -309,7 +753,6 @@ brightnessSlider.addEventListener('input', (e) => {
   }, 40);
 });
 
-// Brightness Presets
 document.querySelectorAll('[data-bright]').forEach(btn => {
   btn.addEventListener('click', () => {
     const val = parseInt(btn.getAttribute('data-bright'), 10);
@@ -320,7 +763,6 @@ document.querySelectorAll('[data-bright]').forEach(btn => {
   });
 });
 
-// Dell Keyboard Lighting (Windows Mobility Center)
 const btnMob = document.getElementById('btn-mobility');
 if (btnMob) {
   btnMob.addEventListener('click', () => {
@@ -339,7 +781,7 @@ document.querySelectorAll('.app-tile').forEach(tile => {
   });
 });
 
-// Windows Controls (Alt+Tab, Win+Tab, Win+D, Screenshot, Close)
+// Windows Controls
 document.querySelectorAll('[data-win]').forEach(btn => {
   btn.addEventListener('click', () => {
     const action = btn.getAttribute('data-win');
@@ -348,11 +790,11 @@ document.querySelectorAll('[data-win]').forEach(btn => {
     if (action === 'taskview') showToast('Task View');
     if (action === 'desktop') showToast('Toggled Desktop');
     if (action === 'screenshot') showToast('Windows Snipping Tool opened');
-    if (action === 'close') showToast('Closed active application');
+    if (action === 'close') showToast('Closed Active Window');
   });
 });
 
-// Power Actions with Safety Modal
+// Power Actions with Safety Countdown
 document.querySelectorAll('[data-power]').forEach(btn => {
   btn.addEventListener('click', () => {
     const action = btn.getAttribute('data-power');
@@ -363,86 +805,86 @@ document.querySelectorAll('[data-power]').forEach(btn => {
     }
     if (action === 'sleep') {
       sendAction({ type: 'system', action: 'sleep' });
-      showToast('PC Going to Sleep...');
+      showToast('PC going to Sleep...');
       return;
     }
-
-    // Dangerous actions: Shutdown or Restart
+    triggerHaptic();
     state.activePowerAction = action;
     state.powerCountdown = 30;
-    modalTitle.textContent = action === 'shutdown' ? 'Confirm PC Shutdown' : 'Confirm PC Restart';
+    modalTitle.textContent = action === 'shutdown' ? 'Confirm Shutdown' : 'Confirm Restart';
     modalSeconds.textContent = '30';
-    safetyModal.classList.add('active');
-
-    // Trigger scheduled shutdown/restart on Windows with 30s delay
-    sendAction({ type: 'system', action, value: 30 });
+    safetyModal.classList.add('show');
 
     clearInterval(state.powerTimer);
     state.powerTimer = setInterval(() => {
       state.powerCountdown--;
-      modalSeconds.textContent = state.powerCountdown;
+      modalSeconds.textContent = String(state.powerCountdown);
       if (state.powerCountdown <= 0) {
         clearInterval(state.powerTimer);
-        safetyModal.classList.remove('active');
+        safetyModal.classList.remove('show');
+        sendAction({ type: 'system', action: state.activePowerAction });
       }
     }, 1000);
   });
 });
 
-// Abort / Cancel Power Action
 btnAbortPower.addEventListener('click', () => {
   triggerHaptic();
   clearInterval(state.powerTimer);
-  safetyModal.classList.remove('active');
-  sendAction({ type: 'system', action: 'cancel-shutdown' });
-  showToast('Power action CANCELLED safely!');
+  safetyModal.classList.remove('show');
+  sendAction({ type: 'system', action: 'abort' });
+  showToast('Shutdown Aborted!');
 });
 
-// Force Immediate Power Action
 btnForcePower.addEventListener('click', () => {
   triggerHaptic();
   clearInterval(state.powerTimer);
-  safetyModal.classList.remove('active');
-  sendAction({ type: 'system', action: state.activePowerAction, value: 0 });
-  showToast(`Executing ${state.activePowerAction} now...`);
+  safetyModal.classList.remove('show');
+  sendAction({ type: 'system', action: state.activePowerAction });
 });
 
-// Trackpad Controller
+// ==========================================================================
+// Wireless Trackpad Mode
+// ==========================================================================
 const trackpadArea = document.getElementById('trackpad-area');
 let lastTouchX = null;
 let lastTouchY = null;
 let isTwoFinger = false;
-let lastScrollY = null;
+let lastTwoDist = null;
 
 trackpadArea.addEventListener('touchstart', (e) => {
   if (e.touches.length === 1) {
-    isTwoFinger = false;
     lastTouchX = e.touches[0].clientX;
     lastTouchY = e.touches[0].clientY;
+    isTwoFinger = false;
   } else if (e.touches.length === 2) {
     isTwoFinger = true;
-    lastScrollY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    lastTouchY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
   }
 }, { passive: true });
 
 trackpadArea.addEventListener('touchmove', (e) => {
-  if (isTwoFinger && e.touches.length >= 2) {
-    const currentScrollY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-    const deltaY = currentScrollY - lastScrollY;
-    if (Math.abs(deltaY) > 2) {
-      sendAction({ type: 'mouse', action: 'scroll', p1: Math.round(deltaY * 8) });
-      lastScrollY = currentScrollY;
+  if (e.touches.length === 1 && !isTwoFinger) {
+    const curX = e.touches[0].clientX;
+    const curY = e.touches[0].clientY;
+    if (lastTouchX !== null && lastTouchY !== null) {
+      const dx = Math.round((curX - lastTouchX) * 1.8);
+      const dy = Math.round((curY - lastTouchY) * 1.8);
+      if (dx !== 0 || dy !== 0) {
+        sendAction({ type: 'mouse', action: 'move', dx, dy });
+      }
     }
-  } else if (!isTwoFinger && e.touches.length === 1) {
-    const touch = e.touches[0];
-    const dx = Math.round((touch.clientX - lastTouchX) * 1.8);
-    const dy = Math.round((touch.clientY - lastTouchY) * 1.8);
-
-    if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
-      sendAction({ type: 'mouse', action: 'move', dx, dy });
-      lastTouchX = touch.clientX;
-      lastTouchY = touch.clientY;
+    lastTouchX = curX;
+    lastTouchY = curY;
+  } else if (e.touches.length === 2) {
+    const curY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    if (lastTouchY !== null) {
+      const scrollDy = Math.round((curY - lastTouchY) * 1.5);
+      if (scrollDy !== 0) {
+        sendAction({ type: 'mouse', action: 'scroll', dy: scrollDy });
+      }
     }
+    lastTouchY = curY;
   }
 }, { passive: true });
 
@@ -470,7 +912,6 @@ document.querySelectorAll('.numpad-key').forEach(keyBtn => {
     const key = keyBtn.getAttribute('data-key');
     triggerHaptic();
     showToast(`Key: ${key.toUpperCase()}`);
-    // Optional: send keystroke to PC
   });
 });
 
@@ -484,6 +925,10 @@ async function loadInfo() {
     }
     if (data.tabletUrl && displayUrl) {
       displayUrl.textContent = data.tabletUrl;
+    }
+    if (data.customActions) {
+      state.customActions = data.customActions;
+      renderCustomActions(data.customActions);
     }
   } catch (e) {}
 }

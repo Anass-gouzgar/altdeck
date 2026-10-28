@@ -21,7 +21,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "build:helper": "powershell -ExecutionPolicy Bypass -File build-helper.ps1"
+    "build:helper": "powershell -ExecutionPolicy Bypass -File build-helper.ps1",
+    "notify": "node scripts/deck-notify.js"
   },
   "dependencies": {
     "nosleep.js": "^0.12.0",
