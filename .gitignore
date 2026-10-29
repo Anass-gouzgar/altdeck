@@ -34,3 +34,7 @@ ehthumbs.db
 *.sublime-project
 *.sublime-workspace
 .gemini/
+
+# Build artifacts
+bin/tabdeck-core.exe
+bin/altdeck-core.exe

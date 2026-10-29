@@ -1,5 +1,5 @@
 {
-  "name": "tabdeck-pc-controller",
+  "name": "altdeck",
   "version": "1.0.0",
   "description": "Transform any Android tablet, iPad, or smartphone into a low-latency PC Stream Deck & hardware controller over local Wi-Fi.",
   "main": "server.js",
@@ -20,7 +20,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
+    "dev": "node --watch server.js",
     "build:helper": "powershell -ExecutionPolicy Bypass -File build-helper.ps1",
     "notify": "node scripts/deck-notify.js"
   },

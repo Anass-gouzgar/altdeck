@@ -1,6 +1,6 @@
 Add-Type -AssemblyName System.Drawing
 
-function Draw-TabDeckIcon([int]$size, [string]$outPath) {
+function Draw-AltDeckIcon([int]$size, [string]$outPath) {
     $bmp = New-Object System.Drawing.Bitmap($size, $size)
     $g = [System.Drawing.Graphics]::FromImage($bmp)
     $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
@@ -87,5 +87,5 @@ function Draw-TabDeckIcon([int]$size, [string]$outPath) {
     Write-Host "Created $outPath"
 }
 
-Draw-TabDeckIcon 512 "public/icon-512.png"
-Draw-TabDeckIcon 192 "public/icon-192.png"
+Draw-AltDeckIcon 512 "public/icon-512.png"
+Draw-AltDeckIcon 192 "public/icon-192.png"

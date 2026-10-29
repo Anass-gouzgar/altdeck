@@ -1,7 +1,7 @@
 {
   "id": "/?pwa=1",
-  "name": "TabDeck PC Controller",
-  "short_name": "TabDeck",
+  "name": "AltDeck PC Controller",
+  "short_name": "AltDeck",
   "description": "Touchscreen Stream Deck and PC Remote for Android Tablets",
   "start_url": "/?pwa=1",
   "scope": "/",

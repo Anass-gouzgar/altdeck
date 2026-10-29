@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest an idea or new capability for TabDeck
+about: Suggest an idea or new capability for AltDeck
 title: '[FEAT] '
 labels: enhancement
 assignees: ''

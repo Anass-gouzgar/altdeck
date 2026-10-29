@@ -11,7 +11,7 @@ Write-Host "Compiling native/pc-control.cs using $cscPath..."
 & $cscPath /target:exe /out:bin\pc-control.exe /r:System.Management.dll /r:System.Windows.Forms.dll /r:System.Drawing.dll native\pc-control.cs
 
 if (Test-Path "bin\pc-control.exe") {
-    Write-Host "SUCCESS: bin\pc-control.exe compiled successfully!" -ForegroundColor Green
+    Write-Host "SUCCESS: Native hardware controller compiled successfully!" -ForegroundColor Green
 } else {
     Write-Host "ERROR: Compilation failed." -ForegroundColor Red
 }

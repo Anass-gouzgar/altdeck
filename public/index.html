@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#07090e">
-  <title>TabDeck - PC Touch Controller</title>
+  <title>AltDeck - PC Touch Controller</title>
   
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -15,10 +15,10 @@
   <!-- Modern Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <script src="nosleep.min.js"></script>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2.99">
 </head>
 <body>
 
@@ -31,7 +31,7 @@
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     </div>
     <div class="notif-content">
-      <div class="notif-title" id="notif-title">TabDeck Alert</div>
+      <div class="notif-title" id="notif-title">AltDeck Alert</div>
       <div class="notif-message" id="notif-msg">Notification message</div>
     </div>
     <button class="notif-close" id="notif-close-btn">&times;</button>
@@ -45,24 +45,43 @@
       </div>
       <div>
         <div style="display: flex; align-items: center; gap: 8px;">
-          <h1 class="brand-title">TabDeck</h1>
-          <span class="brand-badge">DELL 7400</span>
+          <h1 class="brand-title">AltDeck</h1>
+          <span class="brand-badge">PC DECK</span>
         </div>
-        <div style="font-size: 0.72rem; color: var(--text-muted);" id="pc-hostname">Dell Latitude • Windows 11</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted);" id="pc-hostname">Windows PC • Connecting...</div>
       </div>
     </div>
 
     <div class="system-stats">
       <div class="stat-pill">
         <div class="status-dot" id="status-indicator"></div>
-        <span id="connection-status">Online</span>
+        <span id="connection-status" data-i18n="statusOnline">Online</span>
       </div>
+
+      <div class="stat-pill telemetry-stat-pill" id="pill-cpu" title="Live CPU Usage">
+        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;" data-i18n="pillCpu">CPU</span>
+        <span id="pill-cpu-val" style="color: var(--neon-cyan); font-family: var(--font-mono); font-weight: 700;">--%</span>
+      </div>
+
+      <div class="stat-pill telemetry-stat-pill" id="pill-ram" title="Live RAM Usage">
+        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;" data-i18n="pillRam">RAM</span>
+        <span id="pill-ram-val" style="color: var(--neon-purple); font-family: var(--font-mono); font-weight: 700;">--%</span>
+      </div>
+
+      <div class="stat-pill telemetry-stat-pill" id="pill-bat" title="Battery & Power Status">
+        <span id="pill-bat-icon">⚡</span>
+        <span id="pill-bat-val" style="color: #10B981; font-family: var(--font-mono); font-weight: 700;">100%</span>
+      </div>
+
       <div class="stat-pill" style="font-family: var(--font-mono); font-weight: 700;" id="clock-display">
         00:00
       </div>
     </div>
 
     <div class="header-actions">
+      <button class="btn-icon" id="btn-refresh-app" title="Reload Deck & Reconnect">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+      </button>
       <button class="btn-icon" id="notif-bell-btn" title="Notification History" style="position: relative;">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span class="notif-badge" id="notif-badge" style="display: none;">0</span>
@@ -112,71 +131,195 @@
         <div class="card-header">
           <div class="card-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-            Master Volume & Media
+            <span data-i18n="cardTitleVolume">Master Volume & Media</span>
           </div>
           <span class="badge-value" id="volume-badge">60%</span>
         </div>
 
-        <div class="slider-container">
-          <input type="range" min="0" max="100" value="60" class="range-slider" id="volume-slider">
+        <div class="slider-container" dir="ltr">
+          <input type="range" min="0" max="100" value="60" class="range-slider" id="volume-slider" dir="ltr">
         </div>
 
-        <div class="preset-buttons">
-          <button class="btn-preset mute-btn" id="mute-btn" data-action="mute">MUTE</button>
-          <button class="btn-preset" data-volume="25">25%</button>
-          <button class="btn-preset" data-volume="50">50%</button>
-          <button class="btn-preset" data-volume="75">75%</button>
-          <button class="btn-preset" data-volume="100">100%</button>
+        <div class="preset-buttons" dir="ltr">
+          <button class="btn-preset mute-btn" id="mute-btn" data-action="mute" data-i18n="btnMute">MUTE</button>
+          <button class="btn-preset" data-vol="25" data-volume="25">25%</button>
+          <button class="btn-preset" data-vol="50" data-volume="50">50%</button>
+          <button class="btn-preset" data-vol="75" data-volume="75">75%</button>
+          <button class="btn-preset" data-vol="100" data-volume="100">100%</button>
         </div>
 
-        <div class="playback-controls">
+        <!-- GLOBAL MICROPHONE BROADCAST TOGGLE -->
+        <div class="mic-card-widget">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="mic-status-icon" id="mic-status-icon">
+              <svg id="mic-icon-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-weight: 700; font-size: 0.95rem; color: #fff;" data-i18n="micTitle">Microphone</span>
+                <span class="mic-badge live" id="mic-badge" data-i18n="micBadgeOnAir">🔴 ON AIR</span>
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-muted);" id="mic-status-sub" data-i18n="micStatusSub">Default Communications Capture</div>
+            </div>
+          </div>
+
+          <button class="btn-mic-toggle live" id="btn-mic-toggle" data-i18n="btnMuteMic">
+            MUTE MIC
+          </button>
+        </div>
+
+        <!-- NOW PLAYING & TRACK PROGRESS (Feature #5) -->
+        <div class="now-playing-deck" id="now-playing-deck">
+          <div class="now-playing-header">
+            <div class="now-playing-art-wrap">
+              <div class="now-playing-art" id="now-playing-art">
+                <svg viewBox="0 0 24 24" class="now-playing-disc-icon" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </div>
+              <div class="eq-bars" id="eq-bars">
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+              </div>
+            </div>
+
+            <div class="now-playing-info">
+              <div class="now-playing-status-badge" id="now-playing-badge" data-i18n="nowPlayingBadgeIdle">IDLE</div>
+              <div class="now-playing-title" id="now-playing-title" data-i18n="nowPlayingNoMedia">No Media Active</div>
+              <div class="now-playing-artist" id="now-playing-artist" data-i18n="nowPlayingWaiting">Waiting for Spotify, YouTube, or Edge...</div>
+            </div>
+          </div>
+
+          <!-- Interactive Track Progress Bar -->
+          <div class="track-progress-section" dir="ltr">
+            <div class="track-timeline-bar" id="track-timeline-bar" dir="ltr" title="Tap or drag to seek track">
+              <div class="track-progress-fill" id="track-progress-fill" dir="ltr" style="width: 0%;">
+                <div class="track-scrubber-thumb"></div>
+              </div>
+            </div>
+            <div class="track-time-labels" dir="ltr">
+              <span id="track-time-current">0:00</span>
+              <span id="track-time-total">0:00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="playback-controls" dir="ltr">
           <button class="btn-playback" id="btn-prev" title="Previous Track">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
-            Prev
+            <span data-i18n="btnPrev">Prev</span>
           </button>
           <button class="btn-playback play-pause" id="btn-playpause" title="Play/Pause">
             <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Play / Pause
+            <span id="btn-playpause-text" data-i18n="btnPlayPause">Play / Pause</span>
           </button>
           <button class="btn-playback" id="btn-next" title="Next Track">
-            Next
+            <span data-i18n="btnNext">Next</span>
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
           </button>
         </div>
       </section>
 
-      <!-- CARD 2: DISPLAY BRIGHTNESS & DELL KEYBOARD LIGHT -->
+      <!-- CARD 2: DISPLAY BRIGHTNESS & DELL MOBILITY CONTROLS -->
       <section class="card">
         <div class="card-header">
           <div class="card-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            Display & Dell Keyboard Light
+            <span data-i18n="cardTitleBrightness">Display & Screen Brightness</span>
           </div>
           <span class="badge-value" id="brightness-badge">100%</span>
         </div>
 
-        <div class="slider-container">
-          <input type="range" min="0" max="100" value="100" class="range-slider brightness-slider" id="brightness-slider">
+        <div class="slider-container" dir="ltr">
+          <input type="range" min="0" max="100" value="100" class="range-slider brightness-slider" id="brightness-slider" dir="ltr">
         </div>
 
-        <div class="preset-buttons">
+        <div class="preset-buttons" dir="ltr">
           <button class="btn-preset" data-bright="20">20%</button>
           <button class="btn-preset" data-bright="50">50%</button>
           <button class="btn-preset" data-bright="80">80%</button>
           <button class="btn-preset" data-bright="100">100%</button>
         </div>
+      </section>
 
-        <div class="hardware-actions" style="grid-template-columns: 1fr;">
-          <button class="btn-hardware" id="btn-mobility" style="padding: 16px; flex-direction: row; gap: 14px; text-align: left;" title="Open Dell Mobility Center (Keyboard Lighting Slider)">
-            <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; color: var(--neon-purple);" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6" y2="8"/><line x1="10" y1="8" x2="10" y2="8"/><line x1="14" y1="8" x2="14" y2="8"/><line x1="18" y1="8" x2="18" y2="8"/><line x1="7" y1="16" x2="17" y2="16"/></svg>
-            <div>
-              <div style="font-size: 0.95rem; font-weight: 700; color: #fff;">Open Keyboard Lighting (Mobility Center)</div>
-              <div style="font-size: 0.75rem; color: var(--text-secondary);">Direct Dell software slider for Keyboard Backlight & Brightness</div>
-            </div>
+      <!-- CARD: LIVE PC HARDWARE TELEMETRY (Option A) -->
+      <section class="card telemetry-card" id="card-telemetry">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/><path d="M2 20h20"/></svg>
+            <span data-i18n="cardTitleTelemetry">PC Hardware Telemetry</span>
+          </div>
+          <button class="btn-taskmgr" id="btn-open-taskmgr" title="Launch Windows Task Manager">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span data-i18n="btnTaskmgr">Task Manager</span>
           </button>
         </div>
-        <div style="margin-top: 10px; font-size: 0.74rem; color: var(--text-muted); line-height: 1.4;">
-          💡 <em>Note: Dell Latitude laptops cycle hardware keyboard backlighting via <strong>Fn + F5</strong> physically on the keyboard.</em>
+
+        <div class="telemetry-grid">
+          <!-- CPU Processor -->
+          <div class="telemetry-box" id="box-cpu">
+            <div class="telemetry-top">
+              <div class="telemetry-label-wrap">
+                <div class="telemetry-icon-box cpu">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+                </div>
+                <div>
+                  <div class="telemetry-name" data-i18n="cpuName">CPU Processor</div>
+                  <div class="telemetry-sub" id="cpu-cores-text" data-i18n="coresActive">8 Cores Active</div>
+                </div>
+              </div>
+              <div class="telemetry-val-badge cpu" id="cpu-percent-badge">--%</div>
+            </div>
+            <div class="telemetry-progress-bg">
+              <div class="telemetry-progress-bar" id="cpu-progress-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- RAM Memory -->
+          <div class="telemetry-box" id="box-ram">
+            <div class="telemetry-top">
+              <div class="telemetry-label-wrap">
+                <div class="telemetry-icon-box ram">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                </div>
+                <div>
+                  <div class="telemetry-name" data-i18n="ramName">RAM Memory</div>
+                  <div class="telemetry-sub" id="ram-usage-text">-- GB / -- GB</div>
+                </div>
+              </div>
+              <div class="telemetry-val-badge ram" id="ram-percent-badge">--%</div>
+            </div>
+            <div class="telemetry-progress-bg">
+              <div class="telemetry-progress-bar" id="ram-progress-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Battery & Power -->
+          <div class="telemetry-box" id="box-battery">
+            <div class="telemetry-top">
+              <div class="telemetry-label-wrap">
+                <div class="telemetry-icon-box bat">
+                  <svg id="battery-status-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="16" height="10" rx="2"/><line x1="20" y1="11" x2="20" y2="13"/><line x1="6" y1="12" x2="12" y2="12"/></svg>
+                </div>
+                <div>
+                  <div class="telemetry-name" data-i18n="powerName">Power & Battery</div>
+                  <div class="telemetry-sub" id="battery-sub-text">⚡ AC Plugged In</div>
+                </div>
+              </div>
+              <div class="telemetry-val-badge bat" id="battery-percent-badge">100%</div>
+            </div>
+            <div class="telemetry-progress-bg">
+              <div class="telemetry-progress-bar" id="battery-progress-bar" style="width: 100%;"></div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -185,9 +328,9 @@
         <div class="card-header">
           <div class="card-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            Application Launchpad
+            <span data-i18n="cardTitleApps">Application Launchpad</span>
           </div>
-          <span style="font-size: 0.8rem; color: var(--text-muted);">One-Tap Instant Launch</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="appsSubtitle">One-Tap Instant Launch</span>
         </div>
 
         <div class="app-grid">
@@ -200,7 +343,7 @@
               </svg>
             </div>
             <div class="app-name">Discord</div>
-            <div class="app-category">Voice & Chat</div>
+            <div class="app-category" data-i18n="catVoiceChat">Voice & Chat</div>
           </div>
 
           <!-- 2. Claude -->
@@ -213,7 +356,7 @@
               </svg>
             </div>
             <div class="app-name">Claude AI</div>
-            <div class="app-category">Anthropic</div>
+            <div class="app-category" data-i18n="catAnthropic">Anthropic</div>
           </div>
 
           <!-- 3. 3uTools -->
@@ -226,7 +369,7 @@
               </svg>
             </div>
             <div class="app-name">3uTools</div>
-            <div class="app-category">iOS Manager</div>
+            <div class="app-category" data-i18n="catIOSManager">iOS Manager</div>
           </div>
 
           <!-- 4. Google Chrome -->
@@ -242,7 +385,7 @@
               </svg>
             </div>
             <div class="app-name">Chrome</div>
-            <div class="app-category">Browser</div>
+            <div class="app-category" data-i18n="catBrowser">Browser</div>
           </div>
 
           <!-- 5. Microsoft Edge -->
@@ -264,7 +407,7 @@
               </svg>
             </div>
             <div class="app-name">Edge</div>
-            <div class="app-category">Browser</div>
+            <div class="app-category" data-i18n="catBrowser">Browser</div>
           </div>
 
           <!-- 6. VS Code -->
@@ -277,7 +420,7 @@
               </svg>
             </div>
             <div class="app-name">VS Code</div>
-            <div class="app-category">Code Editor</div>
+            <div class="app-category" data-i18n="catCodeEditor">Code Editor</div>
           </div>
 
           <!-- 7. Antigravity IDE -->
@@ -296,7 +439,7 @@
               </svg>
             </div>
             <div class="app-name">Antigravity</div>
-            <div class="app-category">AI IDE</div>
+            <div class="app-category" data-i18n="catAIIDE">AI IDE</div>
           </div>
 
           <!-- 8. File Explorer -->
@@ -309,7 +452,7 @@
               </svg>
             </div>
             <div class="app-name">Explorer</div>
-            <div class="app-category">Files</div>
+            <div class="app-category" data-i18n="catFiles">Files</div>
           </div>
 
           <!-- 9. Sticky Notes (Classic) -->
@@ -325,7 +468,7 @@
               </svg>
             </div>
             <div class="app-name">Sticky Notes</div>
-            <div class="app-category">Classic</div>
+            <div class="app-category" data-i18n="catClassic">Classic</div>
           </div>
 
           <!-- 10. Windows Settings -->
@@ -342,7 +485,7 @@
               </svg>
             </div>
             <div class="app-name">Settings</div>
-            <div class="app-category">Control</div>
+            <div class="app-category" data-i18n="catControl">Control</div>
           </div>
 
         </div>
@@ -360,7 +503,7 @@
             <span data-i18n="customActionsTitle">Custom Actions & Macros</span>
           </div>
           <button class="btn-preset" id="btn-quick-add-action" style="padding: 6px 12px; font-size: 0.75rem; border-color: var(--neon-cyan); color: var(--neon-cyan);">
-            + Add Action
+            <span data-i18n="btnAddAction">+ Add Action</span>
           </button>
         </div>
         <div class="custom-actions-grid" id="custom-actions-grid">
@@ -368,36 +511,128 @@
         </div>
       </section>
 
-      <!-- CARD 4: WINDOWS QUICK ACTIONS -->
+      <!-- CARD 4: WINDOWS SNAP LAYOUTS & MULTI-MONITOR (Feature #4) -->
       <section class="card">
         <div class="card-header">
           <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            Windows Controls
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18"/><path d="M3 9h18"/></svg>
+            <span data-i18n="cardTitleSnap">Windows Snap & Multi-Screen</span>
           </div>
-          <span style="font-size: 0.8rem; color: var(--text-muted);">AZERTY Hotkeys</span>
+          <span style="font-size: 0.8rem; color: var(--neon-cyan);" data-i18n="snapBadge">Win 11 Layouts</span>
         </div>
 
-        <div class="action-grid">
-          <button class="action-tile" data-win="switch">
+        <!-- Group 1: Snap Layouts -->
+        <div class="window-subgroup-label">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18"/></svg>
+          <span data-i18n="groupSnapLayouts">Snap Layouts</span>
+        </div>
+        <div class="snap-grid-4">
+          <button class="snap-tile" data-win="snap-left" title="Snap window to left half (Win + Left)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <rect x="3" y="3" width="9" height="18" fill="rgba(0, 240, 255, 0.45)" rx="2"/>
+            </svg>
+            <span data-i18n="snapLeft">Left 50%</span>
+            <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 500;">Win + ←</span>
+          </button>
+          <button class="snap-tile" data-win="maximize" title="Maximize window (Win + Up)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <rect x="3" y="3" width="18" height="18" fill="rgba(0, 240, 255, 0.25)" rx="2"/>
+              <path d="M8 8h8v8H8z"/>
+            </svg>
+            <span data-i18n="maximize">Maximize</span>
+            <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 500;">Win + ↑</span>
+          </button>
+          <button class="snap-tile" data-win="minimize" title="Minimize / Restore window (Win + Down)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <line x1="7" y1="17" x2="17" y2="17" stroke-width="2.5"/>
+            </svg>
+            <span data-i18n="minimize">Minimize</span>
+            <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 500;">Win + ↓</span>
+          </button>
+          <button class="snap-tile" data-win="snap-right" title="Snap window to right half (Win + Right)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <rect x="12" y="3" width="9" height="18" fill="rgba(0, 240, 255, 0.45)" rx="2"/>
+            </svg>
+            <span data-i18n="snapRight">Right 50%</span>
+            <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 500;">Win + →</span>
+          </button>
+        </div>
+
+        <!-- Group 2: Displays & Virtual Desktops -->
+        <div class="window-subgroup-label">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span data-i18n="groupDisplays">Displays & Desktops</span>
+        </div>
+        <div class="snap-grid-4">
+          <button class="snap-tile" data-win="monitor-prev" title="Move window to previous monitor (Win + Shift + Left)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="7" y="4" width="14" height="10" rx="1"/>
+              <rect x="3" y="8" width="14" height="10" rx="1"/>
+              <polyline points="10 13 7 13 7 10"/>
+            </svg>
+            <span data-i18n="screenLeft">Screen ←</span>
+            <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 500;" data-i18n="badgeMoveDisp">Move Disp</span>
+          </button>
+          <button class="snap-tile" data-win="monitor-next" title="Move window to next monitor (Win + Shift + Right)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="14" height="10" rx="1"/>
+              <rect x="7" y="8" width="14" height="10" rx="1"/>
+              <polyline points="14 13 17 13 17 10"/>
+            </svg>
+            <span data-i18n="screenRight">Screen →</span>
+            <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 500;" data-i18n="badgeMoveDisp">Move Disp</span>
+          </button>
+          <button class="vdesk-tile" data-win="vdesk-left" title="Switch to left virtual desktop (Win + Ctrl + Left)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="5" width="18" height="14" rx="2"/>
+              <polyline points="13 9 9 12 13 15"/>
+            </svg>
+            <span data-i18n="deskLeft">Desk ←</span>
+            <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 500;" data-i18n="badgeVirtualDesk">Virtual Desk</span>
+          </button>
+          <button class="vdesk-tile" data-win="vdesk-right" title="Switch to right virtual desktop (Win + Ctrl + Right)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="5" width="18" height="14" rx="2"/>
+              <polyline points="11 9 15 12 11 15"/>
+            </svg>
+            <span data-i18n="deskRight">Desk →</span>
+            <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 500;" data-i18n="badgeVirtualDesk">Virtual Desk</span>
+          </button>
+        </div>
+
+        <!-- Group 3: Quick Windows Shortcuts -->
+        <div class="window-subgroup-label">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span data-i18n="groupShortcuts">System Shortcuts</span>
+        </div>
+        <div class="shortcuts-grid-3">
+          <button class="action-tile" data-win="switch" title="Switch between open apps (Alt + Tab)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M16 8l5-5-5-5"/></svg>
-            <span>Alt + Tab</span>
+            <span data-i18n="shortcutAltTab">Alt + Tab</span>
           </button>
-          <button class="action-tile" data-win="taskview">
+          <button class="action-tile" data-win="taskview" title="Open Windows Task View (Win + Tab)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-            <span>Task View</span>
+            <span data-i18n="taskView">Task View</span>
           </button>
-          <button class="action-tile" data-win="desktop">
+          <button class="action-tile" data-win="desktop" title="Show Desktop (Win + D)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-            <span>Desktop</span>
+            <span data-i18n="desktop">Desktop</span>
           </button>
-          <button class="action-tile" data-win="screenshot">
+          <button class="action-tile" data-win="screenshot" title="Windows Snipping Tool (Win + Shift + S)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            <span>Screenshot</span>
+            <span data-i18n="screenshot">Screenshot</span>
           </button>
-          <button class="action-tile" data-win="close" style="grid-column: 1 / -1;">
+          <button class="action-tile" data-win="vdesk-new" title="Create New Virtual Desktop (Win + Ctrl + D)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <span data-i18n="newDesk">+ New Desk</span>
+          </button>
+          <button class="action-tile" data-win="close" title="Close Active Window (Alt + F4)" style="border-color: rgba(239, 68, 68, 0.4); color: #EF4444;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-            <span>Close Active App (Alt+F4)</span>
+            <span data-i18n="closeApp">Close App</span>
           </button>
         </div>
       </section>
@@ -407,27 +642,27 @@
         <div class="card-header">
           <div class="card-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
-            Power Management
+            <span data-i18n="cardTitlePower">Power Management</span>
           </div>
-          <span style="font-size: 0.8rem; color: var(--neon-rose);">With Safe Countdown</span>
+          <span style="font-size: 0.8rem; color: var(--neon-rose);" data-i18n="powerSubtitle">With Safe Countdown</span>
         </div>
 
         <div class="power-grid">
           <button class="power-tile lock" data-power="lock">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span>Lock PC</span>
+            <span data-i18n="powerLock">Lock PC</span>
           </button>
           <button class="power-tile sleep" data-power="sleep">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            <span>Sleep</span>
+            <span data-i18n="powerSleep">Sleep</span>
           </button>
           <button class="power-tile restart" data-power="restart">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-            <span>Restart</span>
+            <span data-i18n="powerRestart">Restart</span>
           </button>
           <button class="power-tile shutdown" data-power="shutdown">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
-            <span>Shutdown</span>
+            <span data-i18n="powerShutdown">Shutdown</span>
           </button>
         </div>
       </section>
@@ -441,53 +676,90 @@
       <div class="card-header">
         <div class="card-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="4"/><line x1="12" y1="7" x2="12" y2="11"/></svg>
-          Wireless Precision Touchpad
+          <span data-i18n="trackpadTitle">Wireless Precision Touchpad</span>
         </div>
-        <span style="font-size: 0.8rem; color: var(--neon-cyan);">Drag finger to move mouse</span>
+        <span style="font-size: 0.8rem; color: var(--neon-cyan);" data-i18n="trackpadSub">Drag finger to move mouse</span>
       </div>
 
       <div class="trackpad-surface" id="trackpad-area">
         <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"><path d="M12 2a10 10 0 0 0-10 10c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
-        <div class="trackpad-hint">Touch & Glide • Tap for Left Click • 2 Fingers to Scroll</div>
+        <div class="trackpad-hint" data-i18n="trackpadHint">Touch & Glide • Tap for Left Click • 2 Fingers to Scroll</div>
       </div>
 
-      <div class="trackpad-buttons">
-        <button class="trackpad-btn" id="mouse-left">LEFT CLICK</button>
-        <button class="trackpad-btn" id="mouse-right">RIGHT CLICK</button>
+      <div class="trackpad-buttons" dir="ltr">
+        <button class="trackpad-btn" id="mouse-left" data-i18n="trackpadLeftClick">LEFT CLICK</button>
+        <button class="trackpad-btn" id="mouse-right" data-i18n="trackpadRightClick">RIGHT CLICK</button>
       </div>
     </div>
   </section>
 
   <!-- TAB 3: NUMPAD & SHORTCUTS -->
   <section class="tab-content" id="tab-numpad">
-    <div class="card" style="max-width: 500px; margin: 0 auto;">
-      <div class="card-header">
-        <div class="card-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
-          Quick Number Pad
+    <div style="display: flex; flex-direction: column; gap: 16px; max-width: 500px; margin: 0 auto;">
+      <div class="card" style="margin: 0;">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+            <span data-i18n="numpadTitle">Quick Number Pad</span>
+          </div>
+          <span style="font-size: 0.8rem; color: var(--neon-cyan);" data-i18n="numpadSub">Live Windows Input</span>
         </div>
-        <span style="font-size: 0.8rem; color: var(--text-muted);">Direct Input</span>
+
+        <!-- Arithmetic Operators Row -->
+        <div class="numpad-operators" dir="ltr" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px;">
+          <button class="numpad-key" data-key="/" style="padding: 14px 10px; font-size: 1.15rem; color: var(--neon-cyan);" title="Divide (/)">÷</button>
+          <button class="numpad-key" data-key="*" style="padding: 14px 10px; font-size: 1.15rem; color: var(--neon-cyan);" title="Multiply (*)">×</button>
+          <button class="numpad-key" data-key="-" style="padding: 14px 10px; font-size: 1.15rem; color: var(--neon-cyan);" title="Subtract (-)">−</button>
+          <button class="numpad-key" data-key="+" style="padding: 14px 10px; font-size: 1.15rem; color: var(--neon-cyan);" title="Add (+)">+</button>
+        </div>
+
+        <div class="numpad-container" dir="ltr">
+          <button class="numpad-key" data-key="7">7</button>
+          <button class="numpad-key" data-key="8">8</button>
+          <button class="numpad-key" data-key="9">9</button>
+          <button class="numpad-key" data-key="backspace" style="color: var(--neon-rose);" title="Backspace">⌫</button>
+
+          <button class="numpad-key" data-key="4">4</button>
+          <button class="numpad-key" data-key="5">5</button>
+          <button class="numpad-key" data-key="6">6</button>
+          <button class="numpad-key" data-key="tab" style="font-size: 0.9rem;" title="Tab Key">TAB</button>
+
+          <button class="numpad-key" data-key="1">1</button>
+          <button class="numpad-key" data-key="2">2</button>
+          <button class="numpad-key" data-key="3">3</button>
+          <button class="numpad-key" data-key="enter" style="color: var(--neon-cyan); font-size: 1.1rem;" title="Enter Key">↵</button>
+
+          <button class="numpad-key" data-key="0" style="grid-column: span 2;">0</button>
+          <button class="numpad-key" data-key=".">.</button>
+          <button class="numpad-key" data-key="esc" style="font-size: 0.9rem; color: var(--neon-amber);" title="Escape">ESC</button>
+        </div>
       </div>
 
-      <div class="numpad-container">
-        <button class="numpad-key" data-key="7">7</button>
-        <button class="numpad-key" data-key="8">8</button>
-        <button class="numpad-key" data-key="9">9</button>
-        <button class="numpad-key" data-key="backspace" style="color: var(--neon-rose);">⌫</button>
-
-        <button class="numpad-key" data-key="4">4</button>
-        <button class="numpad-key" data-key="5">5</button>
-        <button class="numpad-key" data-key="6">6</button>
-        <button class="numpad-key" data-key="tab" style="font-size: 0.9rem;">TAB</button>
-
-        <button class="numpad-key" data-key="1">1</button>
-        <button class="numpad-key" data-key="2">2</button>
-        <button class="numpad-key" data-key="3">3</button>
-        <button class="numpad-key" data-key="enter" style="color: var(--neon-cyan); font-size: 1.1rem;">↵</button>
-
-        <button class="numpad-key" data-key="0" style="grid-column: span 2;">0</button>
-        <button class="numpad-key" data-key=".">.</button>
-        <button class="numpad-key" data-key="esc" style="font-size: 0.9rem; color: var(--neon-amber);">ESC</button>
+      <!-- Remote Typing & Text Sender -->
+      <div class="card" style="margin: 0;">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+            <span data-i18n="remoteTypeTitle">Remote PC Typing</span>
+          </div>
+          <span style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="remoteTypeDirect">Direct to Focused Window</span>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;" data-i18n="remoteTypeDesc">
+          Type with your tablet keyboard or speech-to-text and inject it directly into any active PC window (browser, code, Discord, terminal).
+        </p>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="remote-text-input" class="action-input" placeholder="Type text, search query, or link..." data-i18n-placeholder="remoteTypePlaceholder" style="flex: 1;">
+          <button class="btn-preset" id="btn-send-remote-text" style="background: var(--neon-cyan); color: #000; font-weight: 800; border: none; padding: 0 16px;">
+            <span data-i18n="btnSend">Send</span> ↵
+          </button>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+          <button class="btn-preset numpad-key" data-key="space" style="padding: 6px 12px; font-size: 0.8rem;">Space ␣</button>
+          <button class="btn-preset numpad-key" data-key="enter" style="padding: 6px 12px; font-size: 0.8rem; color: var(--neon-cyan);">Enter ↵</button>
+          <button class="btn-preset numpad-key" data-key="backspace" style="padding: 6px 12px; font-size: 0.8rem; color: var(--neon-rose);">⌫ Back</button>
+          <button class="btn-preset numpad-key" data-key="tab" style="padding: 6px 12px; font-size: 0.8rem;">Tab ⇥</button>
+          <button class="btn-preset numpad-key" data-key="esc" style="padding: 6px 12px; font-size: 0.8rem; color: var(--neon-amber);">Esc</button>
+        </div>
       </div>
     </div>
   </section>
@@ -501,11 +773,11 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/></svg>
           <span data-i18n="navPairing">Connect & QR</span>
         </div>
-        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 14px;">
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 14px;" data-i18n="pairingDesc">
           Scan this QR code with your Android tablet camera or type this URL into Google Chrome:
         </p>
 
-        <div class="connection-url" id="display-url">http://192.168.100.101:3000</div>
+        <div class="connection-url" id="display-url">http://&lt;your-pc-ip&gt;:3000</div>
 
         <div class="qr-frame" id="qr-container">
           <!-- Live SVG QR Code loaded from server -->
@@ -522,21 +794,21 @@
             </div>
             <span class="badge-value" style="background: rgba(0, 240, 255, 0.15); color: var(--neon-cyan); border-color: var(--neon-cyan);">PWA Ready</span>
           </div>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px; line-height: 1.5;">
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px; line-height: 1.5;" data-i18n="pwaDesc">
             Transform your Galaxy Tab or Android tablet into a dedicated, borderless Stream Deck hardware display without browser address bars!
           </p>
           <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
             <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; color: #cbd5e1;">
               <span style="background: var(--neon-cyan); color: #000; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">1</span>
-              <span>Tap the <strong>Install App</strong> button below, or tap Chrome menu <code>⋮</code> &rarr; <strong>"Install app"</strong> / <strong>"Add to Home screen"</strong>.</span>
+              <span data-i18n="pwaStep1">Tap the <strong>Install App</strong> button below, or tap Chrome menu <code>⋮</code> &rarr; <strong>"Install app"</strong> / <strong>"Add to Home screen"</strong>.</span>
             </div>
             <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; color: #cbd5e1;">
               <span style="background: #8B5CF6; color: #fff; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">2</span>
-              <span>Launch from your tablet home screen. It automatically runs in <strong>100% borderless fullscreen</strong> mode.</span>
+              <span data-i18n="pwaStep2">Launch from your tablet home screen. It automatically runs in <strong>100% borderless fullscreen</strong> mode.</span>
             </div>
             <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; color: #cbd5e1;">
               <span style="background: #10B981; color: #000; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">3</span>
-              <span>Keep Screen Awake (sun icon) is automatically active to ensure your display never sleeps!</span>
+              <span data-i18n="pwaStep3">Keep Screen Awake (sun icon) is automatically active to ensure your display never sleeps!</span>
             </div>
           </div>
         </div>
@@ -564,40 +836,64 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 0 0 0 14v6"/></svg>
             <span data-i18n="themeTitle">Themes & Appearance</span>
           </div>
-          <span style="font-size: 0.8rem; color: var(--neon-cyan);">8 Color Schemes</span>
+          <span style="font-size: 0.8rem; color: var(--neon-cyan);" data-i18n="themeCount">14 Color Schemes</span>
         </div>
         <div class="theme-grid">
           <div class="theme-chip active" data-theme="theme-obsidian">
             <div class="theme-dot" style="background: linear-gradient(135deg, #00f0ff, #8b5cf6);"></div>
-            <span>Obsidian</span>
+            <span data-i18n="themeObsidian">Obsidian</span>
           </div>
           <div class="theme-chip" data-theme="theme-midnight">
             <div class="theme-dot" style="background: linear-gradient(135deg, #64748b, #000000);"></div>
-            <span>Midnight</span>
+            <span data-i18n="themeMidnight">Midnight</span>
           </div>
           <div class="theme-chip" data-theme="theme-ocean">
             <div class="theme-dot" style="background: linear-gradient(135deg, #00d2ff, #0040ff);"></div>
-            <span>Ocean</span>
+            <span data-i18n="themeOcean">Ocean</span>
           </div>
           <div class="theme-chip" data-theme="theme-ember">
             <div class="theme-dot" style="background: linear-gradient(135deg, #ff6b35, #f72585);"></div>
-            <span>Ember</span>
+            <span data-i18n="themeEmber">Ember</span>
           </div>
           <div class="theme-chip" data-theme="theme-forest">
             <div class="theme-dot" style="background: linear-gradient(135deg, #10b981, #064e3b);"></div>
-            <span>Forest</span>
+            <span data-i18n="themeForest">Forest</span>
           </div>
           <div class="theme-chip" data-theme="theme-rose">
             <div class="theme-dot" style="background: linear-gradient(135deg, #ec4899, #831843);"></div>
-            <span>Rose</span>
+            <span data-i18n="themeRose">Rose</span>
           </div>
           <div class="theme-chip" data-theme="theme-frost">
             <div class="theme-dot" style="background: linear-gradient(135deg, #38bdf8, #94a3b8);"></div>
-            <span>Frost</span>
+            <span data-i18n="themeFrost">Frost</span>
           </div>
           <div class="theme-chip" data-theme="theme-gold">
             <div class="theme-dot" style="background: linear-gradient(135deg, #f59e0b, #78350f);"></div>
-            <span>Gold</span>
+            <span data-i18n="themeGold">Gold</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-cyberpunk">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #fcee0a, #ff0055);"></div>
+            <span data-i18n="themeCyberpunk">Cyberpunk</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-matrix">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #00ff66, #047857);"></div>
+            <span data-i18n="themeMatrix">Matrix</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-synthwave">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #ff2a85, #05d9e8);"></div>
+            <span data-i18n="themeSynthwave">Synthwave</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-dracula">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #bd93f9, #ff79c6);"></div>
+            <span data-i18n="themeDracula">Dracula</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-crimson">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #ff1e27, #8b0000);"></div>
+            <span data-i18n="themeCrimson">Crimson</span>
+          </div>
+          <div class="theme-chip" data-theme="theme-nord">
+            <div class="theme-dot" style="background: linear-gradient(135deg, #88c0d0, #5e81ac);"></div>
+            <span data-i18n="themeNord">Nord</span>
           </div>
         </div>
       </div>
@@ -625,16 +921,27 @@
           <div class="setting-row">
             <div>
               <div style="font-weight: 600;" data-i18n="soundLabel">Notification Sound</div>
-              <div style="font-size: 0.75rem; color: var(--text-secondary);">Synth chime when PC sends alert</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary);" data-i18n="soundSub">Synth chime when PC sends alert</div>
             </div>
             <input type="checkbox" id="toggle-sound" checked class="toggle-switch">
           </div>
           <div class="setting-row">
             <div>
               <div style="font-weight: 600;" data-i18n="hapticLabel">Haptic Vibration</div>
-              <div style="font-size: 0.75rem; color: var(--text-secondary);">Tactile motor feedback on touch</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary);" data-i18n="hapticSub">Tactile motor feedback on touch</div>
             </div>
             <input type="checkbox" id="toggle-haptic" checked class="toggle-switch">
+          </div>
+          <div class="setting-row">
+            <div>
+              <div style="font-weight: 600;" data-i18n="timeOffsetTitle">Time Offset & 24hr Mode</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary);" data-i18n="timeOffsetSub">Strict 24hr format • Adjust timezone offset if needed</div>
+            </div>
+            <div class="lang-selector" dir="ltr">
+              <button class="btn-lang active" id="btn-time-minus1" title="Subtract 1 Hour">-1h</button>
+              <button class="btn-lang" id="btn-time-sync" title="Sync with PC Clock" data-i18n="btnTimeSync">PC Sync</button>
+              <button class="btn-lang" id="btn-time-plus1" title="Add 1 Hour">+1h</button>
+            </div>
           </div>
         </div>
       </div>
@@ -647,13 +954,13 @@
             <span data-i18n="notifTestTitle">PC Notifications Hub</span>
           </div>
         </div>
-        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.4;">
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.4;" data-i18n="notifTestDesc">
           Send alerts from your PC using <code>npm run notify -- "Title" "Message" success</code> or POST to <code>/api/notify</code>.
         </p>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="btn-preset" id="test-notif-success" style="border-color: #10B981; color: #10B981;">Test Success</button>
-          <button class="btn-preset" id="test-notif-warning" style="border-color: #F59E0B; color: #F59E0B;">Test Warning</button>
-          <button class="btn-preset" id="test-notif-error" style="border-color: #EF4444; color: #EF4444;">Test Error</button>
+          <button class="btn-preset" id="test-notif-success" style="border-color: #10B981; color: #10B981;" data-i18n="testSuccess">Test Success</button>
+          <button class="btn-preset" id="test-notif-warning" style="border-color: #F59E0B; color: #F59E0B;" data-i18n="testWarning">Test Warning</button>
+          <button class="btn-preset" id="test-notif-error" style="border-color: #EF4444; color: #EF4444;" data-i18n="testError">Test Error</button>
         </div>
       </div>
 
@@ -665,7 +972,7 @@
             <span data-i18n="manageActionsTitle">Manage Custom Deck Buttons</span>
           </div>
           <button class="btn-preset" id="btn-open-create-modal" style="border-color: var(--neon-cyan); color: var(--neon-cyan);">
-            + Create New Action
+            <span data-i18n="btnCreateAction">+ Create Custom Button</span>
           </button>
         </div>
         <div id="config-actions-list" class="config-actions-list">
@@ -681,25 +988,25 @@
             <span data-i18n="detectedAppsTitle">Auto-Detected Installed PC Apps</span>
           </div>
           <div style="display: flex; gap: 8px; align-items: center;">
-            <span class="badge-value" id="detected-apps-count">Scanning PC...</span>
+            <span class="badge-value" id="detected-apps-count" data-i18n="scanningPC">Scanning PC...</span>
             <button class="btn-preset" id="btn-refresh-detected-apps" style="border-color: var(--neon-cyan); color: var(--neon-cyan); font-size: 0.8rem; padding: 4px 10px;">
               🔄 <span data-i18n="detectedAppsRefresh">Refresh</span>
             </button>
           </div>
         </div>
 
-        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;" data-i18n="detectedAppsDesc">
           Automatically detected from Windows Start Menu and Apps. Click <strong>Launch</strong> to test on PC, or <strong>+ Add to Deck</strong> to place an instant shortcut button on your Stream Deck!
         </p>
 
         <div style="position: relative; margin-bottom: 14px;">
-          <input type="text" id="detected-apps-search" class="action-input" placeholder="Search installed PC apps (e.g. Spotify, Discord, Steam, VS Code, Photoshop)..." style="width: 100%; padding-left: 36px;">
+          <input type="text" id="detected-apps-search" class="action-input" data-i18n-placeholder="detectedAppsPlaceholder" placeholder="Search installed PC apps (e.g. Spotify, Discord, Steam, VS Code, Photoshop)..." style="width: 100%; padding-left: 36px;">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
 
         <div class="detected-apps-container" id="detected-apps-container">
           <!-- Rendered list of detected apps -->
-          <div style="text-align: center; color: var(--text-muted); padding: 30px 0;">Scanning installed apps on PC...</div>
+          <div style="text-align: center; color: var(--text-muted); padding: 30px 0;" data-i18n="scanningPCDesc">Scanning installed apps on PC...</div>
         </div>
       </div>
     </div>
@@ -707,51 +1014,51 @@
 
   <!-- CUSTOM ACTION MODAL (CREATE / EDIT) -->
   <div class="modal-backdrop" id="action-modal">
-    <div class="modal-box" style="max-width: 440px; text-align: left;">
-      <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 16px; color: #fff;" id="action-modal-title">Create Custom Button</h2>
+    <div class="modal-box" style="max-width: 440px;">
+      <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 16px; color: #fff;" id="action-modal-title" data-i18n="modalCreateActionTitle">Create Custom Button</h2>
       
       <div class="action-form-group">
-        <label class="action-form-label">Button Label / Name</label>
+        <label class="action-form-label" data-i18n="modalFieldLabel">Button Label / Name</label>
         <input type="text" id="action-form-label" class="action-input" placeholder="e.g. GitHub, Copy Token, Deploy">
       </div>
 
       <div class="action-form-group">
-        <label class="action-form-label">Action Type</label>
+        <label class="action-form-label" data-i18n="modalFieldType">Action Type</label>
         <select id="action-form-type" class="action-input">
-          <option value="app">Launch Installed PC App</option>
-          <option value="url">Open URL (Browser)</option>
-          <option value="copy">Copy Text to PC Clipboard</option>
-          <option value="command">Run Terminal Command (PC)</option>
+          <option value="app" data-i18n="optLaunchApp">Launch Installed PC App</option>
+          <option value="url" data-i18n="optOpenUrl">Open URL (Browser)</option>
+          <option value="copy" data-i18n="optCopyText">Copy Text to PC Clipboard</option>
+          <option value="command" data-i18n="optRunCommand">Run Terminal Command (PC)</option>
         </select>
       </div>
 
       <div class="action-form-group" id="action-app-select-group">
-        <label class="action-form-label">Select Detected App</label>
+        <label class="action-form-label" data-i18n="modalFieldApp">Select Detected App</label>
         <select id="action-form-app-select" class="action-input">
-          <option value="">-- Choose Installed PC App --</option>
+          <option value="" data-i18n="optChooseApp">-- Choose Installed PC App --</option>
         </select>
       </div>
 
       <div class="action-form-group">
-        <label class="action-form-label" id="action-val-label">Target URL</label>
+        <label class="action-form-label" id="action-val-label" data-i18n="modalFieldUrl">Target URL</label>
         <input type="text" id="action-form-val" class="action-input" placeholder="https://...">
       </div>
 
       <div class="action-form-group">
-        <label class="action-form-label">Button Accent Color</label>
+        <label class="action-form-label" data-i18n="modalFieldColor">Button Accent Color</label>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
           <input type="color" id="action-form-color" value="#00f0ff" style="width: 44px; height: 38px; border: none; border-radius: 6px; cursor: pointer; background: transparent;">
-          <button type="button" class="btn-preset color-pick" data-color="#00F0FF" style="color: #00F0FF; border-color: #00F0FF;">Cyan</button>
-          <button type="button" class="btn-preset color-pick" data-color="#10B981" style="color: #10B981; border-color: #10B981;">Emerald</button>
-          <button type="button" class="btn-preset color-pick" data-color="#EC4899" style="color: #EC4899; border-color: #EC4899;">Pink</button>
-          <button type="button" class="btn-preset color-pick" data-color="#F59E0B" style="color: #F59E0B; border-color: #F59E0B;">Amber</button>
-          <button type="button" class="btn-preset color-pick" data-color="#8B5CF6" style="color: #8B5CF6; border-color: #8B5CF6;">Purple</button>
+          <button type="button" class="btn-preset color-pick" data-color="#00F0FF" style="color: #00F0FF; border-color: #00F0FF;" data-i18n="colorCyan">Cyan</button>
+          <button type="button" class="btn-preset color-pick" data-color="#10B981" style="color: #10B981; border-color: #10B981;" data-i18n="colorEmerald">Emerald</button>
+          <button type="button" class="btn-preset color-pick" data-color="#EC4899" style="color: #EC4899; border-color: #EC4899;" data-i18n="colorPink">Pink</button>
+          <button type="button" class="btn-preset color-pick" data-color="#F59E0B" style="color: #F59E0B; border-color: #F59E0B;" data-i18n="colorAmber">Amber</button>
+          <button type="button" class="btn-preset color-pick" data-color="#8B5CF6" style="color: #8B5CF6; border-color: #8B5CF6;" data-i18n="colorPurple">Purple</button>
         </div>
       </div>
 
       <div class="modal-actions" style="margin-top: 24px;">
-        <button class="btn-modal btn-cancel" id="btn-cancel-action">Cancel</button>
-        <button class="btn-modal" id="btn-save-action" style="background: var(--neon-cyan); color: #000; font-weight: 800;">Save Action</button>
+        <button class="btn-modal btn-cancel" id="btn-cancel-action" data-i18n="btnCancel">Cancel</button>
+        <button class="btn-modal" id="btn-save-action" style="background: var(--neon-cyan); color: #000; font-weight: 800;" data-i18n="btnSaveAction">Save Action</button>
       </div>
     </div>
   </div>
@@ -760,15 +1067,15 @@
   <div class="notif-drawer-backdrop" id="notif-drawer-backdrop"></div>
   <div class="notif-drawer" id="notif-drawer">
     <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 12px;">
-      <div style="font-weight: 700; font-size: 1.1rem; color: #fff;">Notifications History</div>
+      <div style="font-weight: 700; font-size: 1.1rem; color: #fff;" data-i18n="notifHistoryTitle">Notifications History</div>
       <button class="notif-close" id="btn-close-notif-drawer">&times;</button>
     </div>
     <div class="notif-history-list" id="notif-history-list">
-      <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 40px 0;">
+      <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 40px 0;" data-i18n="notifEmpty">
         No notifications yet
       </div>
     </div>
-    <button class="btn-preset" id="btn-clear-notifs" style="margin-top: 10px; width: 100%;">Clear All Notifications</button>
+    <button class="btn-preset" id="btn-clear-notifs" style="margin-top: 10px; width: 100%;" data-i18n="btnClearNotifs">Clear All Notifications</button>
   </div>
 
   <!-- SAFETY CONFIRMATION MODAL (SHUTDOWN / RESTART) -->
@@ -777,21 +1084,21 @@
       <div class="modal-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       </div>
-      <h2 style="font-size: 1.4rem; font-weight: 800;" id="modal-title">Confirm Shutdown</h2>
-      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 6px;">Your PC will power down in:</p>
+      <h2 style="font-size: 1.4rem; font-weight: 800;" id="modal-title" data-i18n="modalShutdownTitle">Confirm Shutdown</h2>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 6px;" data-i18n="modalShutdownDesc">Your PC will power down in:</p>
       
       <div class="modal-countdown" id="modal-seconds">30</div>
       
       <div class="modal-actions">
-        <button class="btn-modal btn-cancel" id="btn-abort-power">CANCEL NOW</button>
-        <button class="btn-modal btn-confirm" id="btn-force-power">EXECUTE NOW</button>
+        <button class="btn-modal btn-cancel" id="btn-abort-power" data-i18n="modalCancelNow">CANCEL NOW</button>
+        <button class="btn-modal btn-confirm" id="btn-force-power" data-i18n="modalExecuteNow">EXECUTE NOW</button>
       </div>
     </div>
   </div>
 
   <!-- Toast Notification -->
-  <div class="toast" id="toast-msg">Action Executed</div>
+  <div class="toast" id="toast-msg" data-i18n="toastActionExecuted">Action Executed</div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=2.99"></script>
 </body>
 </html>

@@ -2,10 +2,104 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { exec, execFile } = require('child_process');
+const { exec, execFile, spawn } = require('child_process');
+const readline = require('readline');
 const { WebSocketServer } = require('ws');
 const QRCode = require('qrcode');
 const { APPS, launchApp } = require('./app-launcher');
+
+let wss = null;
+
+// ==========================================================================
+// WinRT SMTC Real-Time Media Session Monitor (Feature #5 - Live Stream v2.91)
+// ==========================================================================
+let cachedMedia = {
+  status: 'idle',
+  hasMedia: false,
+  title: '',
+  artist: '',
+  album: '',
+  playbackStatus: 'Stopped',
+  position: 0,
+  duration: 0
+};
+
+let mediaWorker = null;
+
+function startMediaWorker() {
+  const scriptPath = path.join(__dirname, 'scripts', 'media-monitor.ps1');
+  if (!fs.existsSync(scriptPath)) return;
+
+  try {
+    mediaWorker = spawn('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', scriptPath], {
+      windowsHide: true,
+      stdio: ['pipe', 'pipe', 'pipe']
+    });
+
+    const rl = readline.createInterface({ input: mediaWorker.stdout });
+
+    rl.on('line', (line) => {
+      const trimmed = line.trim();
+      if (!trimmed || !trimmed.startsWith('{')) return;
+      try {
+        const data = JSON.parse(trimmed);
+        if (data && (data.status === 'ok' || data.status === 'idle')) {
+          cachedMedia = data;
+          broadcastMedia();
+        }
+      } catch (e) {}
+    });
+
+    mediaWorker.on('error', (err) => {
+      console.warn('[AltDeck Media] Worker error:', err.message);
+    });
+
+    mediaWorker.on('exit', () => {
+      mediaWorker = null;
+      setTimeout(startMediaWorker, 3000);
+    });
+  } catch (err) {
+    console.warn('[AltDeck Media] Failed to start media worker:', err.message);
+  }
+}
+
+function broadcastMedia() {
+  if (!wss || wss.clients.size === 0) return;
+  const msg = JSON.stringify({ event: 'media', data: cachedMedia });
+  for (const client of wss.clients) {
+    if (client.readyState === 1) {
+      client.send(msg);
+    }
+  }
+}
+
+function seekMedia(sec) {
+  if (mediaWorker && mediaWorker.stdin && !mediaWorker.killed) {
+    try {
+      mediaWorker.stdin.write(`seek ${sec}\n`);
+      return;
+    } catch (e) {}
+  }
+  exec(`powershell -NoProfile -ExecutionPolicy Bypass -File "${path.join(__dirname, 'scripts', 'media-monitor.ps1')}" -SeekTo ${sec}`);
+}
+
+function fetchMediaFallback() {
+  const scriptPath = path.join(__dirname, 'scripts', 'media-monitor.ps1');
+  exec(`powershell -NoProfile -ExecutionPolicy Bypass -File "${scriptPath}" -Mode oneshot`, (err, stdout) => {
+    if (!err && stdout) {
+      try {
+        const data = JSON.parse(stdout.trim());
+        if (data && (data.status === 'ok' || data.status === 'idle')) {
+          cachedMedia = data;
+          broadcastMedia();
+        }
+      } catch (e) {}
+    }
+  });
+}
+
+startMediaWorker();
+fetchMediaFallback();
 
 let config = {};
 try {
@@ -16,17 +110,19 @@ try {
 } catch (e) {}
 
 const PORT = process.env.PORT || config.port || 3000;
-const BIN_PATH = path.join(__dirname, 'bin', 'pc-control.exe');
+const BIN_PATH = fs.existsSync(path.join(__dirname, 'bin', 'pc-control.exe'))
+  ? path.join(__dirname, 'bin', 'pc-control.exe')
+  : path.join(__dirname, 'bin', 'altdeck-core.exe');
 
 // Auto-compile native helper if missing on first run
 function ensureNativeBinary() {
   if (!fs.existsSync(BIN_PATH)) {
-    console.log('[TabDeck] Native hardware controller missing. Auto-compiling via csc.exe...');
+    console.log('[AltDeck] Native hardware controller missing. Auto-compiling via csc.exe...');
     try {
       const { execSync } = require('child_process');
       execSync('powershell -ExecutionPolicy Bypass -File build-helper.ps1', { stdio: 'inherit', cwd: __dirname });
     } catch (e) {
-      console.warn('[TabDeck] Auto-compile failed. Run "npm run build:helper" manually.');
+      console.warn('[AltDeck] Auto-compile failed. Run "npm run build:helper" manually.');
     }
   }
 }
@@ -80,10 +176,79 @@ function runNative(args) {
   });
 }
 
-// Get system state (volume, mute, brightness)
+// Hardware Telemetry Engine (CPU, RAM, Battery)
+let lastCpuTimes = null;
+function getCpuPercent() {
+  const cpus = os.cpus();
+  let idle = 0;
+  let total = 0;
+  for (const cpu of cpus) {
+    for (const type in cpu.times) {
+      total += cpu.times[type];
+    }
+    idle += cpu.times.idle;
+  }
+  if (!lastCpuTimes) {
+    lastCpuTimes = { idle, total };
+    return 10;
+  }
+  const idleDiff = idle - lastCpuTimes.idle;
+  const totalDiff = total - lastCpuTimes.total;
+  lastCpuTimes = { idle, total };
+  if (totalDiff <= 0) return 0;
+  const usage = Math.round((1 - idleDiff / totalDiff) * 100);
+  return Math.max(0, Math.min(100, usage));
+}
+
+function getRamStats() {
+  const totalBytes = os.totalmem();
+  const freeBytes = os.freemem();
+  const usedBytes = totalBytes - freeBytes;
+  const totalGb = parseFloat((totalBytes / (1024 ** 3)).toFixed(1));
+  const usedGb = parseFloat((usedBytes / (1024 ** 3)).toFixed(1));
+  const percent = Math.round((usedBytes / totalBytes) * 100);
+  return {
+    totalGb,
+    usedGb,
+    freeGb: parseFloat((freeBytes / (1024 ** 3)).toFixed(1)),
+    percent
+  };
+}
+
+let cachedBattery = { percent: 100, isCharging: true, powerLine: 'Online', chargeStatus: '' };
+let lastBatteryFetch = 0;
+async function getBatteryStats() {
+  const now = Date.now();
+  if (now - lastBatteryFetch < 4000) return cachedBattery;
+  try {
+    const res = await runNative(['battery']);
+    if (res && res.status === 'ok') {
+      cachedBattery = {
+        percent: typeof res.batteryPercent === 'number' ? res.batteryPercent : 100,
+        isCharging: !!res.isCharging,
+        powerLine: res.powerLine || 'Online',
+        chargeStatus: res.chargeStatus || ''
+      };
+      lastBatteryFetch = now;
+    }
+  } catch (e) {}
+  return cachedBattery;
+}
+
+async function getTelemetryData() {
+  const cpu = getCpuPercent();
+  const ram = getRamStats();
+  const battery = await getBatteryStats();
+  const cores = os.cpus().length;
+  return { cpu, ram, battery, cores };
+}
+
+// Get system state (volume, mute, brightness, telemetry)
 async function getFullStatus() {
   let volume = 50;
   let muted = false;
+  let micMuted = false;
+  let micVolume = 100;
   let brightness = 100;
 
   try {
@@ -95,21 +260,45 @@ async function getFullStatus() {
   } catch (e) {}
 
   try {
+    const micRes = await runNative(['mic', 'get']);
+    if (micRes && typeof micRes.micMuted !== 'undefined') {
+      micMuted = !!micRes.micMuted;
+      micVolume = micRes.micVolume || 100;
+    }
+  } catch (e) {}
+
+  try {
     const brightRes = await runNative(['brightness', 'get']);
     if (brightRes && typeof brightRes.brightness !== 'undefined') {
       brightness = brightRes.brightness;
     }
   } catch (e) {}
 
+  const now = new Date();
+  const pcHours = String(now.getHours()).padStart(2, '0');
+  const pcMinutes = String(now.getMinutes()).padStart(2, '0');
+  const pcSeconds = String(now.getSeconds()).padStart(2, '0');
+  const pcTzOffset = now.getTimezoneOffset(); // minutes offset from UTC
+  const telemetry = await getTelemetryData();
+
   return {
     volume,
     muted,
+    micMuted,
+    micVolume,
     brightness,
+    telemetry,
+    media: cachedMedia,
     hostname: os.hostname(),
     platform: os.platform(),
     localIp: LOCAL_IP,
     port: PORT,
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    pcHours,
+    pcMinutes,
+    pcSeconds,
+    pcTzOffset,
+    pcTime: `${pcHours}:${pcMinutes}`
   };
 }
 
@@ -229,17 +418,36 @@ async function executeAction(payload) {
       result = await runNative(['volume', action, String(value || 5)]);
     }
     broadcastState();
+  } else if (type === 'mic') {
+    if (action === 'set') {
+      result = await runNative(['mic', 'set', String(value)]);
+    } else {
+      result = await runNative(['mic', 'mute', String(value !== undefined ? value : '')]);
+    }
+    broadcastState();
   } else if (type === 'brightness') {
     result = await runNative(['brightness', 'set', String(value)]);
     broadcastState();
   } else if (type === 'media') {
-    result = await runNative(['media', action]);
+    if (action === 'seek') {
+      const sec = parseFloat(value !== undefined ? value : (payload.seconds || payload.position || 0));
+      seekMedia(sec);
+      result = { status: 'ok', action: 'seek', position: sec };
+    } else {
+      result = await runNative(['media', action]);
+    }
   } else if (type === 'window') {
     result = await runNative(['window', action]);
   } else if (type === 'keyboard') {
-    result = await runNative(['keyboard', action]);
+    const keyOrText = payload.key || payload.value || payload.text || payload.param || '';
+    result = await runNative(['keyboard', action, String(keyOrText)]);
   } else if (type === 'system') {
-    result = await runNative(['system', action, String(value || '')]);
+    if (action === 'taskmgr') {
+      exec('start taskmgr');
+      result = { status: 'ok', action: 'taskmgr' };
+    } else {
+      result = await runNative(['system', action, String(value || '')]);
+    }
   } else if (type === 'mouse') {
     result = await runNative(['mouse', action, String(payload.dx || payload.p1 || 0), String(payload.dy || payload.p2 || 0)]);
   }
@@ -361,7 +569,7 @@ const server = http.createServer(async (req, res) => {
         const payload = JSON.parse(body || '{}');
         const notification = {
           id: 'notif-' + Date.now(),
-          title: payload.title || 'TabDeck Notification',
+          title: payload.title || 'AltDeck Notification',
           message: payload.message || '',
           level: payload.level || 'info', // 'success', 'warning', 'error', 'info'
           timestamp: Date.now()
@@ -418,10 +626,14 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(500);
         return res.end('Server error loading file');
       }
-      const headers = { 'Content-Type': contentType };
+      const headers = {
+        'Content-Type': contentType,
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      };
       if (url.pathname === '/sw.js') {
         headers['Service-Worker-Allowed'] = '/';
-        headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
       }
       res.writeHead(200, headers);
       res.end(content);
@@ -430,7 +642,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 // Setup WebSocket server for 0-latency live tablet control
-const wss = new WebSocketServer({ server });
+wss = new WebSocketServer({ server });
 
 async function broadcastState() {
   if (wss.clients.size === 0) return;
@@ -443,10 +655,29 @@ async function broadcastState() {
   }
 }
 
+// Live hardware telemetry & media broadcast every 2000ms
+setInterval(async () => {
+  if (!wss || wss.clients.size === 0) return;
+  try {
+    const telemetry = await getTelemetryData();
+    const msg = JSON.stringify({ event: 'telemetry', data: telemetry });
+    for (const client of wss.clients) {
+      if (client.readyState === 1) {
+        client.send(msg);
+      }
+    }
+    broadcastMedia();
+    if (!cachedMedia.hasMedia) {
+      fetchMediaFallback();
+    }
+  } catch (e) {}
+}, 2000);
+
 wss.on('connection', async (ws) => {
   // Send current status and custom actions immediately upon connection
   const status = await getFullStatus();
   ws.send(JSON.stringify({ event: 'status', data: status }));
+  ws.send(JSON.stringify({ event: 'media', data: cachedMedia }));
   ws.send(JSON.stringify({ event: 'custom-actions', data: loadCustomActions() }));
 
   ws.on('message', async (message) => {
@@ -462,7 +693,7 @@ wss.on('connection', async (ws) => {
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
     console.error(`\n⚠️ Port ${PORT} is already in use by another instance!`);
-    console.error(`Close the previous terminal running TabDeck, or run:`);
+    console.error(`Close the previous terminal running AltDeck, or run:`);
     console.error(`  npx kill-port ${PORT}\n`);
   } else {
     console.error('Server error:', err);
@@ -473,7 +704,7 @@ server.on('error', (err) => {
 server.listen(PORT, '0.0.0.0', () => {
   const url = `http://${LOCAL_IP}:${PORT}`;
   console.log('====================================================');
-  console.log('  🚀 TabDeck PC Controller is RUNNING!');
+  console.log('  🚀 AltDeck PC Controller is RUNNING!');
   console.log('====================================================');
   console.log(`  PC Access:      http://localhost:${PORT}`);
   console.log(`  Tablet Access:  ${url}`);

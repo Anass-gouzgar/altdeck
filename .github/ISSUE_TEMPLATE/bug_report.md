@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Create a report to help us improve TabDeck
+about: Create a report to help us improve AltDeck
 title: '[BUG] '
 labels: bug
 assignees: ''

@@ -1,8 +1,8 @@
 @echo off
-title TabDeck PC Controller
+title AltDeck PC Controller
 color 0B
 echo ========================================================
-echo    TabDeck - Android Tablet PC Stream Deck Controller
+echo    AltDeck - Android Tablet PC Stream Deck Controller
 echo ========================================================
 echo.
 
@@ -13,7 +13,7 @@ if not exist "bin\pc-control.exe" (
     powershell -ExecutionPolicy Bypass -File build-helper.ps1
 )
 
-echo [*] Starting TabDeck Server...
+echo [*] Starting AltDeck Server...
 start "" "http://localhost:3000"
 node server.js
 

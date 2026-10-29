@@ -16,7 +16,7 @@
     "color": "#10B981",
     "icon": "key",
     "payload": {
-      "text": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyForTabDeckUser"
+      "text": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyForAltDeckUser"
     }
   },
   {
@@ -37,6 +37,56 @@
     "icon": "music",
     "payload": {
       "url": "https://music.youtube.com"
+    }
+  },
+  {
+    "id": "app-1793197703902",
+    "label": "Camera",
+    "type": "app",
+    "color": "#EC4899",
+    "icon": "rocket",
+    "payload": {
+      "appId": "Microsoft.WindowsCamera_8wekyb3d8bbwe!App"
+    }
+  },
+  {
+    "id": "app-1793197711776",
+    "label": "Excel",
+    "type": "app",
+    "color": "#EC4899",
+    "icon": "rocket",
+    "payload": {
+      "appId": "Microsoft.Office.EXCEL.EXE.15"
+    }
+  },
+  {
+    "id": "app-1793197730772",
+    "label": "Microsoft Teams",
+    "type": "app",
+    "color": "#38BDF8",
+    "icon": "rocket",
+    "payload": {
+      "appId": "MSTeams_8wekyb3d8bbwe!MSTeams"
+    }
+  },
+  {
+    "id": "app-1793197742387",
+    "label": "Outlook",
+    "type": "app",
+    "color": "#F59E0B",
+    "icon": "rocket",
+    "payload": {
+      "appId": "Microsoft.OutlookForWindows_8wekyb3d8bbwe!Microsoft.OutlookforWindows"
+    }
+  },
+  {
+    "id": "app-1793285809958",
+    "label": "SADP",
+    "type": "app",
+    "color": "#EC4899",
+    "icon": "rocket",
+    "payload": {
+      "appId": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\SADP\\SADP\\SADPTool.exe"
     }
   }
 ]

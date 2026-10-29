@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TabDeck PC Controller - Ultimate Touchscreen Interface for Android Tablets
+   AltDeck PC Controller - Ultimate Touchscreen Interface for Android Tablets
    ========================================================================== */
 
 :root {
@@ -204,6 +204,15 @@ body {
   50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.65); }
 }
 
+@keyframes spin-refresh {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-anim svg {
+  animation: spin-refresh 0.65s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
 /* ==========================================================================
    Navigation Tabs
    ========================================================================== */
@@ -326,6 +335,8 @@ body {
   align-items: center;
   gap: 14px;
   margin-bottom: 14px;
+  direction: ltr !important;
+  unicode-bidi: isolate;
 }
 
 .range-slider {
@@ -339,6 +350,12 @@ body {
   position: relative;
   cursor: pointer;
   overflow: hidden;
+  direction: ltr !important;
+  unicode-bidi: isolate;
+}
+
+.range-slider::-webkit-slider-runnable-track {
+  direction: ltr !important;
 }
 
 .range-slider::-webkit-slider-thumb {
@@ -355,6 +372,24 @@ body {
 
 .range-slider.brightness-slider::-webkit-slider-thumb {
   box-shadow: -407px 0 0 400px var(--neon-amber), 0 0 10px rgba(245, 158, 11, 0.8);
+}
+
+.range-slider::-moz-range-progress {
+  background-color: var(--neon-cyan);
+  height: 12px;
+  border-radius: 6px;
+}
+
+.range-slider.brightness-slider::-moz-range-progress {
+  background-color: var(--neon-amber);
+}
+
+.range-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #ffffff;
 }
 
 .preset-buttons {
@@ -393,6 +428,107 @@ body {
   color: #fff;
   border-color: var(--neon-rose);
   box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
+}
+
+/* ==========================================================================
+   Global Microphone Control & ON-AIR Indicator
+   ========================================================================== */
+
+.mic-card-widget {
+  margin: 14px 0 16px 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: all 0.3s ease;
+}
+
+.mic-status-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mic-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mic-badge.live {
+  background: rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+  animation: pulse-onair 2s infinite ease-in-out;
+}
+
+.mic-badge.muted {
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--text-muted);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  box-shadow: none;
+  animation: none;
+}
+
+@keyframes pulse-onair {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+    transform: scale(1.02);
+  }
+}
+
+.btn-mic-toggle {
+  padding: 10px 18px;
+  font-weight: 800;
+  font-size: 0.82rem;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+}
+
+.btn-mic-toggle.live {
+  background: rgba(239, 68, 68, 0.16);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.btn-mic-toggle.live:hover, .btn-mic-toggle.live:active {
+  background: rgba(239, 68, 68, 0.3);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+}
+
+.btn-mic-toggle.muted {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.btn-mic-toggle.muted:hover, .btn-mic-toggle.muted:active {
+  background: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
 }
 
 .playback-controls {
@@ -752,6 +888,9 @@ body {
   font-weight: 700;
   cursor: pointer;
   text-align: center;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
   transition: all 0.15s ease;
 }
 
@@ -1467,7 +1606,7 @@ body.theme-gold {
 
 html[lang="ar"],
 html[dir="rtl"] {
-  font-family: 'Segoe UI', Tahoma, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  font-family: 'Cairo', 'Segoe UI', Tahoma, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
 }
 
 html[dir="rtl"] .modal-box,
@@ -1631,5 +1770,984 @@ html[dir="rtl"] .notif-drawer.show {
   transform: translateY(-1px);
 }
 
+/* ==========================================================================
+   Hardware Telemetry Gauges (Option A)
+   ========================================================================== */
 
+.telemetry-stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glass);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+}
+
+.btn-taskmgr {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-taskmgr:hover {
+  background: rgba(0, 240, 255, 0.15);
+  color: #fff;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+}
+
+.telemetry-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.telemetry-box {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  transition: all 0.25s ease;
+}
+
+.telemetry-box:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.telemetry-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.telemetry-label-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.telemetry-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.telemetry-icon-box.cpu {
+  background: rgba(0, 240, 255, 0.12);
+  color: var(--neon-cyan);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.telemetry-icon-box.ram {
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--neon-purple);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.telemetry-icon-box.bat {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.telemetry-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.telemetry-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin-top: 2px;
+}
+
+.telemetry-val-badge {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-glass);
+}
+
+.telemetry-val-badge.cpu {
+  color: var(--neon-cyan);
+  border-color: rgba(0, 240, 255, 0.3);
+}
+
+.telemetry-val-badge.ram {
+  color: var(--neon-purple);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.telemetry-val-badge.bat {
+  color: #10B981;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.telemetry-progress-bg {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.telemetry-progress-bar {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#cpu-progress-bar {
+  background: linear-gradient(90deg, #00f0ff, #3b82f6);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+#ram-progress-bar {
+  background: linear-gradient(90deg, #8B5CF6, #EC4899);
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+}
+
+#battery-progress-bar {
+  background: linear-gradient(90deg, #10B981, #059669);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+/* ==========================================================================
+   Window Snap Layouts & Virtual Desktops (Feature #4)
+   ========================================================================== */
+
+.snap-tile, .vdesk-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+}
+
+.snap-tile svg {
+  width: 22px;
+  height: 22px;
+  color: var(--neon-cyan);
+  transition: transform 0.2s ease;
+}
+
+.snap-tile:hover, .snap-tile:active {
+  background: rgba(0, 240, 255, 0.14);
+  border-color: var(--neon-cyan);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 240, 255, 0.35);
+}
+
+.snap-tile:active {
+  transform: scale(0.95);
+}
+
+.vdesk-tile svg {
+  width: 20px;
+  height: 20px;
+  color: var(--neon-purple);
+  transition: transform 0.2s ease;
+}
+
+.vdesk-tile:hover, .vdesk-tile:active {
+  background: rgba(139, 92, 246, 0.16);
+  border-color: var(--neon-purple);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
+}
+
+.vdesk-tile:active {
+  transform: scale(0.95);
+}
+
+.window-subgroup-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-top: 12px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.window-subgroup-label:first-child {
+  margin-top: 0;
+}
+
+.snap-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.shortcuts-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .snap-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .shortcuts-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ==========================================================================
+   Now Playing & Track Progress Bar (Feature #5)
+   ========================================================================== */
+
+.now-playing-deck {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin: 14px 0 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.now-playing-deck.playing {
+  background: rgba(0, 240, 255, 0.04);
+  border-color: rgba(0, 240, 255, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 240, 255, 0.08);
+}
+
+.now-playing-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.now-playing-art-wrap {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.now-playing-art {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 240, 255, 0.2));
+  border: 1.5px solid rgba(0, 240, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+  transition: transform 0.4s ease;
+}
+
+.now-playing-deck.playing .now-playing-art {
+  animation: spin-vinyl 12s linear infinite;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+}
+
+@keyframes spin-vinyl {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.now-playing-disc-icon {
+  width: 26px;
+  height: 26px;
+  color: var(--neon-cyan);
+}
+
+/* 4-bar Audio Equalizer */
+.eq-bars {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+  background: rgba(7, 9, 14, 0.85);
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.eq-bar {
+  width: 2.5px;
+  background: var(--neon-cyan);
+  border-radius: 1px;
+  height: 4px;
+  transition: height 0.2s ease;
+}
+
+.now-playing-deck.playing .eq-bar:nth-child(1) {
+  animation: eq-bounce 0.6s ease-in-out infinite alternate;
+}
+.now-playing-deck.playing .eq-bar:nth-child(2) {
+  animation: eq-bounce 0.8s 0.2s ease-in-out infinite alternate;
+}
+.now-playing-deck.playing .eq-bar:nth-child(3) {
+  animation: eq-bounce 0.5s 0.4s ease-in-out infinite alternate;
+}
+.now-playing-deck.playing .eq-bar:nth-child(4) {
+  animation: eq-bounce 0.7s 0.1s ease-in-out infinite alternate;
+}
+
+@keyframes eq-bounce {
+  0% { height: 3px; }
+  100% { height: 14px; background: var(--neon-purple); }
+}
+
+.now-playing-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.now-playing-status-badge {
+  align-self: flex-start;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+}
+
+.now-playing-deck.playing .now-playing-status-badge {
+  background: rgba(16, 185, 129, 0.18);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.now-playing-deck.paused .now-playing-status-badge {
+  background: rgba(245, 158, 11, 0.18);
+  color: #F59E0B;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.now-playing-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.now-playing-artist {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Interactive Timeline Progress Bar */
+.track-progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.track-timeline-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: height 0.15s ease, background 0.2s ease;
+}
+
+.track-timeline-bar:hover, .track-timeline-bar:active {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.track-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+  border-radius: 4px;
+  position: relative;
+  width: 0%;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+  transition: width 0.25s linear;
+}
+
+.track-scrubber-thumb {
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.track-timeline-bar:hover .track-scrubber-thumb,
+.track-timeline-bar:active .track-scrubber-thumb {
+  opacity: 1;
+}
+
+.track-time-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   14 Ultra-Premium Glassmorphic Themes
+   ========================================================================== */
+
+/* 1. Obsidian (Default Cyber Onyx) */
+body.theme-obsidian {
+  --bg-deep: #07090e;
+  --bg-surface: #0e1320;
+  --bg-card: rgba(18, 24, 40, 0.75);
+  --bg-card-hover: rgba(28, 36, 58, 0.85);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(0, 240, 255, 0.35);
+  --neon-cyan: #00f0ff;
+  --neon-blue: #3b82f6;
+  --neon-purple: #8b5cf6;
+  --gradient-cyan: linear-gradient(135deg, #00f0ff 0%, #3b82f6 100%);
+  --shadow-glow: 0 0 25px rgba(0, 240, 255, 0.2);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+}
+
+/* 2. Midnight (Pure AMOLED Pitch Black) */
+body.theme-midnight {
+  --bg-deep: #000000;
+  --bg-surface: #0a0a0a;
+  --bg-card: rgba(16, 16, 20, 0.88);
+  --bg-card-hover: rgba(26, 26, 32, 0.95);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(148, 163, 184, 0.45);
+  --neon-cyan: #38bdf8;
+  --neon-blue: #60a5fa;
+  --neon-purple: #a78bfa;
+  --gradient-cyan: linear-gradient(135deg, #f8fafc 0%, #64748b 100%);
+  --shadow-glow: 0 0 25px rgba(255, 255, 255, 0.1);
+  background-color: #000000;
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 50%);
+}
+
+/* 3. Ocean (Deep Abyssal Navy) */
+body.theme-ocean {
+  --bg-deep: #030d1a;
+  --bg-surface: #06182c;
+  --bg-card: rgba(7, 26, 48, 0.82);
+  --bg-card-hover: rgba(12, 39, 72, 0.92);
+  --border-glass: rgba(0, 210, 255, 0.16);
+  --border-glow: rgba(0, 210, 255, 0.5);
+  --neon-cyan: #00d2ff;
+  --neon-blue: #0077ff;
+  --neon-purple: #4f46e5;
+  --gradient-cyan: linear-gradient(135deg, #00d2ff 0%, #0055ff 100%);
+  --shadow-glow: 0 0 25px rgba(0, 210, 255, 0.3);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 20% 15%, rgba(0, 210, 255, 0.14) 0%, transparent 45%),
+    radial-gradient(circle at 80% 85%, rgba(0, 85, 255, 0.16) 0%, transparent 50%);
+}
+
+/* 4. Ember (Inferno Charcoal & Molten Amber) */
+body.theme-ember {
+  --bg-deep: #120704;
+  --bg-surface: #1e0b07;
+  --bg-card: rgba(36, 16, 12, 0.82);
+  --bg-card-hover: rgba(54, 24, 18, 0.92);
+  --border-glass: rgba(255, 107, 53, 0.18);
+  --border-glow: rgba(255, 107, 53, 0.55);
+  --neon-cyan: #ff7a00;
+  --neon-blue: #ff3b00;
+  --neon-purple: #f72585;
+  --gradient-cyan: linear-gradient(135deg, #ff9e00 0%, #ff0055 100%);
+  --shadow-glow: 0 0 25px rgba(255, 107, 53, 0.35);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(255, 107, 53, 0.16) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(239, 68, 68, 0.14) 0%, transparent 50%);
+}
+
+/* 5. Forest (Emerald Pine & Jade) */
+body.theme-forest {
+  --bg-deep: #031109;
+  --bg-surface: #061c10;
+  --bg-card: rgba(8, 34, 20, 0.82);
+  --bg-card-hover: rgba(14, 50, 30, 0.92);
+  --border-glass: rgba(16, 185, 129, 0.18);
+  --border-glow: rgba(16, 185, 129, 0.55);
+  --neon-cyan: #10b981;
+  --neon-blue: #059669;
+  --neon-purple: #34d399;
+  --gradient-cyan: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  --shadow-glow: 0 0 25px rgba(16, 185, 129, 0.35);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 20% 10%, rgba(16, 185, 129, 0.16) 0%, transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(5, 150, 105, 0.14) 0%, transparent 50%);
+}
+
+/* 6. Rose (Cyber Noir & Magenta Pink) */
+body.theme-rose {
+  --bg-deep: #12040b;
+  --bg-surface: #1e0914;
+  --bg-card: rgba(36, 12, 26, 0.82);
+  --bg-card-hover: rgba(52, 18, 38, 0.92);
+  --border-glass: rgba(236, 72, 153, 0.2);
+  --border-glow: rgba(236, 72, 153, 0.55);
+  --neon-cyan: #f43f5e;
+  --neon-blue: #ec4899;
+  --neon-purple: #d946ef;
+  --gradient-cyan: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+  --shadow-glow: 0 0 25px rgba(236, 72, 153, 0.35);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(236, 72, 153, 0.16) 0%, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(217, 70, 239, 0.14) 0%, transparent 50%);
+}
+
+/* 7. Frost (Arctic Glacier Blue & Diamond) */
+body.theme-frost {
+  --bg-deep: #070d14;
+  --bg-surface: #0d1622;
+  --bg-card: rgba(18, 30, 46, 0.82);
+  --bg-card-hover: rgba(26, 42, 64, 0.92);
+  --border-glass: rgba(186, 230, 253, 0.2);
+  --border-glow: rgba(186, 230, 253, 0.55);
+  --neon-cyan: #7dd3fc;
+  --neon-blue: #38bdf8;
+  --neon-purple: #93c5fd;
+  --gradient-cyan: linear-gradient(135deg, #bae6fd 0%, #38bdf8 100%);
+  --shadow-glow: 0 0 25px rgba(125, 211, 252, 0.3);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 20% 15%, rgba(186, 230, 253, 0.14) 0%, transparent 40%),
+    radial-gradient(circle at 80% 85%, rgba(56, 189, 248, 0.12) 0%, transparent 45%);
+}
+
+/* 8. Gold (Imperial Dark Luxury Amber) */
+body.theme-gold {
+  --bg-deep: #110c03;
+  --bg-surface: #1a1306;
+  --bg-card: rgba(34, 25, 10, 0.82);
+  --bg-card-hover: rgba(50, 36, 16, 0.92);
+  --border-glass: rgba(245, 158, 11, 0.2);
+  --border-glow: rgba(245, 158, 11, 0.55);
+  --neon-cyan: #fbbf24;
+  --neon-blue: #f59e0b;
+  --neon-purple: #d97706;
+  --gradient-cyan: linear-gradient(135deg, #fde047 0%, #b45309 100%);
+  --shadow-glow: 0 0 25px rgba(245, 158, 11, 0.35);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(251, 191, 36, 0.16) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(217, 119, 6, 0.14) 0%, transparent 50%);
+}
+
+/* 9. Cyberpunk (Night City 2077 Electric Yellow & Hot Magenta) */
+body.theme-cyberpunk {
+  --bg-deep: #0a0612;
+  --bg-surface: #120a1f;
+  --bg-card: rgba(25, 14, 42, 0.85);
+  --bg-card-hover: rgba(38, 20, 64, 0.95);
+  --border-glass: rgba(252, 238, 10, 0.22);
+  --border-glow: rgba(252, 238, 10, 0.65);
+  --neon-cyan: #fcee0a;
+  --neon-blue: #00f0ff;
+  --neon-purple: #ff0055;
+  --gradient-cyan: linear-gradient(135deg, #fcee0a 0%, #ff0055 100%);
+  --shadow-glow: 0 0 25px rgba(252, 238, 10, 0.4);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(252, 238, 10, 0.16) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(255, 0, 85, 0.18) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.12) 0%, transparent 50%);
+}
+
+/* 10. Matrix (Phosphor Terminal Hacker Green) */
+body.theme-matrix {
+  --bg-deep: #020502;
+  --bg-surface: #040c04;
+  --bg-card: rgba(6, 22, 8, 0.88);
+  --bg-card-hover: rgba(10, 34, 14, 0.96);
+  --border-glass: rgba(0, 255, 102, 0.2);
+  --border-glow: rgba(0, 255, 102, 0.6);
+  --neon-cyan: #00ff66;
+  --neon-blue: #10b981;
+  --neon-purple: #059669;
+  --gradient-cyan: linear-gradient(135deg, #00ff66 0%, #047857 100%);
+  --shadow-glow: 0 0 25px rgba(0, 255, 102, 0.4);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 20% 15%, rgba(0, 255, 102, 0.14) 0%, transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.12) 0%, transparent 50%);
+}
+
+/* 11. Synthwave (80s Neon Sunset Violet & Cyan) */
+body.theme-synthwave {
+  --bg-deep: #150824;
+  --bg-surface: #200c36;
+  --bg-card: rgba(42, 16, 72, 0.85);
+  --bg-card-hover: rgba(62, 24, 104, 0.95);
+  --border-glass: rgba(255, 42, 133, 0.22);
+  --border-glow: rgba(255, 42, 133, 0.65);
+  --neon-cyan: #ff2a85;
+  --neon-blue: #05d9e8;
+  --neon-purple: #d300c5;
+  --gradient-cyan: linear-gradient(135deg, #ff2a85 0%, #05d9e8 100%);
+  --shadow-glow: 0 0 25px rgba(255, 42, 133, 0.4);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(255, 42, 133, 0.2) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(5, 217, 232, 0.18) 0%, transparent 45%),
+    radial-gradient(circle at 50% 90%, rgba(255, 128, 0, 0.12) 0%, transparent 50%);
+}
+
+/* 12. Dracula (Gothic Twilight Lavender & Pink) */
+body.theme-dracula {
+  --bg-deep: #14151f;
+  --bg-surface: #1e1f2d;
+  --bg-card: rgba(34, 35, 52, 0.85);
+  --bg-card-hover: rgba(48, 50, 74, 0.95);
+  --border-glass: rgba(189, 147, 249, 0.2);
+  --border-glow: rgba(189, 147, 249, 0.55);
+  --neon-cyan: #bd93f9;
+  --neon-blue: #8be9fd;
+  --neon-purple: #ff79c6;
+  --gradient-cyan: linear-gradient(135deg, #bd93f9 0%, #ff79c6 100%);
+  --shadow-glow: 0 0 25px rgba(189, 147, 249, 0.32);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(189, 147, 249, 0.16) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(255, 121, 198, 0.14) 0%, transparent 50%);
+}
+
+/* 13. Crimson (Supercar Carbon Matte & Racing Red) */
+body.theme-crimson {
+  --bg-deep: #0b090a;
+  --bg-surface: #161214;
+  --bg-card: rgba(28, 20, 22, 0.88);
+  --bg-card-hover: rgba(42, 30, 34, 0.96);
+  --border-glass: rgba(255, 30, 39, 0.22);
+  --border-glow: rgba(255, 30, 39, 0.65);
+  --neon-cyan: #ff1e27;
+  --neon-blue: #e50914;
+  --neon-purple: #ff4d5a;
+  --gradient-cyan: linear-gradient(135deg, #ff1e27 0%, #8b0000 100%);
+  --shadow-glow: 0 0 25px rgba(255, 30, 39, 0.4);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(255, 30, 39, 0.18) 0%, transparent 45%),
+    radial-gradient(circle at 90% 85%, rgba(229, 9, 20, 0.14) 0%, transparent 50%);
+}
+
+/* 14. Nord (Arctic Aurora Frost Slate) */
+body.theme-nord {
+  --bg-deep: #1e222a;
+  --bg-surface: #242933;
+  --bg-card: rgba(43, 49, 61, 0.85);
+  --bg-card-hover: rgba(56, 64, 80, 0.95);
+  --border-glass: rgba(136, 192, 208, 0.22);
+  --border-glow: rgba(136, 192, 208, 0.55);
+  --neon-cyan: #88c0d0;
+  --neon-blue: #81a1c1;
+  --neon-purple: #b48ead;
+  --gradient-cyan: linear-gradient(135deg, #88c0d0 0%, #5e81ac 100%);
+  --shadow-glow: 0 0 25px rgba(136, 192, 208, 0.3);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 20% 15%, rgba(136, 192, 208, 0.16) 0%, transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(163, 190, 140, 0.12) 0%, transparent 50%);
+}
+
+/* ==========================================================================
+   RTL Layout & Arabic Typography Enhancements
+   ========================================================================== */
+[dir="rtl"] {
+  font-family: 'Segoe UI', 'Cairo', 'Tajawal', -apple-system, BlinkMacSystemFont, Tahoma, sans-serif;
+  letter-spacing: 0 !important;
+}
+
+[dir="rtl"] .brand {
+  flex-direction: row;
+}
+
+[dir="rtl"] .header-telemetry-pills {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .nav-tab {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .card-header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .card-title {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .telemetry-top {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .telemetry-label-wrap {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .window-subgroup-label {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .now-playing-header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .now-playing-info {
+  text-align: right;
+}
+
+[dir="rtl"] .now-playing-info .now-playing-status-badge {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+/* Media, Volume, Brightness, Trackpad, and Numpad controls ALWAYS remain in universal LTR orientation */
+[dir="rtl"] .slider-container,
+[dir="rtl"] .range-slider,
+[dir="rtl"] .preset-buttons,
+[dir="rtl"] .track-progress-section,
+[dir="rtl"] .track-timeline-deck,
+[dir="rtl"] .track-timeline-bar,
+[dir="rtl"] .track-progress-fill,
+[dir="rtl"] .track-time-labels,
+[dir="rtl"] .playback-controls,
+[dir="rtl"] .trackpad-buttons,
+[dir="rtl"] .numpad-container,
+[dir="rtl"] .numpad-operators,
+[dir="rtl"] .time-offset-buttons,
+[dir="rtl"] .detected-app-actions {
+  direction: ltr !important;
+  unicode-bidi: isolate;
+}
+
+[dir="rtl"] .setting-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .setting-row > div:first-child {
+  text-align: right;
+}
+
+[dir="rtl"] .mic-card-widget {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .mic-card-widget > div:first-child {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+[dir="rtl"] .modal-box {
+  text-align: right;
+}
+
+[dir="rtl"] .action-form-group {
+  text-align: right;
+}
+
+[dir="rtl"] #detected-apps-search {
+  padding-left: 14px !important;
+  padding-right: 36px !important;
+  text-align: right;
+}
+
+[dir="rtl"] .toast {
+  text-align: center;
+}
+
+[dir="rtl"] .modal-actions {
+  flex-direction: row-reverse;
+}
+
+/* ==========================================================================
+   Comprehensive Responsiveness & Touch Target Breakpoints
+   ========================================================================== */
+
+/* 1. Large Displays (Wide Tablets / PC Screen) */
+@media (min-width: 1400px) {
+  .deck-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* 2. Compact Tablets / Landscape (Samsung Galaxy Tab) */
+@media (max-width: 1024px) {
+  body {
+    padding: 12px;
+  }
+  .app-header {
+    padding: 10px 16px;
+    margin-bottom: 12px;
+  }
+  .deck-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+    gap: 14px;
+  }
+  .card {
+    padding: 16px;
+  }
+  .theme-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+}
+
+/* 3. Portrait Mode Tablets & Half-Screen Split Windows (<= 768px) */
+@media (max-width: 768px) {
+  body {
+    padding: 8px;
+  }
+  .app-header {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .brand {
+    flex: 1;
+    min-width: 180px;
+  }
+  .header-telemetry-pills {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .header-actions {
+    margin-left: auto;
+  }
+  .deck-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .nav-tabs {
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .nav-tab {
+    padding: 8px 14px;
+    font-size: 0.88rem;
+  }
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .snap-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .shortcuts-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .power-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .trackpad-surface {
+    height: 380px;
+  }
+}
+
+/* 4. Small Handhelds & Mini-Windows (<= 480px) */
+@media (max-width: 480px) {
+  .brand-title {
+    font-size: 1.1rem;
+  }
+  .brand-badge {
+    display: none;
+  }
+  .stat-pill {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+  .preset-buttons {
+    flex-wrap: wrap;
+  }
+  .btn-preset {
+    flex: 1 1 calc(33.3% - 8px);
+    min-height: 44px;
+  }
+  .modal-dialog {
+    width: 95%;
+    padding: 20px 16px;
+  }
+}
 

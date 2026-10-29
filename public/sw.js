@@ -1,5 +1,5 @@
-// TabDeck PWA Service Worker
-const CACHE_NAME = 'tabdeck-v1';
+// AltDeck PWA Service Worker
+const CACHE_NAME = 'altdeck-v2.99';
 const CORE_ASSETS = [
   '/',
   '/index.html',

@@ -2,7 +2,7 @@
 const http = require('http');
 
 const args = process.argv.slice(2);
-const title = args[0] || 'TabDeck Notification';
+const title = args[0] || 'AltDeck Notification';
 const message = args[1] || 'Task or process completed successfully.';
 const level = args[2] || 'success'; // success, warning, error, info
 const port = process.env.PORT || 3000;
@@ -22,12 +22,12 @@ const req = http.request({
   let data = '';
   res.on('data', chunk => data += chunk);
   res.on('end', () => {
-    console.log(`[TabDeck] Notification sent to tablets (${level}): "${title}"`);
+    console.log(`[AltDeck] Notification sent to tablets (${level}): "${title}"`);
   });
 });
 
 req.on('error', (err) => {
-  console.error('[TabDeck] Failed to send notification:', err.message);
+  console.error('[AltDeck] Failed to send notification:', err.message);
 });
 
 req.write(payload);

@@ -1,6 +1,6 @@
-# Contributing to TabDeck PC Controller 🚀
+# Contributing to AltDeck PC Controller 🚀
 
-Thank you for your interest in contributing to **TabDeck**! TabDeck transforms any tablet, iPad, or smartphone into a low-latency, hardware-accelerated Stream Deck and PC companion.
+Thank you for your interest in contributing to **AltDeck**! AltDeck transforms any tablet, iPad, or smartphone into a low-latency, hardware-accelerated Stream Deck and PC companion.
 
 We welcome all contributions: new features, UI enhancements, platform support, bug fixes, and documentation improvements!
 
@@ -8,12 +8,12 @@ We welcome all contributions: new features, UI enhancements, platform support, b
 
 ## 🛠️ Architecture Overview
 
-TabDeck is designed to be **lightweight, dependency-minimal, and lightning-fast (<10ms action response)**:
+AltDeck is designed to be **lightweight, dependency-minimal, and lightning-fast (<10ms action response)**:
 
 ```
 ┌─────────────────────────────────┐           WebSocket (0-latency)
 │   Tablet / Phone / iPad         │ ◄─────────────────────────────────────► ┌─────────────────────────────────┐
-│   (Any Browser or PWA)          │              HTTP / REST                │   TabDeck Node.js Server        │
+│   (Any Browser or PWA)          │              HTTP / REST                │   AltDeck Node.js Server        │
 │   • Cyber-Glassmorphic Touch UI │ ──────────────────────────────────────► │   (0.0.0.0:3000)                │
 │   • Trackpad, Numpad, Deck      │                                         └──────────────┬──────────────────┘
 └─────────────────────────────────┘                                                        │
@@ -48,8 +48,8 @@ TabDeck is designed to be **lightweight, dependency-minimal, and lightning-fast 
 
 1. **Fork and Clone the Repository**:
    ```bash
-   git clone https://github.com/<your-username>/tabdeck-pc-controller.git
-   cd tabdeck-pc-controller
+   git clone https://github.com/<your-username>/altdeck.git
+   cd altdeck
    ```
 
 2. **Install Dependencies**:
@@ -141,4 +141,4 @@ git commit -m "docs: add Android 9 tablet setup tips to README"
 4. Open a Pull Request against `main`.
 5. Clearly describe the motivation, changes made, and test devices (e.g., Samsung Galaxy Tab A, iPad, etc.).
 
-Thank you for helping make TabDeck the best open-source tablet PC controller! 🌟
+Thank you for helping make AltDeck the best open-source tablet PC controller! 🌟

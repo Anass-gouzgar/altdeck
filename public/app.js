@@ -1,10 +1,11 @@
 // ==========================================================================
-// TabDeck Client-Side Logic & Real-Time Sync
+// AltDeck Client-Side Logic & Real-Time Sync
 // ==========================================================================
 
 const state = {
   volume: 60,
   muted: false,
+  micMuted: false,
   brightness: 100,
   connected: false,
   wakeLock: null,
@@ -13,10 +14,12 @@ const state = {
   powerCountdown: 30,
   customActions: [],
   notifications: [],
-  soundEnabled: localStorage.getItem('tabdeck_sound') !== 'false',
-  hapticEnabled: localStorage.getItem('tabdeck_haptic') !== 'false',
-  theme: localStorage.getItem('tabdeck_theme') || 'theme-obsidian',
-  lang: localStorage.getItem('tabdeck_lang') || 'en'
+  soundEnabled: (localStorage.getItem('altdeck_sound') || localStorage.getItem('tabdeck_sound')) !== 'false',
+  hapticEnabled: (localStorage.getItem('altdeck_haptic') || localStorage.getItem('tabdeck_haptic')) !== 'false',
+  theme: localStorage.getItem('altdeck_theme') || localStorage.getItem('tabdeck_theme') || 'theme-obsidian',
+  lang: localStorage.getItem('altdeck_lang') || localStorage.getItem('tabdeck_lang') || 'en',
+  serverTzOffset: null,
+  timeOffsetHours: parseInt((localStorage.getItem('altdeck_time_offset') !== null ? localStorage.getItem('altdeck_time_offset') : localStorage.getItem('tabdeck_time_offset')) || '-1', 10)
 };
 
 // Elements
@@ -126,12 +129,20 @@ function escapeHtml(str) {
 }
 
 // ==========================================================================
-// Themes Management (8 Glassmorphic Themes)
+// Themes Management (14 Ultra-Premium Glassmorphic Themes)
 // ==========================================================================
+const ALL_THEMES = [
+  'theme-obsidian', 'theme-midnight', 'theme-ocean', 'theme-ember',
+  'theme-forest', 'theme-rose', 'theme-frost', 'theme-gold',
+  'theme-cyberpunk', 'theme-matrix', 'theme-synthwave', 'theme-dracula',
+  'theme-crimson', 'theme-nord'
+];
+
 function applyTheme(themeName) {
-  document.body.classList.remove('theme-obsidian', 'theme-midnight', 'theme-ocean', 'theme-ember', 'theme-forest', 'theme-rose', 'theme-frost', 'theme-gold');
+  document.body.classList.remove(...ALL_THEMES);
   document.body.classList.add(themeName);
   state.theme = themeName;
+  localStorage.setItem('altdeck_theme', themeName);
   localStorage.setItem('tabdeck_theme', themeName);
   document.querySelectorAll('.theme-chip').forEach(chip => {
     chip.classList.toggle('active', chip.getAttribute('data-theme') === themeName);
@@ -142,8 +153,11 @@ applyTheme(state.theme);
 document.querySelectorAll('.theme-chip').forEach(chip => {
   chip.addEventListener('click', () => {
     triggerHaptic();
-    applyTheme(chip.getAttribute('data-theme'));
-    showToast(`Theme switched to ${chip.querySelector('span').textContent}`);
+    const themeName = chip.getAttribute('data-theme');
+    applyTheme(themeName);
+    const chipLabel = chip.querySelector('span') ? chip.querySelector('span').textContent : themeName;
+    const msg = state.lang === 'ar' ? `تم تفعيل مظهر: ${chipLabel}` : (state.lang === 'fr' ? `Thème activé : ${chipLabel}` : `Theme switched to ${chipLabel}`);
+    showToast(msg);
   });
 });
 
@@ -157,21 +171,163 @@ const I18N = {
     navNumpad: 'Numpad',
     navConfig: 'Config',
     navPairing: 'Connect & QR',
+    cardTitleVolume: 'Master Volume & Media',
+    btnMute: 'MUTE',
+    micTitle: 'Microphone',
+    micBadgeOnAir: '🔴 ON AIR',
+    micBadgeMuted: 'MUTED',
+    micStatusSub: 'Default Communications Capture',
+    btnMuteMic: 'MUTE MIC',
+    btnUnmuteMic: 'UNMUTE MIC',
+    nowPlayingBadgeIdle: 'IDLE',
+    nowPlayingBadgePlaying: 'PLAYING',
+    nowPlayingBadgePaused: 'PAUSED',
+    nowPlayingNoMedia: 'No Media Active',
+    nowPlayingWaiting: 'Waiting for Spotify, YouTube, or Edge...',
+    btnPrev: 'Prev',
+    btnPlayPause: 'Play / Pause',
+    btnNext: 'Next',
+    cardTitleBrightness: 'Display & Screen Brightness',
+    cardTitleTelemetry: 'PC Hardware Telemetry',
+    btnTaskmgr: 'Task Manager',
+    cpuName: 'CPU Processor',
+    ramName: 'RAM Memory',
+    powerName: 'Power & Battery',
+    cardTitleApps: 'Application Launchpad',
+    appsSubtitle: 'One-Tap Instant Launch',
+    browseDetectedApps: '🔍 Browse Auto-Detected PC Apps...',
+    appAddedToDeck: 'App added to your Stream Deck!',
     customActionsTitle: 'Custom Actions & Macros',
-    themeTitle: 'Themes & Appearance',
-    langTitle: 'Language & Feedback',
-    langLabel: 'Interface Language',
-    soundLabel: 'Notification Sound',
-    hapticLabel: 'Haptic Vibration',
-    notifTestTitle: 'PC Notifications Hub',
-    manageActionsTitle: 'Manage Custom Deck Buttons',
+    btnAddAction: '+ Add Action',
+    cardTitleSnap: 'Windows Snap & Multi-Screen',
+    snapBadge: 'Win 11 Layouts',
+    groupSnapLayouts: 'Snap Layouts',
+    snapLeft: 'Left 50%',
+    maximize: 'Maximize',
+    minimize: 'Minimize',
+    snapRight: 'Right 50%',
+    groupDisplays: 'Displays & Desktops',
+    screenLeft: 'Screen ←',
+    screenRight: 'Screen →',
+    deskLeft: 'Desk ←',
+    deskRight: 'Desk →',
+    groupShortcuts: 'System Shortcuts',
+    taskView: 'Task View',
+    desktop: 'Desktop',
+    screenshot: 'Screenshot',
+    newDesk: '+ New Desk',
+    closeApp: 'Close App',
+    cardTitlePower: 'Power Management',
+    powerSubtitle: 'With Safe Countdown',
+    powerLock: 'Lock PC',
+    powerSleep: 'Sleep',
+    powerRestart: 'Restart',
+    powerShutdown: 'Shutdown',
+    trackpadTitle: 'Wireless Precision Touchpad',
+    trackpadSub: 'Drag finger to move mouse',
+    trackpadHint: 'Touch & Glide • Tap for Left Click • 2 Fingers to Scroll',
+    trackpadLeftClick: 'LEFT CLICK',
+    trackpadRightClick: 'RIGHT CLICK',
+    numpadTitle: 'Quick Number Pad',
+    numpadSub: 'Live Windows Input',
+    remoteTypeTitle: 'Remote PC Typing',
+    remoteTypeDirect: 'Direct to Focused Window',
+    remoteTypeDesc: 'Type with your tablet keyboard or speech-to-text and inject it directly into any active PC window (browser, code, Discord, terminal).',
+    remoteTypePlaceholder: 'Type text, search query, or link...',
+    btnSend: 'Send',
+    pairingDesc: 'Scan this QR code with your Android tablet camera or type this URL into Google Chrome:',
     pwaInstallTitle: 'Fullscreen Tablet App (PWA)',
     pwaInstallBtn: '📱 Install as Fullscreen App',
     pwaFullscreenBtn: '⛶ Switch to Fullscreen Mode',
+    pwaDesc: 'Transform your Galaxy Tab or Android tablet into a dedicated, borderless Stream Deck hardware display without browser address bars!',
+    pwaStep1: 'Tap the Install App button below, or tap Chrome menu ⋮ → "Install app" / "Add to Home screen".',
+    pwaStep2: 'Launch from your tablet home screen. It automatically runs in 100% borderless fullscreen mode.',
+    pwaStep3: 'Keep Screen Awake (sun icon) is automatically active to ensure your display never sleeps!',
+    themeTitle: 'Themes & Appearance',
+    themeCount: '14 Color Schemes',
+    themeObsidian: 'Obsidian',
+    themeMidnight: 'Midnight',
+    themeOcean: 'Ocean',
+    themeEmber: 'Ember',
+    themeForest: 'Forest',
+    themeRose: 'Rose',
+    themeFrost: 'Frost',
+    themeGold: 'Gold',
+    themeCyberpunk: 'Cyberpunk',
+    themeMatrix: 'Matrix',
+    themeSynthwave: 'Synthwave',
+    themeDracula: 'Dracula',
+    themeCrimson: 'Crimson',
+    themeNord: 'Nord',
+    langTitle: 'Language & Feedback',
+    langLabel: 'Interface Language',
+    soundLabel: 'Notification Sound',
+    soundSub: 'Synth chime when PC sends alert',
+    hapticLabel: 'Haptic Vibration',
+    hapticSub: 'Tactile motor feedback on touch',
+    timeOffsetTitle: 'Time Offset & 24hr Mode',
+    timeOffsetSub: 'Strict 24hr format • Adjust timezone offset if needed',
+    notifTestTitle: 'PC Notifications Hub',
+    notifTestDesc: 'Send alerts from your PC using npm run notify or POST to /api/notify.',
+    testSuccess: 'Test Success',
+    testWarning: 'Test Warning',
+    testError: 'Test Error',
+    manageActionsTitle: 'Manage Custom Deck Buttons',
+    btnCreateAction: '+ Create Custom Button',
+    modalShutdownTitle: 'Confirm Shutdown',
+    modalShutdownDesc: 'Your PC will power down in:',
+    modalCancelNow: 'CANCEL NOW',
+    modalExecuteNow: 'EXECUTE NOW',
     detectedAppsTitle: 'Auto-Detected Installed PC Apps',
     detectedAppsRefresh: 'Refresh',
-    browseDetectedApps: '🔍 Browse Auto-Detected PC Apps...',
-    appAddedToDeck: 'App added to your Stream Deck!'
+    detectedAppsDesc: 'Automatically detected from Windows Start Menu and Apps. Click Launch to test on PC, or + Add to Deck to place an instant shortcut button on your Stream Deck!',
+    detectedAppsPlaceholder: 'Search installed PC apps (e.g. Spotify, Discord, Steam, VS Code, Photoshop)...',
+    scanningPC: 'Scanning PC...',
+    scanningPCDesc: 'Scanning installed apps on PC...',
+    coresActive: '8 Cores Active',
+    badgeMoveDisp: 'Move Disp',
+    badgeVirtualDesk: 'Virtual Desk',
+    shortcutAltTab: 'Alt + Tab',
+    catVoiceChat: 'Voice & Chat',
+    catAnthropic: 'Anthropic',
+    catIOSManager: 'iOS Manager',
+    catBrowser: 'Browser',
+    catCodeEditor: 'Code Editor',
+    catAIIDE: 'AI IDE',
+    catFiles: 'Files',
+    catClassic: 'Classic',
+    catControl: 'Control',
+    modalCreateActionTitle: 'Create Custom Button',
+    modalFieldLabel: 'Button Label / Name',
+    modalFieldType: 'Action Type',
+    modalFieldApp: 'Select Detected App',
+    modalFieldUrl: 'Target URL',
+    modalFieldColor: 'Button Accent Color',
+    btnCancel: 'Cancel',
+    btnSaveAction: 'Save Action',
+    notifHistoryTitle: 'Notifications History',
+    btnClearNotifs: 'Clear All Notifications',
+    notifEmpty: 'No notifications yet',
+    btnMuteActive: 'MUTED',
+    btnMuteInactive: 'MUTE',
+    statusOnline: 'Online',
+    statusReconnecting: 'Reconnecting...',
+    pillCpu: 'CPU',
+    pillRam: 'RAM',
+    optLaunchApp: 'Launch Installed PC App',
+    optOpenUrl: 'Open URL (Browser)',
+    optCopyText: 'Copy Text to PC Clipboard',
+    optRunCommand: 'Run Terminal Command (PC)',
+    optChooseApp: '-- Choose Installed PC App --',
+    colorCyan: 'Cyan',
+    colorEmerald: 'Emerald',
+    colorPink: 'Pink',
+    colorAmber: 'Amber',
+    colorPurple: 'Purple',
+    btnTimeSync: 'PC Sync',
+    toastActionExecuted: 'Action Executed',
+    guideLaunch: 'Launch',
+    guideAddToDeck: '+ Add to Deck'
   },
   fr: {
     navDeck: 'Stream Deck',
@@ -179,21 +335,163 @@ const I18N = {
     navNumpad: 'Pavé Numérique',
     navConfig: 'Configuration',
     navPairing: 'Connexion & QR',
+    cardTitleVolume: 'Volume Principal & Média',
+    btnMute: 'MUET',
+    micTitle: 'Microphone',
+    micBadgeOnAir: '🔴 EN DIRECT',
+    micBadgeMuted: 'COUPE',
+    micStatusSub: 'Périphérique de Communication Principal',
+    btnMuteMic: 'COUPER MIC',
+    btnUnmuteMic: 'RÉACTIVER MIC',
+    nowPlayingBadgeIdle: 'ARRÊTÉ',
+    nowPlayingBadgePlaying: 'EN LECTURE',
+    nowPlayingBadgePaused: 'EN PAUSE',
+    nowPlayingNoMedia: 'Aucun média actif',
+    nowPlayingWaiting: 'En attente de Spotify, YouTube ou Edge...',
+    btnPrev: 'Préc',
+    btnPlayPause: 'Lecture / Pause',
+    btnNext: 'Suiv',
+    cardTitleBrightness: 'Luminosité de l\'Écran',
+    cardTitleTelemetry: 'Télémétrie Matérielle PC',
+    btnTaskmgr: 'Gestionnaire',
+    cpuName: 'Processeur CPU',
+    ramName: 'Mémoire RAM',
+    powerName: 'Alimentation & Batterie',
+    cardTitleApps: 'Lanceur d\'Applications',
+    appsSubtitle: 'Lancement instantané en 1 touche',
+    browseDetectedApps: '🔍 Parcourir les applications PC détectées...',
+    appAddedToDeck: 'Application ajoutée à votre Stream Deck !',
     customActionsTitle: 'Actions & Macros Personnalisées',
-    themeTitle: 'Thèmes & Apparence',
-    langTitle: 'Langue & Audio',
-    langLabel: 'Langue de l\'Interface',
-    soundLabel: 'Son de Notification',
-    hapticLabel: 'Vibration Haptique',
-    notifTestTitle: 'Hub de Notifications PC',
-    manageActionsTitle: 'Gérer les Boutons Personnalisés',
+    btnAddAction: '+ Ajouter Action',
+    cardTitleSnap: 'Ancrage & Multi-Écrans Windows',
+    snapBadge: 'Dispositions Win 11',
+    groupSnapLayouts: 'Ancrage de Fenêtres',
+    snapLeft: 'Gauche 50%',
+    maximize: 'Agrandir',
+    minimize: 'Réduire',
+    snapRight: 'Droite 50%',
+    groupDisplays: 'Écrans & Bureaux',
+    screenLeft: 'Écran ←',
+    screenRight: 'Écran →',
+    deskLeft: 'Bureau ←',
+    deskRight: 'Bureau →',
+    groupShortcuts: 'Raccourcis Système',
+    taskView: 'Vue Tâches',
+    desktop: 'Bureau',
+    screenshot: 'Capture d\'écran',
+    newDesk: '+ Nouveau Bureau',
+    closeApp: 'Fermer App',
+    cardTitlePower: 'Gestion de l\'Alimentation',
+    powerSubtitle: 'Avec Compte à Rebours Sécurisé',
+    powerLock: 'Verrouiller',
+    powerSleep: 'Veille',
+    powerRestart: 'Redémarrer',
+    powerShutdown: 'Éteindre',
+    trackpadTitle: 'Pavé Tactile Sans Fil de Précision',
+    trackpadSub: 'Glissez pour déplacer la souris',
+    trackpadHint: 'Glisser pour déplacer • Taper pour clic gauche • 2 doigts pour défiler',
+    trackpadLeftClick: 'CLIC GAUCHE',
+    trackpadRightClick: 'CLIC DROIT',
+    numpadTitle: 'Pavé Numérique Rapide',
+    numpadSub: 'Saisie directe dans Windows',
+    remoteTypeTitle: 'Saisie Texte à Distance',
+    remoteTypeDirect: 'Directement vers la fenêtre active',
+    remoteTypeDesc: 'Tapez au clavier ou dictez à la voix sur la tablette pour injecter le texte dans la fenêtre active sur le PC.',
+    remoteTypePlaceholder: 'Tapez du texte, une recherche ou un lien...',
+    btnSend: 'Envoyer',
+    pairingDesc: 'Scannez ce QR code avec l\'appareil photo de votre tablette Android ou ouvrez cette URL dans Chrome :',
     pwaInstallTitle: 'Application Tablette Plein Écran (PWA)',
     pwaInstallBtn: '📱 Installer en application plein écran',
     pwaFullscreenBtn: '⛶ Passer en plein écran',
-    detectedAppsTitle: 'Applications PC Détectées',
+    pwaDesc: 'Transformez votre Galaxy Tab ou tablette Android en véritable Stream Deck plein écran sans barre d\'adresse !',
+    pwaStep1: 'Appuyez sur le bouton Installer ci-dessous, ou appuyez sur le menu Chrome ⋮ → "Installer l\'application".',
+    pwaStep2: 'Lancez depuis l\'écran d\'accueil de votre tablette. L\'application s\'ouvre en plein écran borderless.',
+    pwaStep3: 'Le maintien de l\'écran allumé (icône soleil) s\'active automatiquement.',
+    themeTitle: 'Thèmes & Apparence',
+    themeCount: '14 Thèmes Visuels',
+    themeObsidian: 'Obsidienne',
+    themeMidnight: 'Minuit AMOLED',
+    themeOcean: 'Océan Néon',
+    themeEmber: 'Braise Infernale',
+    themeForest: 'Forêt Émeraude',
+    themeRose: 'Rose Cyber',
+    themeFrost: 'Givre Polaire',
+    themeGold: 'Or Impérial',
+    themeCyberpunk: 'Cyberpunk 2077',
+    themeMatrix: 'Terminal Matrix',
+    themeSynthwave: 'Rétro Synthwave',
+    themeDracula: 'Gothique Dracula',
+    themeCrimson: 'Carbone Crimson',
+    themeNord: 'Aurore Nordique',
+    langTitle: 'Langue & Audio',
+    langLabel: 'Langue de l\'Interface',
+    soundLabel: 'Son de Notification',
+    soundSub: 'Carillon synthétisé lors d\'une alerte PC',
+    hapticLabel: 'Vibration Haptique',
+    hapticSub: 'Retour tactile vibratoire à chaque touche',
+    timeOffsetTitle: 'Décalage Horaire & Mode 24h',
+    timeOffsetSub: 'Format 24h strict • Ajustez le fuseau si nécessaire',
+    notifTestTitle: 'Hub de Notifications PC',
+    notifTestDesc: 'Envoyez des alertes depuis votre PC avec npm run notify ou par l\'API POST /api/notify.',
+    testSuccess: 'Test Succès',
+    testWarning: 'Test Alerte',
+    testError: 'Test Erreur',
+    manageActionsTitle: 'Gérer les Boutons Personnalisés',
+    btnCreateAction: '+ Créer un Bouton Personnalisé',
+    modalShutdownTitle: 'Confirmer l\'Arrêt du PC',
+    modalShutdownDesc: 'Votre PC va s\'éteindre dans :',
+    modalCancelNow: 'ANNULER MAINTENANT',
+    modalExecuteNow: 'ÉTEINDRE MAINTENANT',
+    detectedAppsTitle: 'Applications PC Détectées Automatiquement',
     detectedAppsRefresh: 'Actualiser',
-    browseDetectedApps: '🔍 Parcourir les applications PC détectées...',
-    appAddedToDeck: 'Application ajoutée à votre Stream Deck !'
+    detectedAppsDesc: 'Détecté automatiquement depuis le menu Démarrer de Windows. Cliquez sur Lancer pour tester sur PC, ou + Ajouter au Deck pour créer un raccourci instantané !',
+    detectedAppsPlaceholder: 'Rechercher des applications installées (ex. Spotify, Discord, Steam, VS Code)...',
+    scanningPC: 'Recherche sur le PC...',
+    scanningPCDesc: 'Recherche des applications installées sur le PC...',
+    coresActive: '8 cœurs actifs',
+    badgeMoveDisp: 'Écran',
+    badgeVirtualDesk: 'Bureau virtuel',
+    shortcutAltTab: 'Alt + Tab',
+    catVoiceChat: 'Voix & Chat',
+    catAnthropic: 'Anthropic',
+    catIOSManager: 'Gestionnaire iOS',
+    catBrowser: 'Navigateur',
+    catCodeEditor: 'Éditeur de Code',
+    catAIIDE: 'IDE IA',
+    catFiles: 'Fichiers',
+    catClassic: 'Classique',
+    catControl: 'Contrôle',
+    modalCreateActionTitle: 'Créer un Bouton Personnalisé',
+    modalFieldLabel: 'Nom / Étiquette du Bouton',
+    modalFieldType: 'Type d\'Action',
+    modalFieldApp: 'Sélectionner l\'Application Détectée',
+    modalFieldUrl: 'URL Cible',
+    modalFieldColor: 'Couleur d\'Accentuation',
+    btnCancel: 'Annuler',
+    btnSaveAction: 'Enregistrer l\'Action',
+    notifHistoryTitle: 'Historique des Notifications',
+    btnClearNotifs: 'Effacer Toutes les Notifications',
+    notifEmpty: 'Aucune notification pour le moment',
+    btnMuteActive: 'MUTÉ',
+    btnMuteInactive: 'MUET',
+    statusOnline: 'En ligne',
+    statusReconnecting: 'Reconnexion...',
+    pillCpu: 'CPU',
+    pillRam: 'RAM',
+    optLaunchApp: 'Lancer une application PC',
+    optOpenUrl: 'Ouvrir une URL (Navigateur)',
+    optCopyText: 'Copier dans le presse-papier PC',
+    optRunCommand: 'Exécuter une commande (PC)',
+    optChooseApp: '-- Choisir une application --',
+    colorCyan: 'Cyan',
+    colorEmerald: 'Émeraude',
+    colorPink: 'Rose',
+    colorAmber: 'Ambre',
+    colorPurple: 'Violet',
+    btnTimeSync: 'Synchro PC',
+    toastActionExecuted: 'Action exécutée',
+    guideLaunch: 'Lancer',
+    guideAddToDeck: '+ Deck'
   },
   ar: {
     navDeck: 'لوحة التحكم',
@@ -201,21 +499,163 @@ const I18N = {
     navNumpad: 'لوحة الأرقام',
     navConfig: 'الإعدادات',
     navPairing: 'الربط والرمز',
+    cardTitleVolume: 'مستوى الصوت والوسائط',
+    btnMute: 'كتم الصوت',
+    micTitle: 'الميكروفون',
+    micBadgeOnAir: '🔴 قيد البث',
+    micBadgeMuted: 'مكتوم',
+    micStatusSub: 'جهاز الاتصال الصوتي الافتراضي',
+    btnMuteMic: 'كتم الميكروفون',
+    btnUnmuteMic: 'تشغيل الميكروفون',
+    nowPlayingBadgeIdle: 'متوقف',
+    nowPlayingBadgePlaying: 'قيد التشغيل',
+    nowPlayingBadgePaused: 'مؤقت',
+    nowPlayingNoMedia: 'لا يوجد وسائط قيد التشغيل',
+    nowPlayingWaiting: 'بانتظار Spotify أو YouTube أو Edge...',
+    btnPrev: 'السابق',
+    btnPlayPause: 'تشغيل / إيقاف',
+    btnNext: 'التالي',
+    cardTitleBrightness: 'سطوع الشاشة',
+    cardTitleTelemetry: 'مراقبة عتاد الكمبيوتر',
+    btnTaskmgr: 'إدارة المهام',
+    cpuName: 'المعالج CPU',
+    ramName: 'ذاكرة الرام RAM',
+    powerName: 'الطاقة والبطارية',
+    cardTitleApps: 'لوحة إطلاق التطبيقات',
+    appsSubtitle: 'تشغيل فوري بلمسة واحدة',
+    browseDetectedApps: '🔍 تصفح تطبيقات الكمبيوتر المكتشفة...',
+    appAddedToDeck: 'تمت إضافة التطبيق إلى لوحة التحكم بنجاح!',
     customActionsTitle: 'أزرار واختصارات مخصصة',
-    themeTitle: 'المظهر والسمات',
-    langTitle: 'اللغة والتنبيهات',
-    langLabel: 'لغة الواجهة',
-    soundLabel: 'صوت التنبيهات',
-    hapticLabel: 'الاهتزاز اللمسي',
-    notifTestTitle: 'مركز إشعارات الكمبيوتر',
-    manageActionsTitle: 'إدارة الأزرار المخصصة',
+    btnAddAction: '+ إضافة زر',
+    cardTitleSnap: 'محاذاة النوافذ والشاشات',
+    snapBadge: 'تنسيقات ويندوز 11',
+    groupSnapLayouts: 'محاذاة وتقسيم الشاشة',
+    snapLeft: 'يسار 50%',
+    maximize: 'تكبير',
+    minimize: 'تصغير',
+    snapRight: 'يمين 50%',
+    groupDisplays: 'الشاشات وأسطح المكتب',
+    screenLeft: 'الشاشة ←',
+    screenRight: 'الشاشة →',
+    deskLeft: 'سطح مكتب ←',
+    deskRight: 'سطح مكتب →',
+    groupShortcuts: 'اختصارات النظام',
+    taskView: 'عرض المهام',
+    desktop: 'سطح المكتب',
+    screenshot: 'لقطة شاشة',
+    newDesk: '+ سطح جديد',
+    closeApp: 'إغلاق النافذة',
+    cardTitlePower: 'التحكم بالطاقة',
+    powerSubtitle: 'مع مؤقت أمان للإلغاء',
+    powerLock: 'قفل الكمبيوتر',
+    powerSleep: 'سكون',
+    powerRestart: 'إعادة تشغيل',
+    powerShutdown: 'إيقاف التشغيل',
+    trackpadTitle: 'لوحة لمس لاسلكية دقيقة',
+    trackpadSub: 'مرر إصبعك لتحريك مؤشر الماوس',
+    trackpadHint: 'المس وحرك المؤشر • نقرة للنقر الأيسر • إصبعان للتمرير',
+    trackpadLeftClick: 'نقرة يسار',
+    trackpadRightClick: 'نقرة يمين',
+    numpadTitle: 'لوحة الأرقام السريعة',
+    numpadSub: 'إدخال فوري في نظام ويندوز',
+    remoteTypeTitle: 'الكتابة عن بعد على الكمبيوتر',
+    remoteTypeDirect: 'مباشرة في النافذة النشطة',
+    remoteTypeDesc: 'اكتب بلوحة مفاتيح التابلت أو أملِ صوتياً ليتم إدخال النص مباشرة في النافذة المفتوحة على الكمبيوتر.',
+    remoteTypePlaceholder: 'اكتب نصاً، أو بحثاً، أو رابطاً...',
+    btnSend: 'إرسال',
+    pairingDesc: 'امسح رمز QR بكاميرا التابلت أو افتح هذا الرابط في متصفح كروم:',
     pwaInstallTitle: 'تطبيق التابلت ملء الشاشة (PWA)',
     pwaInstallBtn: '📱 تثبيت كتطبيق ملء الشاشة',
     pwaFullscreenBtn: '⛶ التبديل إلى وضع ملء الشاشة',
+    pwaDesc: 'حول جهاز التابلت إلى لوحة ستريم ديك حقيقية بملء الشاشة وبدون أشرطة متصفح!',
+    pwaStep1: 'انقر على زر تثبيت التطبيق أدناه أو من قائمة كروم ⋮ اختر "تثبيت التطبيق".',
+    pwaStep2: 'شغل التطبيق من شاشة التابلت الرئيسية ليعمل تلقائياً بكامل الشاشة.',
+    pwaStep3: 'خاصية إبقاء الشاشة مضاءة (أيقونة الشمس) تعمل تلقائياً لمنع قفل التابلت.',
+    themeTitle: 'المظهر والسمات',
+    themeCount: '14 سمة مظهر',
+    themeObsidian: 'أوبسيديان فاحم',
+    themeMidnight: 'سواد أموليد',
+    themeOcean: 'محيط نيون',
+    themeEmber: 'جمر ناري',
+    themeForest: 'غابة الزمرد',
+    themeRose: 'وردي سايبر',
+    themeFrost: 'جليد قطبي',
+    themeGold: 'ذهب ملكي',
+    themeCyberpunk: 'سايبر بانك',
+    themeMatrix: 'ماتريكس هاكر',
+    themeSynthwave: 'سينث ويف 80s',
+    themeDracula: 'دراكولا الليلي',
+    themeCrimson: 'قرمزي كربون',
+    themeNord: 'شفق نورديك',
+    langTitle: 'اللغة والتنبيهات',
+    langLabel: 'لغة الواجهة',
+    soundLabel: 'صوت التنبيهات',
+    soundSub: 'رنين نغمة عند تلقي إشعار من الكمبيوتر',
+    hapticLabel: 'الاهتزاز اللمسي',
+    hapticSub: 'اهتزاز لمسي تفاعلي عند النقر',
+    timeOffsetTitle: 'فرق التوقيت ونظام 24 ساعة',
+    timeOffsetSub: 'نظام 24 ساعة دقيق • يمكنك ضبط فارق الساعات',
+    notifTestTitle: 'مركز إشعارات الكمبيوتر',
+    notifTestDesc: 'أرسل تنبيهات من الكمبيوتر عبر أمر npm run notify أو عبر طلب POST /api/notify.',
+    testSuccess: 'تجربة نجاح',
+    testWarning: 'تجربة تحذير',
+    testError: 'تجربة خطأ',
+    manageActionsTitle: 'إدارة الأزرار المخصصة',
+    btnCreateAction: '+ إنشاء زر مخصص جديد',
+    modalShutdownTitle: 'تأكيد إيقاف تشغيل الكمبيوتر',
+    modalShutdownDesc: 'سيتم إيقاف تشغيل الكمبيوتر خلال:',
+    modalCancelNow: 'إلغاء الآن',
+    modalExecuteNow: 'تنفيذ الآن',
     detectedAppsTitle: 'تطبيقات الكمبيوتر المكتشفة تلقائياً',
     detectedAppsRefresh: 'تحديث',
-    browseDetectedApps: '🔍 تصفح تطبيقات الكمبيوتر المكتشفة...',
-    appAddedToDeck: 'تمت إضافة التطبيق إلى لوحة التحكم بنجاح!'
+    detectedAppsDesc: 'تم اكتشافها تلقائياً من قائمة ابدأ وتطبيقات Windows. انقر على تشغيل للتجربة على الكمبيوتر، أو + إضافة للوحة لوضع زر اختصار فوري!',
+    detectedAppsPlaceholder: 'البحث في تطبيقات الكمبيوتر (مثل Spotify, Discord, Steam, VS Code)...',
+    scanningPC: 'جاري الفحص...',
+    scanningPCDesc: 'جاري فحص التطبيقات المثبتة على الكمبيوتر...',
+    coresActive: '8 أنوية نشطة',
+    badgeMoveDisp: 'نقل للشاشة',
+    badgeVirtualDesk: 'سطح مكتب',
+    shortcutAltTab: 'Alt + Tab',
+    catVoiceChat: 'صوت ومحادثة',
+    catAnthropic: 'أنثروبيك',
+    catIOSManager: 'إدارة أجهزة iOS',
+    catBrowser: 'متصفح',
+    catCodeEditor: 'محرر أكواد',
+    catAIIDE: 'بيئة ذكاء اصطناعي',
+    catFiles: 'الملفات',
+    catClassic: 'كلاسيكي',
+    catControl: 'لوحة التحكم',
+    modalCreateActionTitle: 'إنشاء زر مخصص جديد',
+    modalFieldLabel: 'اسم الزر / التسمية',
+    modalFieldType: 'نوع الإجراء',
+    modalFieldApp: 'اختر التطبيق المكتشف',
+    modalFieldUrl: 'الرابط المستهدف',
+    modalFieldColor: 'لون تمييز الزر',
+    btnCancel: 'إلغاء',
+    btnSaveAction: 'حفظ الإجراء',
+    notifHistoryTitle: 'سجل الإشعارات',
+    btnClearNotifs: 'مسح جميع الإشعارات',
+    notifEmpty: 'لا توجد إشعارات حتى الآن',
+    btnMuteActive: 'مكتوم',
+    btnMuteInactive: 'كتم',
+    statusOnline: 'متصل',
+    statusReconnecting: 'إعادة الاتصال...',
+    pillCpu: 'المعالج',
+    pillRam: 'الذاكرة',
+    optLaunchApp: 'تشغيل تطبيق مثبت على الحاسوب',
+    optOpenUrl: 'فتح رابط إنترنت (المتصفح)',
+    optCopyText: 'نسخ النص إلى حافظة الحاسوب',
+    optRunCommand: 'تنفيذ أمر موجه الأوامر (PC)',
+    optChooseApp: '-- اختر تطبيقاً مثبتاً --',
+    colorCyan: 'سماوي',
+    colorEmerald: 'زمردي',
+    colorPink: 'وردي',
+    colorAmber: 'كهرماني',
+    colorPurple: 'بنفسجي',
+    btnTimeSync: 'مزامنة الحاسوب',
+    toastActionExecuted: 'تم تنفيذ الإجراء',
+    guideLaunch: 'تشغيل',
+    guideAddToDeck: '+ للوحة'
   }
 };
 
@@ -224,6 +664,7 @@ function applyLanguage(lang) {
     lang = 'en';
   }
   state.lang = lang;
+  localStorage.setItem('altdeck_lang', lang);
   localStorage.setItem('tabdeck_lang', lang);
 
   if (lang === 'ar') {
@@ -237,18 +678,99 @@ function applyLanguage(lang) {
   const dict = I18N[lang] || I18N.en;
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (dict[key]) el.textContent = dict[key];
+    if (dict[key]) {
+      el.textContent = dict[key];
+    }
   });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (dict[key]) {
+      el.setAttribute('placeholder', dict[key]);
+    }
+  });
+
   document.querySelectorAll('.btn-lang').forEach(btn => {
     btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
   });
+
+  // Enforce universal LTR on physical hardware controls
+  document.querySelectorAll('.slider-container, .range-slider, .preset-buttons, .track-progress-section, .track-timeline-bar, .track-progress-fill, .track-time-labels, .playback-controls, .trackpad-buttons, .numpad-container, .numpad-operators, .lang-selector').forEach(el => {
+    el.setAttribute('dir', 'ltr');
+    el.style.direction = 'ltr';
+  });
+
+  // Re-apply dynamic states in current language safely
+  try {
+    if (typeof updateMicUI === 'function') {
+      updateMicUI(state.micMuted);
+    }
+  } catch (e) {}
+
+  try {
+    if (typeof applyMedia === 'function' && state.media) {
+      applyMedia(state.media);
+    }
+  } catch (e) {}
+
+  try {
+    const mb = document.getElementById('mute-btn');
+    if (mb) {
+      mb.textContent = state.muted ? (dict.btnMuteActive || 'MUTED') : (dict.btnMuteInactive || 'MUTE');
+    }
+  } catch (e) {}
+
+  try {
+    const st = document.getElementById('connection-status');
+    if (st) {
+      if (state.connected) {
+        st.textContent = dict.statusOnline || 'Online';
+      } else {
+        st.textContent = dict.statusReconnecting || 'Reconnecting...';
+      }
+    }
+  } catch (e) {}
+
+  try {
+    if (typeof applyTelemetry === 'function' && state.lastTelemetry) {
+      applyTelemetry(state.lastTelemetry);
+    }
+  } catch (e) {}
+
+  try {
+    if (typeof renderCustomActions === 'function' && state.customActions) {
+      renderCustomActions(state.customActions);
+    }
+  } catch (e) {}
+
+  try {
+    if (typeof updateNotificationDrawer === 'function') {
+      updateNotificationDrawer();
+    }
+  } catch (e) {}
+
+  try {
+    if (typeof updateActionModalLabels === 'function') {
+      updateActionModalLabels();
+    }
+  } catch (e) {}
+
+  try {
+    if (typeof renderDetectedApps === 'function' && state.detectedApps) {
+      renderDetectedApps(state.detectedApps);
+      updateAppSelectDropdown(state.detectedApps);
+    }
+  } catch (e) {}
 }
 applyLanguage(state.lang);
 
 document.querySelectorAll('.btn-lang').forEach(btn => {
   btn.addEventListener('click', () => {
     triggerHaptic();
-    applyLanguage(btn.getAttribute('data-lang'));
+    const newLang = btn.getAttribute('data-lang');
+    applyLanguage(newLang);
+    const langNames = { en: 'English', fr: 'Français', ar: 'العربية' };
+    showToast(newLang === 'ar' ? 'تم تغيير اللغة إلى العربية' : (newLang === 'fr' ? 'Langue changée en Français' : 'Language switched to English'));
   });
 });
 
@@ -258,6 +780,7 @@ if (toggleSound) {
   toggleSound.checked = state.soundEnabled;
   toggleSound.addEventListener('change', () => {
     state.soundEnabled = toggleSound.checked;
+    localStorage.setItem('altdeck_sound', String(state.soundEnabled));
     localStorage.setItem('tabdeck_sound', String(state.soundEnabled));
   });
 }
@@ -267,14 +790,89 @@ if (toggleHaptic) {
   toggleHaptic.checked = state.hapticEnabled;
   toggleHaptic.addEventListener('change', () => {
     state.hapticEnabled = toggleHaptic.checked;
+    localStorage.setItem('altdeck_haptic', String(state.hapticEnabled));
     localStorage.setItem('tabdeck_haptic', String(state.hapticEnabled));
   });
 }
 
-// Clock updates
+const btnTimeMinus1 = document.getElementById('btn-time-minus1');
+const btnTimeSync = document.getElementById('btn-time-sync');
+const btnTimePlus1 = document.getElementById('btn-time-plus1');
+
+function updateTimeOffsetUI() {
+  const off = state.timeOffsetHours || 0;
+  if (btnTimeMinus1) btnTimeMinus1.classList.toggle('active', off === -1);
+  if (btnTimeSync) btnTimeSync.classList.toggle('active', off === 0);
+  if (btnTimePlus1) btnTimePlus1.classList.toggle('active', off === 1);
+}
+
+if (btnTimeMinus1) {
+  btnTimeMinus1.addEventListener('click', () => {
+    triggerHaptic();
+    state.timeOffsetHours = -1;
+    localStorage.setItem('altdeck_time_offset', '-1');
+    localStorage.setItem('tabdeck_time_offset', '-1');
+    updateTimeOffsetUI();
+    updateClock();
+    const msg = state.lang === 'ar' ? 'تم ضبط فارق الوقت: -1 ساعة (تنسيق 24 ساعة)' : (state.lang === 'fr' ? 'Décalage horaire défini à -1 heure (format 24h)' : 'Time offset set to -1 hour (24hr format)');
+    showToast(msg);
+  });
+}
+
+if (btnTimeSync) {
+  btnTimeSync.addEventListener('click', () => {
+    triggerHaptic();
+    state.timeOffsetHours = 0;
+    localStorage.setItem('altdeck_time_offset', '0');
+    localStorage.setItem('tabdeck_time_offset', '0');
+    updateTimeOffsetUI();
+    updateClock();
+    const msg = state.lang === 'ar' ? 'تمت مزامنة الوقت مع ساعة الحاسوب (24 ساعة)' : (state.lang === 'fr' ? 'Heure synchronisée avec l\'horloge du PC (24h)' : 'Time synced to PC Clock (24hr format)');
+    showToast(msg);
+  });
+}
+
+if (btnTimePlus1) {
+  btnTimePlus1.addEventListener('click', () => {
+    triggerHaptic();
+    state.timeOffsetHours = 1;
+    localStorage.setItem('altdeck_time_offset', '1');
+    localStorage.setItem('tabdeck_time_offset', '1');
+    updateTimeOffsetUI();
+    updateClock();
+    const msg = state.lang === 'ar' ? 'تم ضبط فارق الوقت: +1 ساعة (تنسيق 24 ساعة)' : (state.lang === 'fr' ? 'Décalage horaire défini à +1 heure (format 24h)' : 'Time offset set to +1 hour (24hr format)');
+    showToast(msg);
+  });
+}
+
+updateTimeOffsetUI();
+
+// Clock updates (Strict 24-Hour Military Format & Auto PC Timezone Sync)
 function updateClock() {
+  if (!clockDisplay) return;
   const now = new Date();
-  clockDisplay.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  let hours, minutes;
+
+  if (typeof state.serverTzOffset === 'number') {
+    // Exact PC local time via UTC calculation
+    // pcMs = UTC milliseconds - (serverTzOffset in minutes * 60000)
+    const pcMs = Date.now() - (state.serverTzOffset * 60000);
+    const pcDate = new Date(pcMs);
+    hours = pcDate.getUTCHours();
+    minutes = pcDate.getUTCMinutes();
+  } else {
+    hours = now.getHours();
+    minutes = now.getMinutes();
+  }
+
+  // Apply user manual offset if active (e.g. -1 or +1)
+  if (state.timeOffsetHours) {
+    hours = (hours + state.timeOffsetHours + 24) % 24;
+  }
+
+  const hStr = String(hours).padStart(2, '0');
+  const mStr = String(minutes).padStart(2, '0');
+  clockDisplay.textContent = `${hStr}:${mStr}`;
 }
 setInterval(updateClock, 1000);
 updateClock();
@@ -348,7 +946,7 @@ async function activateKeepAwake(quiet = false) {
   }
 
   if (!quiet) {
-    showToast(state.lang === 'ar' ? 'تم تفعيل إبقاء الشاشة مضاءة دائماً!' : 'Screen will stay awake indefinitely!');
+    showToast(state.lang === 'ar' ? 'تم تفعيل إبقاء الشاشة مضاءة دائماً!' : (state.lang === 'fr' ? 'L\'écran restera allumé indéfiniment !' : 'Screen will stay awake indefinitely!'));
   }
 }
 
@@ -369,7 +967,7 @@ function deactivateKeepAwake() {
     clearInterval(keepAwakeWatchdog);
     keepAwakeWatchdog = null;
   }
-  showToast(state.lang === 'ar' ? 'تم إيقاف إبقاء الشاشة مضاءة' : 'Keep-Awake Deactivated');
+  showToast(state.lang === 'ar' ? 'تم إيقاف إبقاء الشاشة مضاءة' : (state.lang === 'fr' ? 'Maintien de l\'écran désactivé' : 'Keep-Awake Deactivated'));
 }
 
 function toggleWakeLock() {
@@ -411,6 +1009,26 @@ document.getElementById('fullscreen-btn').addEventListener('click', () => {
   }
 });
 
+// Quick Tablet Refresh Button (Wipes stale tablet cache & reloads fresh assets)
+const btnRefreshApp = document.getElementById('btn-refresh-app');
+if (btnRefreshApp) {
+  btnRefreshApp.addEventListener('click', () => {
+    triggerHaptic();
+    btnRefreshApp.classList.add('spin-anim');
+    showToast(state.lang === 'ar' ? 'جاري تحديث لوحة التحكم...' : (state.lang === 'fr' ? 'Actualisation de AltDeck...' : 'Refreshing AltDeck...'));
+
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        return Promise.all(names.map(name => caches.delete(name)));
+      }).catch(() => {});
+    }
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
+  });
+}
+
 // Tab Navigation
 document.querySelectorAll('.nav-tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -437,8 +1055,8 @@ function connectWS() {
   ws.onopen = () => {
     state.connected = true;
     statusDot.classList.remove('disconnected');
-    statusText.textContent = 'Online';
-    console.log('Connected to TabDeck PC Controller');
+    statusText.textContent = state.lang === 'ar' ? 'متصل' : (state.lang === 'fr' ? 'En ligne' : 'Online');
+    console.log('Connected to AltDeck PC Controller');
   };
 
   ws.onmessage = (event) => {
@@ -451,6 +1069,10 @@ function connectWS() {
         renderCustomActions(state.customActions);
       } else if (msg.event === 'notification') {
         showNotification(msg.data);
+      } else if (msg.event === 'telemetry') {
+        applyTelemetry(msg.data);
+      } else if (msg.event === 'media') {
+        applyMedia(msg.data);
       }
     } catch (e) {}
   };
@@ -458,7 +1080,7 @@ function connectWS() {
   ws.onclose = () => {
     state.connected = false;
     statusDot.classList.add('disconnected');
-    statusText.textContent = 'Reconnecting...';
+    statusText.textContent = state.lang === 'ar' ? 'إعادة الاتصال...' : (state.lang === 'fr' ? 'Reconnexion...' : 'Reconnecting...');
     setTimeout(connectWS, 2000);
   };
 
@@ -489,18 +1111,34 @@ function applyStatus(data) {
   }
   if (typeof data.muted !== 'undefined') {
     state.muted = data.muted;
+    const isAr = state.lang === 'ar';
+    const isFr = state.lang === 'fr';
     if (data.muted) {
       muteBtn.classList.add('active');
-      muteBtn.textContent = 'MUTED';
+      muteBtn.textContent = isAr ? 'مكتوم' : (isFr ? 'MUTÉ' : 'MUTED');
     } else {
       muteBtn.classList.remove('active');
-      muteBtn.textContent = 'MUTE';
+      muteBtn.textContent = isAr ? 'كتم' : (isFr ? 'MUET' : 'MUTE');
     }
   }
   if (typeof data.brightness !== 'undefined') {
     state.brightness = data.brightness;
     brightnessSlider.value = data.brightness;
     brightnessBadge.textContent = `${data.brightness}%`;
+  }
+  if (typeof data.micMuted !== 'undefined') {
+    state.micMuted = !!data.micMuted;
+    updateMicUI(state.micMuted);
+  }
+  if (typeof data.pcTzOffset !== 'undefined') {
+    state.serverTzOffset = data.pcTzOffset;
+  }
+  updateClock();
+  if (data.telemetry) {
+    applyTelemetry(data.telemetry);
+  }
+  if (data.media) {
+    applyMedia(data.media);
   }
   if (data.hostname && pcHostname) {
     pcHostname.textContent = `${data.hostname} • Windows 11`;
@@ -511,7 +1149,7 @@ function applyStatus(data) {
 // Real-Time PC Notifications (From PC to Tablet)
 // ==========================================================================
 function showNotification(notif) {
-  notifTitle.textContent = notif.title || 'TabDeck Alert';
+  notifTitle.textContent = notif.title || 'AltDeck Alert';
   notifMsg.textContent = notif.message || '';
   notifBanner.className = `notification-banner show level-${notif.level || 'info'}`;
   playNotificationChime();
@@ -540,7 +1178,12 @@ function updateNotificationDrawer() {
   }
 
   if (state.notifications.length === 0) {
-    notifHistoryList.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 40px 0;">No notifications yet</div>';
+    const emptyMsg = state.lang === 'ar'
+      ? 'لا توجد إشعارات حتى الآن'
+      : (state.lang === 'fr'
+        ? 'Aucune notification pour le moment'
+        : 'No notifications yet');
+    notifHistoryList.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 40px 0;">${emptyMsg}</div>`;
     return;
   }
 
@@ -576,7 +1219,8 @@ notifDrawerBackdrop.addEventListener('click', closeNotifDrawer);
 btnClearNotifs.addEventListener('click', () => {
   state.notifications = [];
   updateNotificationDrawer();
-  showToast('Notifications Cleared');
+  const msg = state.lang === 'ar' ? 'تم مسح الإشعارات' : (state.lang === 'fr' ? 'Notifications effacées' : 'Notifications Cleared');
+  showToast(msg);
 });
 
 // Test Notification Buttons
@@ -637,8 +1281,18 @@ function renderCustomActions(actions) {
   if (configList) configList.innerHTML = '';
 
   if (actions.length === 0) {
-    grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 20px; font-size: 0.85rem;">No custom buttons yet. Tap "+ Add Action" to configure one!</div>';
-    if (configList) configList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 12px;">No custom actions configured.</div>';
+    const emptyDeck = state.lang === 'ar'
+      ? 'لا توجد أزرار مخصصة حتى الآن. انقر على "+ إضافة زر" لإنشاء زر!'
+      : (state.lang === 'fr'
+        ? 'Aucun bouton personnalisé. Touchez "+ Ajouter une action" pour en créer un !'
+        : 'No custom buttons yet. Tap "+ Add Action" to configure one!');
+    const emptyCfg = state.lang === 'ar'
+      ? 'لا توجد إجراءات مخصصة مُهيأة.'
+      : (state.lang === 'fr'
+        ? 'Aucune action personnalisée configurée.'
+        : 'No custom actions configured.');
+    grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 20px; font-size: 0.85rem;">${emptyDeck}</div>`;
+    if (configList) configList.innerHTML = `<div style="color: var(--text-muted); font-size: 0.85rem; padding: 12px;">${emptyCfg}</div>`;
     return;
   }
 
@@ -656,19 +1310,21 @@ function renderCustomActions(actions) {
 
     tile.addEventListener('click', () => {
       triggerHaptic();
+      const isAr = state.lang === 'ar';
+      const isFr = state.lang === 'fr';
       if (action.type === 'url') {
         sendAction({ type: 'url', url: action.payload.url });
-        showToast(`Opened: ${action.label}`);
+        showToast(isAr ? `تم الفتح: ${action.label}` : (isFr ? `Ouvert : ${action.label}` : `Opened: ${action.label}`));
       } else if (action.type === 'copy') {
         sendAction({ type: 'copy', text: action.payload.text });
-        showToast(`Copied to PC: ${action.label}`);
+        showToast(isAr ? `تم النسخ إلى الحاسوب: ${action.label}` : (isFr ? `Copié sur le PC : ${action.label}` : `Copied to PC: ${action.label}`));
       } else if (action.type === 'command') {
         sendAction({ type: 'command', command: action.payload.command });
-        showToast(`Executed: ${action.label}`);
+        showToast(isAr ? `تم التنفيذ: ${action.label}` : (isFr ? `Exécuté : ${action.label}` : `Executed: ${action.label}`));
       } else if (action.type === 'app') {
         const targetApp = (action.payload && action.payload.appId) ? action.payload.appId : (action.action || action.id);
         sendAction({ type: 'app', action: targetApp, target: targetApp });
-        showToast(`Launching: ${action.label}`);
+        showToast(isAr ? `جاري تشغيل: ${action.label}` : (isFr ? `Lancement de : ${action.label}` : `Launching: ${action.label}`));
       }
     });
     grid.appendChild(tile);
@@ -706,6 +1362,31 @@ function renderCustomActions(actions) {
 const actionAppSelectGroup = document.getElementById('action-app-select-group');
 const actionFormAppSelect = document.getElementById('action-form-app-select');
 
+function updateActionModalLabels() {
+  if (!actionValLabel || !actionFormType) return;
+  const val = actionFormType.value;
+  const isAr = state.lang === 'ar';
+  const isFr = state.lang === 'fr';
+
+  if (val === 'app') {
+    if (actionAppSelectGroup) actionAppSelectGroup.style.display = 'block';
+    actionValLabel.textContent = isAr ? 'معرف التطبيق / مسار البرنامج' : (isFr ? 'ID de l\'application / Chemin exécutable' : 'App ID / Executable Path');
+    actionFormVal.placeholder = isAr ? 'اختر من القائمة أو أدخل معرف التطبيق' : (isFr ? 'Choisir dans la liste ou saisir l\'AppID' : 'Choose from list or enter AppID');
+  } else {
+    if (actionAppSelectGroup) actionAppSelectGroup.style.display = 'none';
+    if (val === 'url') {
+      actionValLabel.textContent = isAr ? 'رابط الويب المستهدف' : (isFr ? 'URL de destination' : 'Target URL');
+      actionFormVal.placeholder = 'https://...';
+    } else if (val === 'copy') {
+      actionValLabel.textContent = isAr ? 'النص لنسخه إلى حافظة الحاسوب' : (isFr ? 'Texte à copier sur le PC' : 'Text to Copy to PC Clipboard');
+      actionFormVal.placeholder = isAr ? 'مثال: رمز سري أو نص متكرر' : (isFr ? 'ex: MonSecretToken123' : 'e.g. MySecretToken123');
+    } else if (val === 'command') {
+      actionValLabel.textContent = isAr ? 'أمر موجه الأوامر / الطرفية' : (isFr ? 'Commande de terminal' : 'Terminal Command');
+      actionFormVal.placeholder = 'e.g. git pull || wt.exe';
+    }
+  }
+}
+
 function openActionModal() {
   triggerHaptic();
   actionFormLabel.value = '';
@@ -713,8 +1394,7 @@ function openActionModal() {
   actionFormType.value = 'app';
   if (actionAppSelectGroup) actionAppSelectGroup.style.display = 'block';
   if (actionFormAppSelect) actionFormAppSelect.value = '';
-  actionValLabel.textContent = 'App ID / Executable Path';
-  actionFormVal.placeholder = 'Choose from list or enter AppID';
+  updateActionModalLabels();
   actionModal.classList.add('show');
 }
 
@@ -730,26 +1410,7 @@ if (btnOpenCreate) btnOpenCreate.addEventListener('click', openActionModal);
 
 btnCancelAction.addEventListener('click', closeActionModal);
 
-actionFormType.addEventListener('change', () => {
-  const val = actionFormType.value;
-  if (val === 'app') {
-    if (actionAppSelectGroup) actionAppSelectGroup.style.display = 'block';
-    actionValLabel.textContent = 'App ID / Executable Path';
-    actionFormVal.placeholder = 'e.g. Microsoft.WindowsCalculator_8wekyb3d8bbwe!App';
-  } else {
-    if (actionAppSelectGroup) actionAppSelectGroup.style.display = 'none';
-    if (val === 'url') {
-      actionValLabel.textContent = 'Target URL';
-      actionFormVal.placeholder = 'https://...';
-    } else if (val === 'copy') {
-      actionValLabel.textContent = 'Text to Copy to PC Clipboard';
-      actionFormVal.placeholder = 'e.g. MySecretToken123';
-    } else if (val === 'command') {
-      actionValLabel.textContent = 'Terminal Command';
-      actionFormVal.placeholder = 'e.g. git pull || wt.exe';
-    }
-  }
-});
+actionFormType.addEventListener('change', updateActionModalLabels);
 
 if (actionFormAppSelect) {
   actionFormAppSelect.addEventListener('change', () => {
@@ -775,7 +1436,8 @@ btnSaveAction.addEventListener('click', async () => {
   const color = actionFormColor.value;
 
   if (!label || !val) {
-    showToast('Please fill all fields');
+    const msg = state.lang === 'ar' ? 'يرجى ملء جميع الحقول' : (state.lang === 'fr' ? 'Veuillez remplir tous les champs' : 'Please fill all fields');
+    showToast(msg);
     return;
   }
 
@@ -801,9 +1463,11 @@ btnSaveAction.addEventListener('click', async () => {
       body: JSON.stringify(newAction)
     });
     closeActionModal();
-    showToast(`Added "${label}" to Deck!`);
+    const msg = state.lang === 'ar' ? `تمت إضافة "${label}" إلى لوحة التحكم!` : (state.lang === 'fr' ? `Ajouté "${label}" au Deck !` : `Added "${label}" to Deck!`);
+    showToast(msg);
   } catch (e) {
-    showToast('Error saving action');
+    const msg = state.lang === 'ar' ? 'خطأ أثناء حفظ الإجراء' : (state.lang === 'fr' ? 'Erreur lors de l\'enregistrement' : 'Error saving action');
+    showToast(msg);
   }
 });
 
@@ -834,33 +1498,296 @@ muteBtn.addEventListener('click', () => {
   sendAction({ type: 'volume', action: 'mute', value: next ? 1 : 0 });
 });
 
-document.querySelectorAll('[data-vol]').forEach(btn => {
+// ==========================================================================
+// Global Microphone Control & ON-AIR Indicator
+// ==========================================================================
+const micBadge = document.getElementById('mic-badge');
+const btnMicToggle = document.getElementById('btn-mic-toggle');
+const micStatusIcon = document.getElementById('mic-status-icon');
+const micIconSvg = document.getElementById('mic-icon-svg');
+const micStatusSub = document.getElementById('mic-status-sub');
+
+function updateMicUI(isMuted) {
+  if (!micBadge || !btnMicToggle) return;
+  const isAr = state.lang === 'ar';
+  const isFr = state.lang === 'fr';
+
+  if (isMuted) {
+    micBadge.className = 'mic-badge muted';
+    micBadge.textContent = isAr ? 'مكتوم' : (isFr ? 'MUTÉ' : 'MUTED');
+    btnMicToggle.className = 'btn-mic-toggle muted';
+    btnMicToggle.textContent = isAr ? 'تفعيل المايك' : (isFr ? 'ACTIVER LE MICRO' : 'UNMUTE MIC');
+    if (micStatusIcon) {
+      micStatusIcon.style.background = 'rgba(148, 163, 184, 0.12)';
+      micStatusIcon.style.borderColor = 'rgba(148, 163, 184, 0.3)';
+      micStatusIcon.style.color = 'var(--text-muted)';
+    }
+    if (micIconSvg) {
+      micIconSvg.innerHTML = `
+        <line x1="1" y1="1" x2="23" y2="23"/>
+        <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
+        <path d="M19 10v2a7 7 0 0 1-1.23 3.9M5.07 10.57A7 7 0 0 0 12 19"/>
+        <line x1="12" y1="19" x2="12" y2="23"/>
+        <line x1="8" y1="23" x2="16" y2="23"/>
+      `;
+    }
+    if (micStatusSub) micStatusSub.textContent = isAr ? 'الميكروفون مغلق تماماً' : (isFr ? 'Microphone désactivé' : 'Microphone is Muted');
+  } else {
+    micBadge.className = 'mic-badge live';
+    micBadge.textContent = isAr ? 'مباشر • قيد البث' : (isFr ? 'EN DIRECT • LIVE' : '🔴 ON AIR');
+    btnMicToggle.className = 'btn-mic-toggle live';
+    btnMicToggle.textContent = isAr ? 'كتم المايك' : (isFr ? 'COUPER LE MICRO' : 'MUTE MIC');
+    if (micStatusIcon) {
+      micStatusIcon.style.background = 'rgba(239, 68, 68, 0.18)';
+      micStatusIcon.style.borderColor = 'rgba(239, 68, 68, 0.6)';
+      micStatusIcon.style.color = '#EF4444';
+    }
+    if (micIconSvg) {
+      micIconSvg.innerHTML = `
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="23"/>
+        <line x1="8" y1="23" x2="16" y2="23"/>
+      `;
+    }
+    if (micStatusSub) micStatusSub.textContent = isAr ? 'المايك يعمل وينقل الصوت' : (isFr ? 'Microphone actif' : 'Microphone is Live');
+  }
+}
+
+if (btnMicToggle) {
+  btnMicToggle.addEventListener('click', () => {
+    triggerHaptic();
+    const nextMuted = !state.micMuted;
+    state.micMuted = nextMuted;
+    updateMicUI(nextMuted);
+    sendAction({ type: 'mic', action: 'mute', value: nextMuted ? 1 : 0 });
+    const toast = nextMuted
+      ? (state.lang === 'ar' ? 'تم كتم الميكروفون' : (state.lang === 'fr' ? 'Microphone coupé' : 'Microphone Muted'))
+      : (state.lang === 'ar' ? 'الميكروفون قيد البث (مباشر)' : (state.lang === 'fr' ? 'Microphone actif (EN DIRECT)' : 'Microphone is Live (ON AIR)'));
+    showToast(toast);
+  });
+}
+
+document.querySelectorAll('[data-vol], [data-volume]').forEach(btn => {
   btn.addEventListener('click', () => {
-    const val = parseInt(btn.getAttribute('data-vol'), 10);
-    volumeSlider.value = val;
-    volumeBadge.textContent = `${val}%`;
-    sendAction({ type: 'volume', action: 'set', value: val });
-    showToast(`Volume set to ${val}%`);
+    triggerHaptic();
+    const raw = btn.getAttribute('data-volume') || btn.getAttribute('data-vol');
+    const val = parseInt(raw, 10);
+    if (!isNaN(val)) {
+      volumeSlider.value = val;
+      volumeBadge.textContent = `${val}%`;
+      sendAction({ type: 'volume', action: 'set', value: val });
+      const msg = state.lang === 'ar' ? `تم ضبط الصوت على ${val}%` : (state.lang === 'fr' ? `Volume réglé à ${val}%` : `Volume set to ${val}%`);
+      showToast(msg);
+    }
   });
 });
 
+// ==========================================================================
+// Media Player Now-Playing Art & Track Progress Bar (Feature #5)
+// ==========================================================================
+const nowPlayingDeck = document.getElementById('now-playing-deck');
+const nowPlayingTitle = document.getElementById('now-playing-title');
+const nowPlayingArtist = document.getElementById('now-playing-artist');
+const nowPlayingBadge = document.getElementById('now-playing-badge');
+const trackTimelineBar = document.getElementById('track-timeline-bar');
+const trackProgressFill = document.getElementById('track-progress-fill');
+const trackTimeCurrent = document.getElementById('track-time-current');
+const trackTimeTotal = document.getElementById('track-time-total');
+const btnPlayPause = document.getElementById('btn-playpause');
+
+state.media = {
+  title: '',
+  artist: '',
+  playbackStatus: 'Stopped',
+  position: 0,
+  duration: 0,
+  lastUpdate: Date.now()
+};
+
+function formatTime(seconds) {
+  if (isNaN(seconds) || seconds < 0) return '0:00';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
+let isUserScrubbing = false;
+let scrubSec = 0;
+
+function applyMedia(media) {
+  if (!media || !nowPlayingDeck) return;
+  const statusStr = String(media.playbackStatus || '').trim().toLowerCase();
+  const isPlaying = statusStr === 'playing' || statusStr === '4';
+  const isPaused = statusStr === 'paused' || statusStr === '5';
+
+  state.media = {
+    ...state.media,
+    ...media,
+    playbackStatus: isPlaying ? 'Playing' : (isPaused ? 'Paused' : 'Stopped'),
+    isPlaying: isPlaying,
+    lastUpdate: Date.now()
+  };
+
+  nowPlayingDeck.classList.toggle('playing', isPlaying);
+  nowPlayingDeck.classList.toggle('paused', isPaused);
+
+  if (media.title) {
+    nowPlayingTitle.textContent = media.title;
+    nowPlayingArtist.textContent = media.artist || (media.album || 'Windows Media');
+  } else {
+    nowPlayingTitle.textContent = state.lang === 'ar' ? 'لا يوجد وسائط قيد التشغيل' : (state.lang === 'fr' ? 'Aucun média actif' : 'No Media Active');
+    nowPlayingArtist.textContent = state.lang === 'ar' ? 'بانتظار Spotify أو YouTube أو Edge...' : (state.lang === 'fr' ? 'En attente de Spotify, YouTube...' : 'Waiting for Spotify, YouTube, or Edge...');
+  }
+
+  if (nowPlayingBadge) {
+    if (isPlaying) {
+      nowPlayingBadge.textContent = state.lang === 'ar' ? 'قيد التشغيل' : (state.lang === 'fr' ? 'EN LECTURE' : 'PLAYING');
+    } else if (isPaused) {
+      nowPlayingBadge.textContent = state.lang === 'ar' ? 'مؤقت' : (state.lang === 'fr' ? 'EN PAUSE' : 'PAUSED');
+    } else {
+      nowPlayingBadge.textContent = state.lang === 'ar' ? 'متوقف' : (state.lang === 'fr' ? 'ARRÊTÉ' : 'IDLE');
+    }
+  }
+
+  // Update Play/Pause button icon & label
+  if (btnPlayPause) {
+    const playText = state.lang === 'ar' ? 'تشغيل' : (state.lang === 'fr' ? 'Lecture' : 'Play');
+    const pauseText = state.lang === 'ar' ? 'إيقاف مؤقت' : (state.lang === 'fr' ? 'Pause' : 'Pause');
+    if (isPlaying) {
+      btnPlayPause.innerHTML = `
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <rect x="6" y="4" width="4" height="16" rx="1"/>
+          <rect x="14" y="4" width="4" height="16" rx="1"/>
+        </svg>
+        <span>${pauseText}</span>
+      `;
+    } else {
+      btnPlayPause.innerHTML = `
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        <span>${playText}</span>
+      `;
+    }
+  }
+
+  if (!isUserScrubbing) {
+    updateMediaTimelineUI();
+  }
+}
+
+function updateMediaTimelineUI() {
+  if (!trackProgressFill || !trackTimeCurrent || !trackTimeTotal || isUserScrubbing) return;
+  const dur = Number(state.media.duration) || 0;
+  let pos = Number(state.media.position) || 0;
+
+  // Interpolate position smoothly if currently playing
+  if (state.media.isPlaying && state.media.lastUpdate) {
+    const elapsed = (Date.now() - state.media.lastUpdate) / 1000;
+    pos = dur > 0 ? Math.min(dur, pos + elapsed) : (pos + elapsed);
+  }
+
+  const pct = dur > 0 ? Math.min(100, Math.max(0, (pos / dur) * 100)) : 0;
+  trackProgressFill.style.width = `${pct}%`;
+  trackTimeCurrent.textContent = formatTime(pos);
+  trackTimeTotal.textContent = formatTime(dur);
+}
+
+// Local tick timer for butter-smooth progress bar movement every 500ms
+setInterval(() => {
+  if (state.media && state.media.isPlaying && !isUserScrubbing) {
+    updateMediaTimelineUI();
+  }
+}, 500);
+
+// Seek interaction & touch scrubbing on timeline bar
+if (trackTimelineBar) {
+  function getScrubTarget(e) {
+    if (!state.media || !state.media.duration || state.media.duration <= 0) return 0;
+    const rect = trackTimelineBar.getBoundingClientRect();
+    const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+    const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    return Math.round(ratio * state.media.duration);
+  }
+
+  function startScrub(e) {
+    if (!state.media || !state.media.duration || state.media.duration <= 0) return;
+    isUserScrubbing = true;
+    scrubSec = getScrubTarget(e);
+    const dur = state.media.duration;
+    const pct = (scrubSec / dur) * 100;
+    trackProgressFill.style.width = `${pct}%`;
+    trackTimeCurrent.textContent = formatTime(scrubSec);
+  }
+
+  function moveScrub(e) {
+    if (!isUserScrubbing) return;
+    scrubSec = getScrubTarget(e);
+    const dur = state.media.duration;
+    const pct = (scrubSec / dur) * 100;
+    trackProgressFill.style.width = `${pct}%`;
+    trackTimeCurrent.textContent = formatTime(scrubSec);
+  }
+
+  function endScrub() {
+    if (!isUserScrubbing) return;
+    isUserScrubbing = false;
+    state.media.position = scrubSec;
+    state.media.lastUpdate = Date.now();
+    updateMediaTimelineUI();
+    sendAction({ type: 'media', action: 'seek', value: scrubSec });
+    const seekMsg = state.lang === 'ar' ? `الانتقال إلى ${formatTime(scrubSec)}` : (state.lang === 'fr' ? `Positionné à ${formatTime(scrubSec)}` : `Seeked to ${formatTime(scrubSec)}`);
+    showToast(seekMsg);
+  }
+
+  trackTimelineBar.addEventListener('mousedown', (e) => {
+    startScrub(e);
+    const onMove = (ev) => moveScrub(ev);
+    const onUp = () => {
+      endScrub();
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  });
+
+  trackTimelineBar.addEventListener('touchstart', (e) => {
+    startScrub(e);
+  }, { passive: true });
+
+  trackTimelineBar.addEventListener('touchmove', (e) => {
+    moveScrub(e);
+  }, { passive: true });
+
+  trackTimelineBar.addEventListener('touchend', () => {
+    endScrub();
+  });
+}
+
 document.getElementById('btn-prev').addEventListener('click', () => {
   sendAction({ type: 'media', action: 'prev' });
-  showToast('Previous Track');
+  const msg = state.lang === 'ar' ? 'المقطع السابق' : (state.lang === 'fr' ? 'Piste précédente' : 'Previous Track');
+  showToast(msg);
 });
 
-document.getElementById('btn-playpause').addEventListener('click', () => {
-  sendAction({ type: 'media', action: 'playpause' });
-  showToast('Play / Pause');
-});
+if (btnPlayPause) {
+  btnPlayPause.addEventListener('click', () => {
+    sendAction({ type: 'media', action: 'playpause' });
+    const msg = state.lang === 'ar' ? 'تشغيل / إيقاف مؤقت' : (state.lang === 'fr' ? 'Lecture / Pause' : 'Play / Pause');
+    showToast(msg);
+  });
+}
 
 document.getElementById('btn-next').addEventListener('click', () => {
   sendAction({ type: 'media', action: 'next' });
-  showToast('Next Track');
+  const msg = state.lang === 'ar' ? 'المقطع التالي' : (state.lang === 'fr' ? 'Piste suivante' : 'Next Track');
+  showToast(msg);
 });
 
 // ==========================================================================
-// Brightness & Dell Lighting
+// Brightness & Dell Controls
 // ==========================================================================
 let brightDebounce = null;
 brightnessSlider.addEventListener('input', (e) => {
@@ -874,20 +1801,114 @@ brightnessSlider.addEventListener('input', (e) => {
 
 document.querySelectorAll('[data-bright]').forEach(btn => {
   btn.addEventListener('click', () => {
+    triggerHaptic();
     const val = parseInt(btn.getAttribute('data-bright'), 10);
     brightnessSlider.value = val;
     brightnessBadge.textContent = `${val}%`;
     sendAction({ type: 'brightness', action: 'set', value: val });
-    showToast(`Brightness set to ${val}%`);
+    const msg = state.lang === 'ar' ? `تم ضبط السطوع على ${val}%` : (state.lang === 'fr' ? `Luminosité réglée à ${val}%` : `Brightness set to ${val}%`);
+    showToast(msg);
   });
 });
 
-const btnMob = document.getElementById('btn-mobility');
-if (btnMob) {
-  btnMob.addEventListener('click', () => {
-    sendAction({ type: 'keyboard', action: 'mobility' });
-    showToast('Opened Dell Keyboard Lighting Controls');
+const btnOpenTaskmgr = document.getElementById('btn-open-taskmgr');
+if (btnOpenTaskmgr) {
+  btnOpenTaskmgr.addEventListener('click', () => {
+    triggerHaptic();
+    sendAction({ type: 'system', action: 'taskmgr' });
+    const msg = state.lang === 'ar' ? 'تم فتح إدارة المهام على الحاسوب' : (state.lang === 'fr' ? 'Gestionnaire des tâches lancé sur le PC' : 'Launched Windows Task Manager on PC');
+    showToast(msg);
   });
+}
+
+// ==========================================================================
+// Hardware Telemetry Real-Time Synchronizer
+// ==========================================================================
+function applyTelemetry(t) {
+  if (!t) return;
+  state.lastTelemetry = t;
+  const isAr = state.lang === 'ar';
+  const isFr = state.lang === 'fr';
+
+  // 1. CPU Processor
+  if (typeof t.cpu === 'number') {
+    const cpuVal = `${t.cpu}%`;
+    const pillCpu = document.getElementById('pill-cpu-val');
+    const badgeCpu = document.getElementById('cpu-percent-badge');
+    const barCpu = document.getElementById('cpu-progress-bar');
+    if (pillCpu) pillCpu.textContent = cpuVal;
+    if (badgeCpu) badgeCpu.textContent = cpuVal;
+    if (barCpu) {
+      barCpu.style.width = `${Math.min(100, Math.max(0, t.cpu))}%`;
+      if (t.cpu > 85) {
+        barCpu.style.background = 'linear-gradient(90deg, #EF4444, #DC2626)';
+        if (badgeCpu) badgeCpu.style.color = '#EF4444';
+      } else if (t.cpu > 60) {
+        barCpu.style.background = 'linear-gradient(90deg, #F59E0B, #D97706)';
+        if (badgeCpu) badgeCpu.style.color = '#F59E0B';
+      } else {
+        barCpu.style.background = 'linear-gradient(90deg, #00f0ff, #3b82f6)';
+        if (badgeCpu) badgeCpu.style.color = 'var(--neon-cyan)';
+      }
+    }
+    if (t.cores) {
+      const coresText = document.getElementById('cpu-cores-text');
+      if (coresText) {
+        coresText.textContent = isAr ? `${t.cores} أنوية نشطة` : (isFr ? `${t.cores} cœurs actifs` : `${t.cores} Cores Active`);
+      }
+    }
+  }
+
+  // 2. RAM Memory
+  if (t.ram) {
+    const ramPct = `${t.ram.percent}%`;
+    const pillRam = document.getElementById('pill-ram-val');
+    const badgeRam = document.getElementById('ram-percent-badge');
+    const barRam = document.getElementById('ram-progress-bar');
+    const textRam = document.getElementById('ram-usage-text');
+    if (pillRam) pillRam.textContent = ramPct;
+    if (badgeRam) badgeRam.textContent = ramPct;
+    if (barRam) barRam.style.width = `${Math.min(100, Math.max(0, t.ram.percent))}%`;
+    if (textRam && typeof t.ram.usedGb !== 'undefined') {
+      textRam.textContent = isAr
+        ? `${t.ram.usedGb} جيجابايت / ${t.ram.totalGb} جيجابايت (${t.ram.freeGb} جيجابايت متاح)`
+        : (isFr
+          ? `${t.ram.usedGb} Go / ${t.ram.totalGb} Go (${t.ram.freeGb} Go libre)`
+          : `${t.ram.usedGb} GB / ${t.ram.totalGb} GB (${t.ram.freeGb} GB Free)`);
+    }
+  }
+
+  // 3. Battery & Power
+  if (t.battery) {
+    const batPct = `${t.battery.percent}%`;
+    const pillBatVal = document.getElementById('pill-bat-val');
+    const pillBatIcon = document.getElementById('pill-bat-icon');
+    const badgeBat = document.getElementById('battery-percent-badge');
+    const barBat = document.getElementById('battery-progress-bar');
+    const subBat = document.getElementById('battery-sub-text');
+    const batSvg = document.getElementById('battery-status-icon');
+
+    if (pillBatVal) pillBatVal.textContent = batPct;
+    if (badgeBat) badgeBat.textContent = batPct;
+    if (barBat) barBat.style.width = `${Math.min(100, Math.max(0, t.battery.percent))}%`;
+
+    const isPlugged = !!t.battery.isCharging || t.battery.powerLine === 'Online';
+    if (pillBatIcon) pillBatIcon.textContent = isPlugged ? '⚡' : '🔋';
+    if (subBat) {
+      subBat.textContent = isPlugged
+        ? (isAr ? '⚡ متصل بالشاحن (تيار مستمر)' : (isFr ? '⚡ Branché sur secteur' : '⚡ Plugged In (AC Power)'))
+        : (isAr ? '🔋 يعمل على البطارية' : (isFr ? '🔋 Sur batterie' : '🔋 Running on Battery'));
+    }
+    if (batSvg) {
+      if (isPlugged) {
+        batSvg.style.color = '#10B981';
+      } else if (t.battery.percent <= 20) {
+        batSvg.style.color = '#EF4444';
+      } else {
+        batSvg.style.color = 'var(--neon-cyan)';
+      }
+    }
+  }
 }
 
 // App Launchpad
@@ -896,20 +1917,41 @@ document.querySelectorAll('.app-tile').forEach(tile => {
     const appId = tile.getAttribute('data-app');
     const appName = tile.querySelector('.app-name').textContent;
     sendAction({ type: 'app', action: appId });
-    showToast(`Launching ${appName}...`);
+    const msg = state.lang === 'ar' ? `جاري تشغيل ${appName}...` : (state.lang === 'fr' ? `Lancement de ${appName}...` : `Launching ${appName}...`);
+    showToast(msg);
   });
 });
 
-// Windows Controls
+// Windows Controls & Snap Management (Feature #4)
 document.querySelectorAll('[data-win]').forEach(btn => {
   btn.addEventListener('click', () => {
+    triggerHaptic();
     const action = btn.getAttribute('data-win');
     sendAction({ type: 'window', action });
-    if (action === 'switch') showToast('Alt + Tab (App Switcher)');
-    if (action === 'taskview') showToast('Task View');
-    if (action === 'desktop') showToast('Toggled Desktop');
-    if (action === 'screenshot') showToast('Windows Snipping Tool opened');
-    if (action === 'close') showToast('Closed Active Window');
+    const isAr = state.lang === 'ar';
+    const isFr = state.lang === 'fr';
+
+    const winToasts = {
+      'snap-left': isAr ? 'محاذاة النافذة إلى اليسار 50%' : (isFr ? 'Aligner à gauche 50%' : 'Snapped Window Left (50%)'),
+      'snap-right': isAr ? 'محاذاة النافذة إلى اليمين 50%' : (isFr ? 'Aligner à droite 50%' : 'Snapped Window Right (50%)'),
+      'maximize': isAr ? 'تكبير النافذة' : (isFr ? 'Agrandir la fenêtre' : 'Window Maximized'),
+      'minimize': isAr ? 'تصغير النافذة' : (isFr ? 'Réduire la fenêtre' : 'Window Minimized'),
+      'monitor-prev': isAr ? 'نقل النافذة إلى الشاشة السابقة' : (isFr ? 'Déplacer vers l’écran précédent' : 'Moved Window to Prev Monitor'),
+      'monitor-next': isAr ? 'نقل النافذة إلى الشاشة التالية' : (isFr ? 'Déplacer vers l’écran suivant' : 'Moved Window to Next Monitor'),
+      'vdesk-left': isAr ? 'سطح المكتب الافتراضي السابق' : (isFr ? 'Bureau virtuel précédent' : 'Switched to Left Virtual Desktop'),
+      'vdesk-right': isAr ? 'سطح المكتب الافتراضي التالي' : (isFr ? 'Bureau virtuel suivant' : 'Switched to Right Virtual Desktop'),
+      'vdesk-new': isAr ? 'تم إنشاء سطح مكتب افتراضي جديد' : (isFr ? 'Nouveau bureau virtuel créé' : 'Created New Virtual Desktop'),
+      'vdesk-close': isAr ? 'تم إغلاق سطح المكتب الافتراضي' : (isFr ? 'Bureau virtuel fermé' : 'Closed Virtual Desktop'),
+      'switch': isAr ? 'التبديل بين النوافذ (Alt+Tab)' : (isFr ? 'Basculer d’application (Alt+Tab)' : 'Alt + Tab (App Switcher)'),
+      'taskview': isAr ? 'عرض المهام (Win+Tab)' : (isFr ? 'Affichage des tâches (Win+Tab)' : 'Task View (Win + Tab)'),
+      'desktop': isAr ? 'عرض سطح المكتب' : (isFr ? 'Afficher le bureau' : 'Toggled Desktop (Win + D)'),
+      'screenshot': isAr ? 'أداة التقاط الشاشة' : (isFr ? 'Outil Capture d’écran' : 'Windows Snipping Tool (Win+Shift+S)'),
+      'close': isAr ? 'إغلاق النافذة النشطة' : (isFr ? 'Fermer la fenêtre active' : 'Closed Active Window (Alt+F4)')
+    };
+
+    if (winToasts[action]) {
+      showToast(winToasts[action]);
+    }
   });
 });
 
@@ -917,20 +1959,26 @@ document.querySelectorAll('[data-win]').forEach(btn => {
 document.querySelectorAll('[data-power]').forEach(btn => {
   btn.addEventListener('click', () => {
     const action = btn.getAttribute('data-power');
+    const isAr = state.lang === 'ar';
+    const isFr = state.lang === 'fr';
     if (action === 'lock') {
       sendAction({ type: 'system', action: 'lock' });
-      showToast('PC Locked');
+      showToast(isAr ? 'تم قفل الحاسوب' : (isFr ? 'PC Verrouillé' : 'PC Locked'));
       return;
     }
     if (action === 'sleep') {
       sendAction({ type: 'system', action: 'sleep' });
-      showToast('PC going to Sleep...');
+      showToast(isAr ? 'الحاسوب ينتقل لوضع السكون...' : (isFr ? 'PC en veille...' : 'PC going to Sleep...'));
       return;
     }
     triggerHaptic();
     state.activePowerAction = action;
     state.powerCountdown = 30;
-    modalTitle.textContent = action === 'shutdown' ? 'Confirm Shutdown' : 'Confirm Restart';
+    if (action === 'shutdown') {
+      modalTitle.textContent = isAr ? 'تأكيد إيقاف التشغيل' : (isFr ? 'Confirmer l\'arrêt' : 'Confirm Shutdown');
+    } else {
+      modalTitle.textContent = isAr ? 'تأكيد إعادة التشغيل' : (isFr ? 'Confirmer le redémarrage' : 'Confirm Restart');
+    }
     modalSeconds.textContent = '30';
     safetyModal.classList.add('show');
 
@@ -952,7 +2000,9 @@ btnAbortPower.addEventListener('click', () => {
   clearInterval(state.powerTimer);
   safetyModal.classList.remove('show');
   sendAction({ type: 'system', action: 'abort' });
-  showToast('Shutdown Aborted!');
+  const isAr = state.lang === 'ar';
+  const isFr = state.lang === 'fr';
+  showToast(isAr ? 'تم إلغاء إيقاف التشغيل!' : (isFr ? 'Arrêt annulé !' : 'Shutdown Aborted!'));
 });
 
 btnForcePower.addEventListener('click', () => {
@@ -1025,14 +2075,47 @@ document.getElementById('mouse-right').addEventListener('click', () => {
   triggerHaptic();
 });
 
-// Numpad Keys
+// ==========================================================================
+// Numpad & Remote PC Typing (Live Keystroke Injection)
+// ==========================================================================
 document.querySelectorAll('.numpad-key').forEach(keyBtn => {
   keyBtn.addEventListener('click', () => {
     const key = keyBtn.getAttribute('data-key');
     triggerHaptic();
-    showToast(`Key: ${key.toUpperCase()}`);
+    sendAction({ type: 'keyboard', action: 'press', key: key });
+    const isAr = state.lang === 'ar';
+    const isFr = state.lang === 'fr';
+    showToast(isAr ? `مفتاح: ${key.toUpperCase()}` : (isFr ? `Touche : ${key.toUpperCase()}` : `Key: ${key.toUpperCase()}`));
   });
 });
+
+const remoteTextInput = document.getElementById('remote-text-input');
+const btnSendRemoteText = document.getElementById('btn-send-remote-text');
+
+function sendRemoteText() {
+  if (!remoteTextInput) return;
+  const text = remoteTextInput.value;
+  if (!text) return;
+  triggerHaptic();
+  sendAction({ type: 'keyboard', action: 'type', text: text });
+  const preview = text.length > 25 ? text.slice(0, 22) + '...' : text;
+  const msg = state.lang === 'ar' ? `تم إرسال: "${preview}"` : (state.lang === 'fr' ? `Saisi sur le PC : "${preview}"` : `Typed to PC: "${preview}"`);
+  showToast(msg);
+  remoteTextInput.value = '';
+}
+
+if (btnSendRemoteText) {
+  btnSendRemoteText.addEventListener('click', sendRemoteText);
+}
+
+if (remoteTextInput) {
+  remoteTextInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendRemoteText();
+    }
+  });
+}
 
 // Load Pairing Info & QR Code
 async function loadInfo() {
@@ -1065,10 +2148,10 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then(reg => {
-        console.log('[TabDeck PWA] Service Worker registered:', reg.scope);
+        console.log('[AltDeck PWA] Service Worker registered:', reg.scope);
       })
       .catch(err => {
-        console.warn('[TabDeck PWA] Service Worker registration failed:', err);
+        console.warn('[AltDeck PWA] Service Worker registration failed:', err);
       });
   });
 }
@@ -1092,7 +2175,7 @@ async function triggerPwaInstall() {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
-      showToast(state.lang === 'ar' ? 'جاري تثبيت TabDeck...' : 'Installing TabDeck as Fullscreen App...');
+      showToast(state.lang === 'ar' ? 'جاري تثبيت AltDeck...' : (state.lang === 'fr' ? 'Installation de AltDeck...' : 'Installing AltDeck as Fullscreen App...'));
     }
     deferredPrompt = null;
     if (btnInstallPwa) btnInstallPwa.style.display = 'none';
@@ -1102,13 +2185,13 @@ async function triggerPwaInstall() {
                          window.matchMedia('(display-mode: fullscreen)').matches ||
                          window.navigator.standalone === true;
     if (isStandalone) {
-      showToast(state.lang === 'ar' ? 'التطبيق مثبت ويعمل بملء الشاشة بالفعل!' : 'TabDeck is running in Fullscreen App mode!');
+      showToast(state.lang === 'ar' ? 'التطبيق مثبت ويعمل بملء الشاشة بالفعل!' : (state.lang === 'fr' ? 'AltDeck fonctionne déjà en mode plein écran !' : 'AltDeck is running in Fullscreen App mode!'));
     } else {
       const msg = state.lang === 'ar'
-        ? '📱 لتثبيت التطبيق بملء الشاشة على تابلت سامسونج / أندرويد:\n1. اضغط على القائمة (⋮) أعلى متصفح Chrome.\n2. اختر "تثبيت التطبيق" أو "الإضافة إلى الشاشة الرئيسية".\n3. افتح TabDeck من شاشة جهازك ليعمل بملء الشاشة بدون أي أشرطة!'
+        ? '📱 لتثبيت التطبيق بملء الشاشة على تابلت سامسونج / أندرويد:\n1. اضغط على القائمة (⋮) أعلى متصفح Chrome.\n2. اختر "تثبيت التطبيق" أو "الإضافة إلى الشاشة الرئيسية".\n3. افتح AltDeck من شاشة جهازك ليعمل بملء الشاشة بدون أي أشرطة!'
         : (state.lang === 'fr'
-          ? '📱 Pour installer TabDeck en plein écran sur votre tablette:\n1. Ouvrez le menu (⋮) de Google Chrome.\n2. Sélectionnez "Installer l\'application" ou "Ajouter à l\'écran d\'accueil".\n3. Lancez TabDeck depuis l\'écran d\'accueil sans barre d\'adresse !'
-          : '📱 To install TabDeck as a Fullscreen App on your tablet:\n1. Tap the Chrome menu (⋮) in the top-right corner.\n2. Tap "Install app" or "Add to Home screen".\n3. Open TabDeck from your home screen to enjoy 100% borderless fullscreen!');
+          ? '📱 Pour installer AltDeck en plein écran sur votre tablette:\n1. Ouvrez le menu (⋮) de Google Chrome.\n2. Sélectionnez "Installer l\'application" ou "Ajouter à l\'écran d\'accueil".\n3. Lancez AltDeck depuis l\'écran d\'accueil sans barre d\'adresse !'
+          : '📱 To install AltDeck as a Fullscreen App on your tablet:\n1. Tap the Chrome menu (⋮) in the top-right corner.\n2. Tap "Install app" or "Add to Home screen".\n3. Open AltDeck from your home screen to enjoy 100% borderless fullscreen!');
       alert(msg);
     }
   }
@@ -1122,7 +2205,7 @@ if (pairingFullscreenBtn) {
     triggerHaptic();
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {});
-      showToast(state.lang === 'ar' ? 'تم تفعيل ملء الشاشة' : 'Entered Fullscreen Mode');
+      showToast(state.lang === 'ar' ? 'تم تفعيل ملء الشاشة' : (state.lang === 'fr' ? 'Mode plein écran activé' : 'Entered Fullscreen Mode'));
     } else {
       document.exitFullscreen().catch(() => {});
     }
@@ -1130,7 +2213,7 @@ if (pairingFullscreenBtn) {
 }
 
 window.addEventListener('appinstalled', () => {
-  showToast(state.lang === 'ar' ? 'تم تثبيت TabDeck بنجاح!' : 'TabDeck installed successfully!');
+  showToast(state.lang === 'ar' ? 'تم تثبيت AltDeck بنجاح!' : (state.lang === 'fr' ? 'AltDeck installé avec succès !' : 'AltDeck installed successfully!'));
   deferredPrompt = null;
   if (btnInstallPwa) btnInstallPwa.style.display = 'none';
 });
@@ -1161,10 +2244,13 @@ function renderDetectedApps(apps) {
 
   if (apps.length === 0) {
     detectedAppsContainer.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 30px 0;">${
-      state.lang === 'ar' ? 'لا توجد تطبيقات مطابقة' : 'No matching applications found'
+      state.lang === 'ar' ? 'لا توجد تطبيقات مطابقة' : (state.lang === 'fr' ? 'Aucune application trouvée' : 'No matching applications found')
     }</div>`;
     return;
   }
+
+  const isAr = state.lang === 'ar';
+  const isFr = state.lang === 'fr';
 
   apps.forEach(app => {
     const card = document.createElement('div');
@@ -1178,9 +2264,9 @@ function renderDetectedApps(apps) {
         <div class="detected-app-name" title="${escapeHtml(app.name)}">${escapeHtml(app.name)}</div>
         <div class="detected-app-id" title="${escapeHtml(app.appId)}">${escapeHtml(app.appId)}</div>
       </div>
-      <div class="detected-app-actions">
-        <button class="btn-app-launch" title="Launch on PC">🚀</button>
-        <button class="btn-app-add" title="Add to Stream Deck">+ Deck</button>
+      <div class="detected-app-actions" dir="ltr">
+        <button class="btn-app-launch" title="${isAr ? 'تشغيل على الحاسوب' : (isFr ? 'Lancer sur le PC' : 'Launch on PC')}">🚀</button>
+        <button class="btn-app-add" title="${isAr ? 'إضافة إلى لوحة التحكم' : (isFr ? 'Ajouter au Stream Deck' : 'Add to Stream Deck')}">${isAr ? '+ للوحة' : '+ Deck'}</button>
       </div>
     `;
 
@@ -1189,7 +2275,8 @@ function renderDetectedApps(apps) {
       e.stopPropagation();
       triggerHaptic();
       sendAction({ type: 'app', action: app.appId, target: app.appId });
-      showToast(state.lang === 'ar' ? `جاري تشغيل ${app.name} على الكمبيوتر...` : `Launching ${app.name} on PC...`);
+      const msg = state.lang === 'ar' ? `جاري تشغيل ${app.name} على الحاسوب...` : (state.lang === 'fr' ? `Lancement de ${app.name} sur le PC...` : `Launching ${app.name} on PC...`);
+      showToast(msg);
     });
 
     // Add directly to Deck
@@ -1217,10 +2304,12 @@ function renderDetectedApps(apps) {
         if (data.status === 'ok') {
           state.customActions = data.actions;
           renderCustomActions(data.actions);
-          showToast(state.lang === 'ar' ? 'تمت إضافة التطبيق إلى لوحة التحكم!' : `Added "${app.name}" to Stream Deck!`);
+          const msg = state.lang === 'ar' ? `تمت إضافة "${app.name}" إلى لوحة التحكم!` : (state.lang === 'fr' ? `Ajouté "${app.name}" au Stream Deck !` : `Added "${app.name}" to Stream Deck!`);
+          showToast(msg);
         }
       } catch (err) {
-        showToast('Error adding action');
+        const msg = state.lang === 'ar' ? 'خطأ في إضافة الإجراء' : (state.lang === 'fr' ? 'Erreur lors de l\'ajout' : 'Error adding action');
+        showToast(msg);
       }
     });
 
@@ -1231,7 +2320,10 @@ function renderDetectedApps(apps) {
 function updateAppSelectDropdown(apps) {
   const select = document.getElementById('action-form-app-select');
   if (!select) return;
-  select.innerHTML = '<option value="">-- Choose Installed PC App --</option>';
+  const isAr = state.lang === 'ar';
+  const isFr = state.lang === 'fr';
+  const chooseText = isAr ? '-- اختر تطبيقاً مثبتاً --' : (isFr ? '-- Choisir une application --' : '-- Choose Installed PC App --');
+  select.innerHTML = `<option value="">${chooseText}</option>`;
   apps.forEach(app => {
     const opt = document.createElement('option');
     opt.value = app.appId;
@@ -1243,7 +2335,7 @@ function updateAppSelectDropdown(apps) {
 
 async function fetchDetectedApps(forceRefresh = false) {
   if (detectedAppsCount) {
-    detectedAppsCount.textContent = state.lang === 'ar' ? 'جاري الفحص...' : 'Scanning PC...';
+    detectedAppsCount.textContent = state.lang === 'ar' ? 'جاري الفحص...' : (state.lang === 'fr' ? 'Recherche sur le PC...' : 'Scanning PC...');
   }
   try {
     const res = await fetch(`/api/detected-apps${forceRefresh ? '?refresh=1' : ''}`);
@@ -1253,13 +2345,13 @@ async function fetchDetectedApps(forceRefresh = false) {
       if (detectedAppsCount) {
         detectedAppsCount.textContent = state.lang === 'ar'
           ? `${data.apps.length} تطبيق مكتشف`
-          : `${data.apps.length} Apps Detected`;
+          : (state.lang === 'fr' ? `${data.apps.length} applications détectées` : `${data.apps.length} Apps Detected`);
       }
       renderDetectedApps(state.detectedApps);
       updateAppSelectDropdown(state.detectedApps);
     }
   } catch (err) {
-    if (detectedAppsCount) detectedAppsCount.textContent = 'Scan Error';
+    if (detectedAppsCount) detectedAppsCount.textContent = state.lang === 'ar' ? 'خطأ في الفحص' : (state.lang === 'fr' ? 'Erreur d\'analyse' : 'Scan Error');
   }
 }
 
@@ -1267,7 +2359,8 @@ if (btnRefreshDetectedApps) {
   btnRefreshDetectedApps.addEventListener('click', () => {
     triggerHaptic();
     fetchDetectedApps(true);
-    showToast(state.lang === 'ar' ? 'جاري تحديث تطبيقات الكمبيوتر...' : 'Refreshing detected PC apps...');
+    const msg = state.lang === 'ar' ? 'جاري تحديث تطبيقات الحاسوب...' : (state.lang === 'fr' ? 'Actualisation des applications du PC...' : 'Refreshing detected PC apps...');
+    showToast(msg);
   });
 }
 
@@ -1305,5 +2398,8 @@ if (btnBrowseDetected) {
     }
   });
 }
+
+// Final initial synchronization
+applyLanguage(state.lang);
 
 
