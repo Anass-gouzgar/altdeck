@@ -89,3 +89,16 @@ function Draw-AltDeckIcon([int]$size, [string]$outPath) {
 
 Draw-AltDeckIcon 512 "public/icon-512.png"
 Draw-AltDeckIcon 192 "public/icon-192.png"
+
+# Generate favicon.ico
+$bmp192 = [System.Drawing.Bitmap]::FromFile("public/icon-192.png")
+$thumb = New-Object System.Drawing.Bitmap($bmp192, 48, 48)
+$hIcon = $thumb.GetHicon()
+$ico = [System.Drawing.Icon]::FromHandle($hIcon)
+$fs = [System.IO.File]::Create("public/favicon.ico")
+$ico.Save($fs)
+$fs.Close()
+$ico.Dispose()
+$thumb.Dispose()
+$bmp192.Dispose()
+Write-Host "Created public/favicon.ico"

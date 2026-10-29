@@ -243,6 +243,25 @@ async function getTelemetryData() {
   return { cpu, ram, battery, cores };
 }
 
+function getSystemHostInfo() {
+  let username = process.env.USERNAME || process.env.USER || 'User';
+  try {
+    const u = os.userInfo();
+    if (u && u.username) username = u.username;
+  } catch (e) {}
+  const osRelease = os.release() || '';
+  const winBuild = parseInt(osRelease.split('.')[2] || '0', 10);
+  const osName = os.platform() === 'win32'
+    ? (winBuild >= 22000 ? 'Windows 11' : (winBuild >= 10240 ? 'Windows 10' : 'Windows'))
+    : (os.type() || 'PC');
+  return {
+    hostname: os.hostname(),
+    username,
+    osName,
+    platform: os.platform()
+  };
+}
+
 // Get system state (volume, mute, brightness, telemetry)
 async function getFullStatus() {
   let volume = 50;
@@ -281,6 +300,8 @@ async function getFullStatus() {
   const pcTzOffset = now.getTimezoneOffset(); // minutes offset from UTC
   const telemetry = await getTelemetryData();
 
+  const hostInfo = getSystemHostInfo();
+
   return {
     volume,
     muted,
@@ -289,8 +310,10 @@ async function getFullStatus() {
     brightness,
     telemetry,
     media: cachedMedia,
-    hostname: os.hostname(),
-    platform: os.platform(),
+    hostname: hostInfo.hostname,
+    username: hostInfo.username,
+    osName: hostInfo.osName,
+    platform: hostInfo.platform,
     localIp: LOCAL_IP,
     port: PORT,
     timestamp: Date.now(),
@@ -473,9 +496,13 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/api/info') {
     const tabletUrl = `http://${LOCAL_IP}:${PORT}`;
     const qrSvg = await QRCode.toString(tabletUrl, { type: 'svg', margin: 2 });
+    const hostInfo = getSystemHostInfo();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({
-      hostname: os.hostname(),
+      hostname: hostInfo.hostname,
+      username: hostInfo.username,
+      osName: hostInfo.osName,
+      platform: hostInfo.platform,
       localIp: LOCAL_IP,
       port: PORT,
       tabletUrl,

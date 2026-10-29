@@ -11,6 +11,9 @@
   
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   
   <!-- Modern Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,7 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <script src="nosleep.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=2.99">
+  <link rel="stylesheet" href="style.css?v=3.00">
 </head>
 <body>
 
@@ -40,15 +43,15 @@
   <!-- Top Navigation & System Status Header -->
   <header class="app-header">
     <div class="brand">
-      <div class="brand-icon">
-        <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z M2 4h20v16H2z M7 10h10v4H7z"/></svg>
+      <div class="brand-icon" id="brand-logo-wrap" title="AltDeck - Touch PC Companion">
+        <img src="icon.svg" alt="AltDeck Logo" class="brand-logo-img" id="brand-logo-img">
       </div>
       <div>
         <div style="display: flex; align-items: center; gap: 8px;">
           <h1 class="brand-title">AltDeck</h1>
-          <span class="brand-badge">PC DECK</span>
+          <span class="brand-badge" id="brand-badge" title="Target PC Hostname (Tap to switch Host/User)">PC DECK</span>
         </div>
-        <div style="font-size: 0.72rem; color: var(--text-muted);" id="pc-hostname">Windows PC • Connecting...</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted);" id="pc-hostname" title="Tap to copy connection address">Windows PC • Connecting...</div>
       </div>
     </div>
 
@@ -1099,6 +1102,6 @@
   <!-- Toast Notification -->
   <div class="toast" id="toast-msg" data-i18n="toastActionExecuted">Action Executed</div>
 
-  <script src="app.js?v=2.99"></script>
+  <script src="app.js?v=3.00"></script>
 </body>
 </html>

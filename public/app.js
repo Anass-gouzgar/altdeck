@@ -19,7 +19,9 @@ const state = {
   theme: localStorage.getItem('altdeck_theme') || localStorage.getItem('tabdeck_theme') || 'theme-obsidian',
   lang: localStorage.getItem('altdeck_lang') || localStorage.getItem('tabdeck_lang') || 'en',
   serverTzOffset: null,
-  timeOffsetHours: parseInt((localStorage.getItem('altdeck_time_offset') !== null ? localStorage.getItem('altdeck_time_offset') : localStorage.getItem('tabdeck_time_offset')) || '-1', 10)
+  timeOffsetHours: parseInt((localStorage.getItem('altdeck_time_offset') !== null ? localStorage.getItem('altdeck_time_offset') : localStorage.getItem('tabdeck_time_offset')) || '-1', 10),
+  hostInfo: null,
+  badgeMode: 'host'
 };
 
 // Elements
@@ -40,6 +42,73 @@ const btnForcePower = document.getElementById('btn-force-power');
 const qrContainer = document.getElementById('qr-container');
 const displayUrl = document.getElementById('display-url');
 const pcHostname = document.getElementById('pc-hostname');
+const brandBadge = document.getElementById('brand-badge');
+const brandLogoWrap = document.getElementById('brand-logo-wrap');
+
+function updateDynamicHost(data) {
+  if (!data) return;
+  const host = data.hostname || (state.hostInfo && state.hostInfo.host) || 'PC DECK';
+  const user = data.username || (state.hostInfo && state.hostInfo.user) || '';
+  const osName = data.osName || (state.hostInfo && state.hostInfo.osName) || 'Windows 11';
+  const ip = data.localIp || (state.hostInfo && state.hostInfo.ip) || window.location.hostname || '';
+
+  state.hostInfo = { host, user, osName, ip };
+
+  if (brandBadge) {
+    if (state.badgeMode === 'user' && user) {
+      brandBadge.textContent = user.toUpperCase();
+      brandBadge.setAttribute('title', `Active User: ${user} (Tap to show PC Name)`);
+    } else {
+      brandBadge.textContent = host;
+      brandBadge.setAttribute('title', `Host PC: ${host} (Tap to show Username)`);
+    }
+  }
+
+  if (pcHostname) {
+    if (user && user !== host) {
+      pcHostname.textContent = `${user} @ ${host} • ${osName}`;
+    } else {
+      pcHostname.textContent = `${host} • ${osName}`;
+    }
+    pcHostname.setAttribute('title', `Tap to copy: http://${ip || window.location.host}`);
+  }
+}
+
+if (brandBadge) {
+  brandBadge.addEventListener('click', () => {
+    triggerHaptic();
+    state.badgeMode = state.badgeMode === 'user' ? 'host' : 'user';
+    if (state.hostInfo) {
+      updateDynamicHost(state.hostInfo);
+      const label = state.badgeMode === 'user'
+        ? (state.lang === 'ar' ? `المستخدم: ${state.hostInfo.user}` : `User: ${state.hostInfo.user}`)
+        : (state.lang === 'ar' ? `اسم الحاسوب: ${state.hostInfo.host}` : `PC: ${state.hostInfo.host}`);
+      showToast(label);
+    }
+  });
+}
+
+if (brandLogoWrap) {
+  brandLogoWrap.addEventListener('click', () => {
+    triggerHaptic();
+    brandLogoWrap.classList.remove('spin-anim');
+    void brandLogoWrap.offsetWidth;
+    brandLogoWrap.classList.add('spin-anim');
+    setTimeout(() => brandLogoWrap.classList.remove('spin-anim'), 600);
+  });
+}
+
+if (pcHostname) {
+  pcHostname.addEventListener('click', () => {
+    triggerHaptic();
+    const url = window.location.origin;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => {
+        showToast(state.lang === 'ar' ? 'تم نسخ رابط الاتصال!' : (state.lang === 'fr' ? 'URL de connexion copiée !' : `Copied: ${url}`));
+      }).catch(() => {});
+    }
+  });
+}
 
 // Notifications & Custom Action Elements
 const notifBanner = document.getElementById('notification-banner');
@@ -1140,8 +1209,8 @@ function applyStatus(data) {
   if (data.media) {
     applyMedia(data.media);
   }
-  if (data.hostname && pcHostname) {
-    pcHostname.textContent = `${data.hostname} • Windows 11`;
+  if (data.hostname || data.username) {
+    updateDynamicHost(data);
   }
 }
 
@@ -2132,8 +2201,8 @@ async function loadInfo() {
       state.customActions = data.customActions;
       renderCustomActions(data.customActions);
     }
-    if (data.hostname && pcHostname) {
-      pcHostname.textContent = `${data.hostname} • Windows`;
+    if (data.hostname || data.username) {
+      updateDynamicHost(data);
     }
   } catch (e) {}
   // Pre-load detected PC apps
