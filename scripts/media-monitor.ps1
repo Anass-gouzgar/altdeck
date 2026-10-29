@@ -5,6 +5,16 @@ param(
     [double]$SeekTo = -1
 )
 
+# Force full UTF-8 output encoding with NO BOM so stdout streams Arabic and unicode strings cleanly to Node.js
+try {
+    $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+    [Console]::OutputEncoding = $utf8NoBom
+    $OutputEncoding = $utf8NoBom
+    if ([System.Console]::InputEncoding) {
+        [Console]::InputEncoding = $utf8NoBom
+    }
+} catch {}
+
 Add-Type -AssemblyName System.Runtime.WindowsRuntime
 $asTaskGeneric = ([System.WindowsRuntimeSystemExtensions].GetMethods() | Where-Object { 
     $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1' 
@@ -128,13 +138,15 @@ Function Seek-Media($sec) {
 
 if ($SeekTo -ge 0) {
     $res = Seek-Media $SeekTo
-    $res | ConvertTo-Json -Compress
+    [Console]::WriteLine(($res | ConvertTo-Json -Compress))
+    [Console]::Out.Flush()
     exit 0
 }
 
 if ($Mode -eq "oneshot") {
     $data = Get-MediaData
-    $data | ConvertTo-Json -Compress
+    [Console]::WriteLine(($data | ConvertTo-Json -Compress))
+    [Console]::Out.Flush()
     exit 0
 }
 
@@ -144,7 +156,7 @@ while ($true) {
     $data = Get-MediaData
     $json = $data | ConvertTo-Json -Compress
     if ($json -ne $lastJson) {
-        Write-Output $json
+        [Console]::WriteLine($json)
         [Console]::Out.Flush()
         $lastJson = $json
     }

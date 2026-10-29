@@ -36,6 +36,10 @@ function startMediaWorker() {
       stdio: ['pipe', 'pipe', 'pipe']
     });
 
+    if (mediaWorker.stdout) {
+      mediaWorker.stdout.setEncoding('utf8');
+    }
+
     const rl = readline.createInterface({ input: mediaWorker.stdout });
 
     rl.on('line', (line) => {
@@ -80,12 +84,12 @@ function seekMedia(sec) {
       return;
     } catch (e) {}
   }
-  exec(`powershell -NoProfile -ExecutionPolicy Bypass -File "${path.join(__dirname, 'scripts', 'media-monitor.ps1')}" -SeekTo ${sec}`);
+  execFile('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(__dirname, 'scripts', 'media-monitor.ps1'), '-SeekTo', String(sec)], { windowsHide: true });
 }
 
 function fetchMediaFallback() {
   const scriptPath = path.join(__dirname, 'scripts', 'media-monitor.ps1');
-  exec(`powershell -NoProfile -ExecutionPolicy Bypass -File "${scriptPath}" -Mode oneshot`, (err, stdout) => {
+  execFile('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', scriptPath, '-Mode', 'oneshot'], { encoding: 'utf8', windowsHide: true }, (err, stdout) => {
     if (!err && stdout) {
       try {
         const data = JSON.parse(stdout.trim());

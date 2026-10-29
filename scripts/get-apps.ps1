@@ -1,3 +1,10 @@
+# Force UTF-8 output encoding for non-ASCII and Arabic Windows applications
+try {
+    $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+    [Console]::OutputEncoding = $utf8NoBom
+    $OutputEncoding = $utf8NoBom
+} catch {}
+
 $apps = Get-StartApps | Where-Object { 
     $_.AppID -notmatch '^https?://' -and 
     $_.AppID -notmatch '\.(html|htm|pdf|url)$' -and
@@ -13,4 +20,5 @@ foreach ($app in $apps) {
         appId = $app.AppID
     }
 }
-$result | ConvertTo-Json -Compress
+[Console]::WriteLine(($result | ConvertTo-Json -Compress))
+[Console]::Out.Flush()

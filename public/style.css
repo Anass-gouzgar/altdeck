@@ -2158,6 +2158,7 @@ html[dir="rtl"] .notif-drawer.show {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  unicode-bidi: plaintext;
 }
 
 .now-playing-artist {
@@ -2166,6 +2167,7 @@ html[dir="rtl"] .notif-drawer.show {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  unicode-bidi: plaintext;
 }
 
 /* Interactive Timeline Progress Bar */
