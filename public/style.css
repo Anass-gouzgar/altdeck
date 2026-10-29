@@ -1146,93 +1146,7 @@ body {
   }
 }
 
-/* ==========================================================================
-   Themes (8 Curated Glassmorphic Schemes)
-   ========================================================================== */
 
-body.theme-midnight {
-  --bg-deep: #000000;
-  --bg-surface: #0a0a0c;
-  --bg-card: rgba(18, 18, 22, 0.85);
-  --bg-card-hover: rgba(28, 28, 34, 0.95);
-  --neon-cyan: #e2e8f0;
-  --neon-blue: #94a3b8;
-  --neon-purple: #64748b;
-  --border-glow: rgba(226, 232, 240, 0.35);
-  --shadow-glow: 0 0 25px rgba(226, 232, 240, 0.15);
-}
-
-body.theme-ocean {
-  --bg-deep: #020b18;
-  --bg-surface: #051833;
-  --bg-card: rgba(8, 28, 58, 0.8);
-  --bg-card-hover: rgba(12, 42, 85, 0.9);
-  --neon-cyan: #00d2ff;
-  --neon-blue: #0077ff;
-  --neon-purple: #00e1d9;
-  --border-glow: rgba(0, 210, 255, 0.4);
-  --shadow-glow: 0 0 25px rgba(0, 210, 255, 0.25);
-}
-
-body.theme-ember {
-  --bg-deep: #120603;
-  --bg-surface: #1e0d08;
-  --bg-card: rgba(38, 18, 12, 0.85);
-  --bg-card-hover: rgba(58, 28, 18, 0.95);
-  --neon-cyan: #ff6b35;
-  --neon-blue: #f72585;
-  --neon-purple: #ff9f1c;
-  --border-glow: rgba(255, 107, 53, 0.45);
-  --shadow-glow: 0 0 25px rgba(255, 107, 53, 0.25);
-}
-
-body.theme-forest {
-  --bg-deep: #031008;
-  --bg-surface: #061e10;
-  --bg-card: rgba(8, 36, 20, 0.8);
-  --bg-card-hover: rgba(14, 56, 32, 0.9);
-  --neon-cyan: #10b981;
-  --neon-blue: #06b6d4;
-  --neon-purple: #34d399;
-  --border-glow: rgba(16, 185, 129, 0.45);
-  --shadow-glow: 0 0 25px rgba(16, 185, 129, 0.25);
-}
-
-body.theme-rose {
-  --bg-deep: #120310;
-  --bg-surface: #1f071b;
-  --bg-card: rgba(38, 12, 34, 0.85);
-  --bg-card-hover: rgba(58, 20, 52, 0.95);
-  --neon-cyan: #ec4899;
-  --neon-blue: #f43f5e;
-  --neon-purple: #d946ef;
-  --border-glow: rgba(236, 72, 153, 0.45);
-  --shadow-glow: 0 0 25px rgba(236, 72, 153, 0.25);
-}
-
-body.theme-frost {
-  --bg-deep: #060e18;
-  --bg-surface: #0c1a2e;
-  --bg-card: rgba(14, 32, 54, 0.8);
-  --bg-card-hover: rgba(22, 48, 80, 0.9);
-  --neon-cyan: #38bdf8;
-  --neon-blue: #60a5fa;
-  --neon-purple: #818cf8;
-  --border-glow: rgba(56, 189, 248, 0.4);
-  --shadow-glow: 0 0 25px rgba(56, 189, 248, 0.2);
-}
-
-body.theme-gold {
-  --bg-deep: #120e03;
-  --bg-surface: #1e1707;
-  --bg-card: rgba(38, 30, 10, 0.85);
-  --bg-card-hover: rgba(58, 46, 16, 0.95);
-  --neon-cyan: #f59e0b;
-  --neon-blue: #fbbf24;
-  --neon-purple: #d97706;
-  --border-glow: rgba(245, 158, 11, 0.45);
-  --shadow-glow: 0 0 25px rgba(245, 158, 11, 0.25);
-}
 
 /* ==========================================================================
    Real-Time Notification Banner (PC-to-Tablet)
@@ -2317,276 +2231,290 @@ html[dir="rtl"] .notif-drawer.show {
 }
 
 /* ==========================================================================
-   14 Ultra-Premium Glassmorphic Themes
+   14 World-Class Tech Brand Themes (Cartographie des Couleurs des Géants)
    ========================================================================== */
 
-/* 1. Obsidian (Default Cyber Onyx) */
-body.theme-obsidian {
-  --bg-deep: #07090e;
-  --bg-surface: #0e1320;
-  --bg-card: rgba(18, 24, 40, 0.75);
-  --bg-card-hover: rgba(28, 36, 58, 0.85);
+/* 1. Instagram Sunset (Sunset Neon: Purple, Coral, Gold) */
+body.theme-instagram,
+body.theme-obsidian,
+body.theme-rose,
+body.theme-synthwave {
+  --bg-deep: #0b0813;
+  --bg-surface: #140e22;
+  --bg-card: rgba(28, 18, 44, 0.78);
+  --bg-card-hover: rgba(42, 26, 66, 0.88);
   --border-glass: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(0, 240, 255, 0.35);
-  --neon-cyan: #00f0ff;
-  --neon-blue: #3b82f6;
-  --neon-purple: #8b5cf6;
-  --gradient-cyan: linear-gradient(135deg, #00f0ff 0%, #3b82f6 100%);
-  --shadow-glow: 0 0 25px rgba(0, 240, 255, 0.2);
+  --border-glow: rgba(225, 48, 108, 0.45);
+  --neon-cyan: #fd1d1d;
+  --neon-blue: #833ab4;
+  --neon-purple: #fcb045;
+  --gradient-cyan: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+  --shadow-glow: 0 0 25px rgba(225, 48, 108, 0.3);
   background-color: var(--bg-deep);
   background-image: 
-    radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 12% 12%, rgba(131, 58, 180, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(253, 29, 29, 0.18) 0%, transparent 48%),
+    radial-gradient(circle at 50% 50%, rgba(252, 176, 69, 0.08) 0%, transparent 50%);
 }
 
-/* 2. Midnight (Pure AMOLED Pitch Black) */
+/* 2. Facebook / Meta (Meta Blue & Electric Cyan) */
+body.theme-facebook,
+body.theme-ocean {
+  --bg-deep: #050b14;
+  --bg-surface: #0a1426;
+  --bg-card: rgba(14, 26, 48, 0.8);
+  --bg-card-hover: rgba(22, 40, 72, 0.9);
+  --border-glass: rgba(0, 194, 255, 0.14);
+  --border-glow: rgba(8, 102, 255, 0.5);
+  --neon-cyan: #00c2ff;
+  --neon-blue: #0866ff;
+  --neon-purple: #4b88ff;
+  --gradient-cyan: linear-gradient(135deg, #0866ff 0%, #00c2ff 100%);
+  --shadow-glow: 0 0 25px rgba(8, 102, 255, 0.35);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(8, 102, 255, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(0, 194, 255, 0.16) 0%, transparent 50%);
+}
+
+/* 3. YouTube (Studio Red & Pitch Black) */
+body.theme-youtube {
+  --bg-deep: #080808;
+  --bg-surface: #121212;
+  --bg-card: rgba(26, 26, 26, 0.85);
+  --bg-card-hover: rgba(38, 38, 38, 0.92);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(255, 0, 0, 0.5);
+  --neon-cyan: #ff0000;
+  --neon-blue: #ff3333;
+  --neon-purple: #ffffff;
+  --gradient-cyan: linear-gradient(135deg, #ff0000 0%, #aa0000 100%);
+  --shadow-glow: 0 0 25px rgba(255, 0, 0, 0.35);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 10% 12%, rgba(255, 0, 0, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 90% 85%, rgba(255, 68, 68, 0.1) 0%, transparent 50%);
+}
+
+/* 4. Canva (Turquoise Teal & Royal Violet) */
+body.theme-canva,
+body.theme-frost {
+  --bg-deep: #080a18;
+  --bg-surface: #10132b;
+  --bg-card: rgba(22, 26, 56, 0.8);
+  --bg-card-hover: rgba(34, 39, 80, 0.9);
+  --border-glass: rgba(0, 196, 204, 0.16);
+  --border-glow: rgba(0, 196, 204, 0.45);
+  --neon-cyan: #00c4cc;
+  --neon-blue: #4568dc;
+  --neon-purple: #7d2ae8;
+  --gradient-cyan: linear-gradient(135deg, #00c4cc 0%, #7d2ae8 100%);
+  --shadow-glow: 0 0 25px rgba(0, 196, 204, 0.32);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 10% 15%, rgba(0, 196, 204, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(125, 42, 232, 0.22) 0%, transparent 48%);
+}
+
+/* 5. Gmail / Google (Google 4-Color Material Dark) */
+body.theme-gmail,
+body.theme-gold {
+  --bg-deep: #0d1017;
+  --bg-surface: #151a24;
+  --bg-card: rgba(25, 31, 44, 0.8);
+  --bg-card-hover: rgba(36, 45, 62, 0.9);
+  --border-glass: rgba(66, 133, 244, 0.16);
+  --border-glow: rgba(66, 133, 244, 0.45);
+  --neon-cyan: #4285f4;
+  --neon-blue: #34a853;
+  --neon-purple: #ea4335;
+  --gradient-cyan: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+  --shadow-glow: 0 0 25px rgba(66, 133, 244, 0.3);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(66, 133, 244, 0.18) 0%, transparent 40%),
+    radial-gradient(circle at 90% 12%, rgba(234, 67, 53, 0.16) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(52, 168, 83, 0.16) 0%, transparent 45%),
+    radial-gradient(circle at 15% 85%, rgba(251, 188, 5, 0.12) 0%, transparent 45%);
+}
+
+/* 6. Claude AI (Anthropic Warm Terracotta & Amber) */
+body.theme-claude,
+body.theme-ember {
+  --bg-deep: #12100e;
+  --bg-surface: #1c1815;
+  --bg-card: rgba(36, 30, 26, 0.82);
+  --bg-card-hover: rgba(50, 42, 36, 0.92);
+  --border-glass: rgba(217, 119, 87, 0.18);
+  --border-glow: rgba(217, 119, 87, 0.5);
+  --neon-cyan: #d97757;
+  --neon-blue: #e28766;
+  --neon-purple: #f59e0b;
+  --gradient-cyan: linear-gradient(135deg, #d97757 0%, #e28766 50%, #f59e0b 100%);
+  --shadow-glow: 0 0 25px rgba(217, 119, 87, 0.32);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 12% 15%, rgba(217, 119, 87, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(245, 158, 11, 0.16) 0%, transparent 50%);
+}
+
+/* 7. LinkedIn (Executive Blue & Steel) */
+body.theme-linkedin,
+body.theme-nord {
+  --bg-deep: #060c14;
+  --bg-surface: #0c1624;
+  --bg-card: rgba(16, 28, 44, 0.82);
+  --bg-card-hover: rgba(24, 40, 62, 0.92);
+  --border-glass: rgba(10, 102, 194, 0.18);
+  --border-glow: rgba(10, 102, 194, 0.5);
+  --neon-cyan: #70b5f9;
+  --neon-blue: #0a66c2;
+  --neon-purple: #004182;
+  --gradient-cyan: linear-gradient(135deg, #0a66c2 0%, #70b5f9 100%);
+  --shadow-glow: 0 0 25px rgba(10, 102, 194, 0.32);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 10% 15%, rgba(10, 102, 194, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 90% 85%, rgba(112, 181, 249, 0.14) 0%, transparent 50%);
+}
+
+/* 8. Duolingo (Owl Lime & Golden Feather) */
+body.theme-duolingo,
+body.theme-forest {
+  --bg-deep: #081216;
+  --bg-surface: #0e1e24;
+  --bg-card: rgba(20, 36, 44, 0.82);
+  --bg-card-hover: rgba(28, 50, 60, 0.92);
+  --border-glass: rgba(88, 204, 2, 0.18);
+  --border-glow: rgba(88, 204, 2, 0.5);
+  --neon-cyan: #58cc02;
+  --neon-blue: #2b70c9;
+  --neon-purple: #ffc800;
+  --gradient-cyan: linear-gradient(135deg, #58cc02 0%, #ffc800 100%);
+  --shadow-glow: 0 0 25px rgba(88, 204, 2, 0.35);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 12% 12%, rgba(88, 204, 2, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(255, 200, 0, 0.16) 0%, transparent 50%);
+}
+
+/* 9. Spotify (Spotify Sound Green & Pitch Dark) */
+body.theme-spotify,
+body.theme-matrix {
+  --bg-deep: #070707;
+  --bg-surface: #111111;
+  --bg-card: rgba(24, 24, 24, 0.85);
+  --bg-card-hover: rgba(36, 36, 36, 0.94);
+  --border-glass: rgba(29, 185, 84, 0.18);
+  --border-glow: rgba(29, 185, 84, 0.5);
+  --neon-cyan: #1db954;
+  --neon-blue: #1ed760;
+  --neon-purple: #10843a;
+  --gradient-cyan: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+  --shadow-glow: 0 0 25px rgba(29, 185, 84, 0.35);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 10% 12%, rgba(29, 185, 84, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 90% 85%, rgba(30, 215, 96, 0.12) 0%, transparent 50%);
+}
+
+/* 10. Discord (Blurple & Gamer Charcoal) */
+body.theme-discord {
+  --bg-deep: #0c0d11;
+  --bg-surface: #15161c;
+  --bg-card: rgba(28, 29, 36, 0.82);
+  --bg-card-hover: rgba(40, 42, 52, 0.92);
+  --border-glass: rgba(88, 101, 242, 0.18);
+  --border-glow: rgba(88, 101, 242, 0.5);
+  --neon-cyan: #57f287;
+  --neon-blue: #5865f2;
+  --neon-purple: #eb459e;
+  --gradient-cyan: linear-gradient(135deg, #5865f2 0%, #3c4270 100%);
+  --shadow-glow: 0 0 25px rgba(88, 101, 242, 0.35);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 12% 15%, rgba(88, 101, 242, 0.24) 0%, transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(87, 242, 135, 0.14) 0%, transparent 50%);
+}
+
+/* 11. Netflix (Cinema Red & Film Shadow) */
+body.theme-netflix,
+body.theme-crimson {
+  --bg-deep: #060606;
+  --bg-surface: #101010;
+  --bg-card: rgba(22, 22, 22, 0.88);
+  --bg-card-hover: rgba(34, 34, 34, 0.95);
+  --border-glass: rgba(229, 9, 20, 0.2);
+  --border-glow: rgba(229, 9, 20, 0.55);
+  --neon-cyan: #e50914;
+  --neon-blue: #b81d24;
+  --neon-purple: #831010;
+  --gradient-cyan: linear-gradient(135deg, #e50914 0%, #000000 100%);
+  --shadow-glow: 0 0 25px rgba(229, 9, 20, 0.38);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(229, 9, 20, 0.25) 0%, transparent 45%),
+    radial-gradient(circle at 90% 90%, rgba(184, 29, 36, 0.14) 0%, transparent 50%);
+}
+
+/* 12. TikTok (Cyber Cyan & Electro Crimson) */
+body.theme-tiktok,
+body.theme-cyberpunk {
+  --bg-deep: #040406;
+  --bg-surface: #0e0e14;
+  --bg-card: rgba(20, 20, 30, 0.82);
+  --bg-card-hover: rgba(30, 30, 44, 0.92);
+  --border-glass: rgba(0, 242, 254, 0.18);
+  --border-glow: rgba(0, 242, 254, 0.5);
+  --neon-cyan: #00f2fe;
+  --neon-blue: #25f4ee;
+  --neon-purple: #fe2c55;
+  --gradient-cyan: linear-gradient(135deg, #00f2fe 0%, #fe2c55 100%);
+  --shadow-glow: 0 0 25px rgba(254, 44, 85, 0.35);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 12% 15%, rgba(0, 242, 254, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(254, 44, 85, 0.22) 0%, transparent 45%);
+}
+
+/* 13. Twitch (Streamer Electric Purple) */
+body.theme-twitch,
+body.theme-dracula {
+  --bg-deep: #08060f;
+  --bg-surface: #110d1f;
+  --bg-card: rgba(24, 18, 42, 0.82);
+  --bg-card-hover: rgba(36, 27, 62, 0.92);
+  --border-glass: rgba(145, 70, 255, 0.18);
+  --border-glow: rgba(145, 70, 255, 0.5);
+  --neon-cyan: #bf94ff;
+  --neon-blue: #9146ff;
+  --neon-purple: #772ce8;
+  --gradient-cyan: linear-gradient(135deg, #9146ff 0%, #772ce8 100%);
+  --shadow-glow: 0 0 25px rgba(145, 70, 255, 0.35);
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 10% 12%, rgba(145, 70, 255, 0.25) 0%, transparent 45%),
+    radial-gradient(circle at 90% 85%, rgba(191, 148, 255, 0.14) 0%, transparent 50%);
+}
+
+/* 14. X / Twitter (Jet Black & Electric Bird Blue) */
+body.theme-x,
 body.theme-midnight {
   --bg-deep: #000000;
-  --bg-surface: #0a0a0a;
-  --bg-card: rgba(16, 16, 20, 0.88);
-  --bg-card-hover: rgba(26, 26, 32, 0.95);
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(148, 163, 184, 0.45);
-  --neon-cyan: #38bdf8;
-  --neon-blue: #60a5fa;
-  --neon-purple: #a78bfa;
-  --gradient-cyan: linear-gradient(135deg, #f8fafc 0%, #64748b 100%);
-  --shadow-glow: 0 0 25px rgba(255, 255, 255, 0.1);
+  --bg-surface: #0a0d13;
+  --bg-card: rgba(16, 20, 28, 0.88);
+  --bg-card-hover: rgba(26, 32, 44, 0.95);
+  --border-glass: rgba(29, 161, 242, 0.18);
+  --border-glow: rgba(29, 161, 242, 0.45);
+  --neon-cyan: #1da1f2;
+  --neon-blue: #38bdf8;
+  --neon-purple: #94a3b8;
+  --gradient-cyan: linear-gradient(135deg, #ffffff 0%, #1da1f2 100%);
+  --shadow-glow: 0 0 25px rgba(29, 161, 242, 0.3);
   background-color: #000000;
   background-image: 
-    radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.04) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 50%);
-}
-
-/* 3. Ocean (Deep Abyssal Navy) */
-body.theme-ocean {
-  --bg-deep: #030d1a;
-  --bg-surface: #06182c;
-  --bg-card: rgba(7, 26, 48, 0.82);
-  --bg-card-hover: rgba(12, 39, 72, 0.92);
-  --border-glass: rgba(0, 210, 255, 0.16);
-  --border-glow: rgba(0, 210, 255, 0.5);
-  --neon-cyan: #00d2ff;
-  --neon-blue: #0077ff;
-  --neon-purple: #4f46e5;
-  --gradient-cyan: linear-gradient(135deg, #00d2ff 0%, #0055ff 100%);
-  --shadow-glow: 0 0 25px rgba(0, 210, 255, 0.3);
-  background-color: var(--bg-deep);
-  background-image: 
-    radial-gradient(circle at 20% 15%, rgba(0, 210, 255, 0.14) 0%, transparent 45%),
-    radial-gradient(circle at 80% 85%, rgba(0, 85, 255, 0.16) 0%, transparent 50%);
-}
-
-/* 4. Ember (Inferno Charcoal & Molten Amber) */
-body.theme-ember {
-  --bg-deep: #120704;
-  --bg-surface: #1e0b07;
-  --bg-card: rgba(36, 16, 12, 0.82);
-  --bg-card-hover: rgba(54, 24, 18, 0.92);
-  --border-glass: rgba(255, 107, 53, 0.18);
-  --border-glow: rgba(255, 107, 53, 0.55);
-  --neon-cyan: #ff7a00;
-  --neon-blue: #ff3b00;
-  --neon-purple: #f72585;
-  --gradient-cyan: linear-gradient(135deg, #ff9e00 0%, #ff0055 100%);
-  --shadow-glow: 0 0 25px rgba(255, 107, 53, 0.35);
-  background-color: var(--bg-deep);
-  background-image: 
-    radial-gradient(circle at 15% 15%, rgba(255, 107, 53, 0.16) 0%, transparent 40%),
-    radial-gradient(circle at 85% 85%, rgba(239, 68, 68, 0.14) 0%, transparent 50%);
-}
-
-/* 5. Forest (Emerald Pine & Jade) */
-body.theme-forest {
-  --bg-deep: #031109;
-  --bg-surface: #061c10;
-  --bg-card: rgba(8, 34, 20, 0.82);
-  --bg-card-hover: rgba(14, 50, 30, 0.92);
-  --border-glass: rgba(16, 185, 129, 0.18);
-  --border-glow: rgba(16, 185, 129, 0.55);
-  --neon-cyan: #10b981;
-  --neon-blue: #059669;
-  --neon-purple: #34d399;
-  --gradient-cyan: linear-gradient(135deg, #10b981 0%, #047857 100%);
-  --shadow-glow: 0 0 25px rgba(16, 185, 129, 0.35);
-  background-color: var(--bg-deep);
-  background-image: 
-    radial-gradient(circle at 20% 10%, rgba(16, 185, 129, 0.16) 0%, transparent 45%),
-    radial-gradient(circle at 80% 80%, rgba(5, 150, 105, 0.14) 0%, transparent 50%);
-}
-
-/* 6. Rose (Cyber Noir & Magenta Pink) */
-body.theme-rose {
-  --bg-deep: #12040b;
-  --bg-surface: #1e0914;
-  --bg-card: rgba(36, 12, 26, 0.82);
-  --bg-card-hover: rgba(52, 18, 38, 0.92);
-  --border-glass: rgba(236, 72, 153, 0.2);
-  --border-glow: rgba(236, 72, 153, 0.55);
-  --neon-cyan: #f43f5e;
-  --neon-blue: #ec4899;
-  --neon-purple: #d946ef;
-  --gradient-cyan: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-  --shadow-glow: 0 0 25px rgba(236, 72, 153, 0.35);
-  background-color: var(--bg-deep);
-  background-image: 
-    radial-gradient(circle at 15% 20%, rgba(236, 72, 153, 0.16) 0%, transparent 45%),
-    radial-gradient(circle at 85% 75%, rgba(217, 70, 239, 0.14) 0%, transparent 50%);
-}
-
-/* 7. Frost (Arctic Glacier Blue & Diamond) */
-body.theme-frost {
-  --bg-deep: #070d14;
-  --bg-surface: #0d1622;
-  --bg-card: rgba(18, 30, 46, 0.82);
-  --bg-card-hover: rgba(26, 42, 64, 0.92);
-  --border-glass: rgba(186, 230, 253, 0.2);
-  --border-glow: rgba(186, 230, 253, 0.55);
-  --neon-cyan: #7dd3fc;
-  --neon-blue: #38bdf8;
-  --neon-purple: #93c5fd;
-  --gradient-cyan: linear-gradient(135deg, #bae6fd 0%, #38bdf8 100%);
-  --shadow-glow: 0 0 25px rgba(125, 211, 252, 0.3);
-  background-color: var(--bg-deep);
-  background-image: 
-    radial-gradient(circle at 20% 15%, rgba(186, 230, 253, 0.14) 0%, transparent 40%),
-    radial-gradient(circle at 80% 85%, rgba(56, 189, 248, 0.12) 0%, transparent 45%);
-}
-
-/* 8. Gold (Imperial Dark Luxury Amber) */
-body.theme-gold {
-  --bg-deep: #110c03;
-  --bg-surface: #1a1306;
-  --bg-card: rgba(34, 25, 10, 0.82);
-  --bg-card-hover: rgba(50, 36, 16, 0.92);
-  --border-glass: rgba(245, 158, 11, 0.2);
-  --border-glow: rgba(245, 158, 11, 0.55);
-  --neon-cyan: #fbbf24;
-  --neon-blue: #f59e0b;
-  --neon-purple: #d97706;
-  --gradient-cyan: linear-gradient(135deg, #fde047 0%, #b45309 100%);
-  --shadow-glow: 0 0 25px rgba(245, 158, 11, 0.35);
-  background-color: var(--bg-deep);
-  background-image: 
-    radial-gradient(circle at 15% 15%, rgba(251, 191, 36, 0.16) 0%, transparent 40%),
-    radial-gradient(circle at 85% 85%, rgba(217, 119, 6, 0.14) 0%, transparent 50%);
-}
-
-/* 9. Cyberpunk (Night City 2077 Electric Yellow & Hot Magenta) */
-body.theme-cyberpunk {
-  --bg-deep: #0a0612;
-  --bg-surface: #120a1f;
-  --bg-card: rgba(25, 14, 42, 0.85);
-  --bg-card-hover: rgba(38, 20, 64, 0.95);
-  --border-glass: rgba(252, 238, 10, 0.22);
-  --border-glow: rgba(252, 238, 10, 0.65);
-  --neon-cyan: #fcee0a;
-  --neon-blue: #00f0ff;
-  --neon-purple: #ff0055;
-  --gradient-cyan: linear-gradient(135deg, #fcee0a 0%, #ff0055 100%);
-  --shadow-glow: 0 0 25px rgba(252, 238, 10, 0.4);
-  background-color: var(--bg-deep);
-  background-image: 
-    radial-gradient(circle at 10% 10%, rgba(252, 238, 10, 0.16) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(255, 0, 85, 0.18) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.12) 0%, transparent 50%);
-}
-
-/* 10. Matrix (Phosphor Terminal Hacker Green) */
-body.theme-matrix {
-  --bg-deep: #020502;
-  --bg-surface: #040c04;
-  --bg-card: rgba(6, 22, 8, 0.88);
-  --bg-card-hover: rgba(10, 34, 14, 0.96);
-  --border-glass: rgba(0, 255, 102, 0.2);
-  --border-glow: rgba(0, 255, 102, 0.6);
-  --neon-cyan: #00ff66;
-  --neon-blue: #10b981;
-  --neon-purple: #059669;
-  --gradient-cyan: linear-gradient(135deg, #00ff66 0%, #047857 100%);
-  --shadow-glow: 0 0 25px rgba(0, 255, 102, 0.4);
-  background-color: var(--bg-deep);
-  background-image: 
-    radial-gradient(circle at 20% 15%, rgba(0, 255, 102, 0.14) 0%, transparent 45%),
-    radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.12) 0%, transparent 50%);
-}
-
-/* 11. Synthwave (80s Neon Sunset Violet & Cyan) */
-body.theme-synthwave {
-  --bg-deep: #150824;
-  --bg-surface: #200c36;
-  --bg-card: rgba(42, 16, 72, 0.85);
-  --bg-card-hover: rgba(62, 24, 104, 0.95);
-  --border-glass: rgba(255, 42, 133, 0.22);
-  --border-glow: rgba(255, 42, 133, 0.65);
-  --neon-cyan: #ff2a85;
-  --neon-blue: #05d9e8;
-  --neon-purple: #d300c5;
-  --gradient-cyan: linear-gradient(135deg, #ff2a85 0%, #05d9e8 100%);
-  --shadow-glow: 0 0 25px rgba(255, 42, 133, 0.4);
-  background-color: var(--bg-deep);
-  background-image: 
-    radial-gradient(circle at 10% 20%, rgba(255, 42, 133, 0.2) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(5, 217, 232, 0.18) 0%, transparent 45%),
-    radial-gradient(circle at 50% 90%, rgba(255, 128, 0, 0.12) 0%, transparent 50%);
-}
-
-/* 12. Dracula (Gothic Twilight Lavender & Pink) */
-body.theme-dracula {
-  --bg-deep: #14151f;
-  --bg-surface: #1e1f2d;
-  --bg-card: rgba(34, 35, 52, 0.85);
-  --bg-card-hover: rgba(48, 50, 74, 0.95);
-  --border-glass: rgba(189, 147, 249, 0.2);
-  --border-glow: rgba(189, 147, 249, 0.55);
-  --neon-cyan: #bd93f9;
-  --neon-blue: #8be9fd;
-  --neon-purple: #ff79c6;
-  --gradient-cyan: linear-gradient(135deg, #bd93f9 0%, #ff79c6 100%);
-  --shadow-glow: 0 0 25px rgba(189, 147, 249, 0.32);
-  background-color: var(--bg-deep);
-  background-image: 
-    radial-gradient(circle at 15% 15%, rgba(189, 147, 249, 0.16) 0%, transparent 45%),
-    radial-gradient(circle at 85% 85%, rgba(255, 121, 198, 0.14) 0%, transparent 50%);
-}
-
-/* 13. Crimson (Supercar Carbon Matte & Racing Red) */
-body.theme-crimson {
-  --bg-deep: #0b090a;
-  --bg-surface: #161214;
-  --bg-card: rgba(28, 20, 22, 0.88);
-  --bg-card-hover: rgba(42, 30, 34, 0.96);
-  --border-glass: rgba(255, 30, 39, 0.22);
-  --border-glow: rgba(255, 30, 39, 0.65);
-  --neon-cyan: #ff1e27;
-  --neon-blue: #e50914;
-  --neon-purple: #ff4d5a;
-  --gradient-cyan: linear-gradient(135deg, #ff1e27 0%, #8b0000 100%);
-  --shadow-glow: 0 0 25px rgba(255, 30, 39, 0.4);
-  background-color: var(--bg-deep);
-  background-image: 
-    radial-gradient(circle at 10% 10%, rgba(255, 30, 39, 0.18) 0%, transparent 45%),
-    radial-gradient(circle at 90% 85%, rgba(229, 9, 20, 0.14) 0%, transparent 50%);
-}
-
-/* 14. Nord (Arctic Aurora Frost Slate) */
-body.theme-nord {
-  --bg-deep: #1e222a;
-  --bg-surface: #242933;
-  --bg-card: rgba(43, 49, 61, 0.85);
-  --bg-card-hover: rgba(56, 64, 80, 0.95);
-  --border-glass: rgba(136, 192, 208, 0.22);
-  --border-glow: rgba(136, 192, 208, 0.55);
-  --neon-cyan: #88c0d0;
-  --neon-blue: #81a1c1;
-  --neon-purple: #b48ead;
-  --gradient-cyan: linear-gradient(135deg, #88c0d0 0%, #5e81ac 100%);
-  --shadow-glow: 0 0 25px rgba(136, 192, 208, 0.3);
-  background-color: var(--bg-deep);
-  background-image: 
-    radial-gradient(circle at 20% 15%, rgba(136, 192, 208, 0.16) 0%, transparent 45%),
-    radial-gradient(circle at 80% 80%, rgba(163, 190, 140, 0.12) 0%, transparent 50%);
+    radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 90% 85%, rgba(29, 161, 242, 0.14) 0%, transparent 50%);
 }
 
 /* ==========================================================================

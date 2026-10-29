@@ -1,5 +1,5 @@
 // AltDeck PWA Service Worker
-const CACHE_NAME = 'altdeck-v2.99';
+const CACHE_NAME = 'altdeck-v3.10';
 const CORE_ASSETS = [
   '/',
   '/index.html',
@@ -10,6 +10,7 @@ const CORE_ASSETS = [
   '/icon.svg',
   '/icon-192.png',
   '/icon-512.png',
+  '/favicon.ico',
   '/manifest.json'
 ];
 
