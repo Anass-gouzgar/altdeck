@@ -37,3 +37,6 @@ ehthumbs.db
 # Build artifacts
 bin/tabdeck-core.exe
 bin/altdeck-core.exe
+
+# Dynamic Icon Cache
+public/icons/cache/

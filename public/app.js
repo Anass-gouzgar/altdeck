@@ -1425,8 +1425,14 @@ function renderCustomActions(actions) {
     tile.style.setProperty('--action-color', action.color || 'var(--neon-cyan)');
     
     const iconSvg = getActionIconSvg(action.icon || action.type);
+    const fallbackImage = `/api/app-icon?name=${encodeURIComponent(action.label || '')}&appId=${encodeURIComponent((action.payload && action.payload.appId) || action.action || '')}`;
+    const iconSrc = action.iconImage || fallbackImage;
+
     tile.innerHTML = `
-      <div class="custom-action-icon">${iconSvg}</div>
+      <div class="custom-action-icon">
+        <img src="${iconSrc}" alt="${escapeHtml(action.label)}" class="custom-action-img" onerror="this.style.display='none'; if (this.nextElementSibling) this.nextElementSibling.style.display='flex';" />
+        <div class="custom-action-svg-fallback" style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center;">${iconSvg}</div>
+      </div>
       <div class="custom-action-title">${escapeHtml(action.label)}</div>
       <div class="custom-action-type">${action.type}</div>
     `;
@@ -2648,9 +2654,13 @@ function renderDetectedApps(apps) {
     card.className = 'detected-app-card';
     const color = getRandomColor(app.name);
     const initial = (app.name || 'A').trim().charAt(0).toUpperCase();
+    const iconUrl = `/api/app-icon?name=${encodeURIComponent(app.name)}&appId=${encodeURIComponent(app.appId)}`;
 
     card.innerHTML = `
-      <div class="detected-app-icon" style="background: linear-gradient(135deg, ${color}22, ${color}55); border-color: ${color}; color: ${color};">${initial}</div>
+      <div class="detected-app-icon" style="background: linear-gradient(135deg, ${color}22, ${color}55); border-color: ${color}; color: ${color};">
+        <img src="${iconUrl}" alt="${escapeHtml(app.name)}" class="detected-app-img" onerror="this.style.display='none'; if (this.nextElementSibling) this.nextElementSibling.style.display='inline-block';" />
+        <span class="detected-app-fallback" style="display: none; color: ${color}; font-weight: 800;">${initial}</span>
+      </div>
       <div class="detected-app-info">
         <div class="detected-app-name" title="${escapeHtml(app.name)}">${escapeHtml(app.name)}</div>
         <div class="detected-app-id" title="${escapeHtml(app.appId)}">${escapeHtml(app.appId)}</div>
@@ -2680,6 +2690,7 @@ function renderDetectedApps(apps) {
         type: 'app',
         color: color,
         icon: 'rocket',
+        iconImage: iconUrl,
         payload: {
           appId: app.appId
         }

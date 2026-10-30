@@ -586,6 +586,93 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify({ status: 'ok', count: data.apps.length, cached: data.cached, apps: data.apps }));
   }
 
+  // Dynamic Official App Icon Extractor & Resolver API
+  if (url.pathname === '/api/app-icon' && req.method === 'GET') {
+    const rawName = (url.searchParams.get('name') || '').toLowerCase().trim();
+    const rawAppId = (url.searchParams.get('appId') || '').toLowerCase().trim();
+
+    // 1. Match against official icons in public/icons/
+    const officialIconMap = {
+      discord: 'discord.png',
+      claude: 'claude.png',
+      '3utools': '3utools.png',
+      '3u': '3utools.png',
+      chrome: 'chrome.png',
+      googlechrome: 'chrome.png',
+      edge: 'edge.png',
+      msedge: 'edge.png',
+      vscode: 'vscode.png',
+      code: 'vscode.png',
+      antigravity: 'antigravity.png',
+      explorer: 'explorer.png',
+      stickynotes: 'stickynotes.png',
+      sticky: 'stickynotes.png',
+      settings: 'settings.png',
+      calculator: 'calculator.png',
+      calc: 'calculator.png',
+      notepad: 'notepad.png',
+      terminal: 'terminal.png',
+      taskmgr: 'taskmgr.png',
+      taskmanager: 'taskmgr.png',
+      spotify: 'spotify.svg'
+    };
+
+    let matchedFile = null;
+    for (const [key, iconFile] of Object.entries(officialIconMap)) {
+      if (rawName.includes(key) || rawAppId.includes(key)) {
+        matchedFile = iconFile;
+        break;
+      }
+    }
+
+    if (matchedFile) {
+      const fullPath = path.join(__dirname, 'public', 'icons', matchedFile);
+      if (fs.existsSync(fullPath)) {
+        const ext = path.extname(fullPath).toLowerCase();
+        res.writeHead(200, {
+          'Content-Type': ext === '.svg' ? 'image/svg+xml' : 'image/png',
+          'Cache-Control': 'public, max-age=86400'
+        });
+        return fs.createReadStream(fullPath).pipe(res);
+      }
+    }
+
+    // 2. Check cached extracted icons
+    const cacheDir = path.join(__dirname, 'public', 'icons', 'cache');
+    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
+
+    const safeHash = Buffer.from(rawAppId || rawName).toString('hex').slice(0, 32);
+    const cachedFile = path.join(cacheDir, `${safeHash}.png`);
+
+    if (fs.existsSync(cachedFile)) {
+      res.writeHead(200, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
+      return fs.createReadStream(cachedFile).pipe(res);
+    }
+
+    // 3. Extract on demand if target is an executable or start menu item
+    const origAppId = url.searchParams.get('appId') || '';
+    let extractPath = null;
+    if (origAppId.toLowerCase().endsWith('.exe') && fs.existsSync(origAppId)) {
+      extractPath = origAppId;
+    }
+
+    if (extractPath) {
+      const script = path.join(__dirname, 'scripts', 'extract-icon.ps1');
+      execFile('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script, '-SourcePath', extractPath, '-TargetPath', cachedFile, '-Size', '128'], (err) => {
+        if (!err && fs.existsSync(cachedFile)) {
+          res.writeHead(200, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
+          return fs.createReadStream(cachedFile).pipe(res);
+        }
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Icon not available' }));
+      });
+      return;
+    }
+
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ error: 'Icon not found' }));
+  }
+
   // Custom Actions API
   if (url.pathname === '/api/custom-actions') {
     if (req.method === 'GET') {

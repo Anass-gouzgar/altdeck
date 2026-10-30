@@ -754,6 +754,22 @@ body {
   display: block;
 }
 
+.app-official-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+  border-radius: 6px;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.app-tile:hover .app-official-icon,
+.app-tile:active .app-official-icon {
+  transform: scale(1.1);
+}
+
 .app-name {
   font-size: 0.85rem;
   font-weight: 700;
@@ -1652,6 +1668,25 @@ html[dir="rtl"] .notif-drawer.show {
   color: var(--neon-cyan);
   flex-shrink: 0;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.detected-app-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  display: block;
+  border-radius: 4px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.custom-action-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  display: block;
+  border-radius: 4px;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4));
 }
 
 .detected-app-info {
