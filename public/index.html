@@ -21,7 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <script src="nosleep.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=3.14">
+  <link rel="stylesheet" href="style.css?v=4.0">
 </head>
 <body>
 
@@ -82,6 +82,13 @@
     </div>
 
     <div class="header-actions">
+      <!-- Direct Header Language Switcher (EN | FR | عربي) -->
+      <div class="header-lang-switcher" role="group" aria-label="Language selector">
+        <button class="btn-lang active" data-lang="en">EN</button>
+        <button class="btn-lang" data-lang="fr">FR</button>
+        <button class="btn-lang" data-lang="ar">عربي</button>
+      </div>
+
       <button class="btn-icon" id="btn-refresh-app" title="Reload Deck & Reconnect">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
       </button>
@@ -1043,11 +1050,11 @@
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 10px;">
-          <button class="btn-preset pwa-primary-btn" id="pairing-install-btn" style="background: linear-gradient(135deg, #00f0ff, #3b82f6); color: #000; font-weight: 800; padding: 14px; border-radius: 12px; font-size: 1rem; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <button class="btn-preset pwa-primary-btn" id="pairing-install-btn" style="background: #ffffff; color: #0b0d11; font-weight: 700; padding: 12px 16px; border-radius: 10px; font-size: 0.95rem; border: 1px solid rgba(255, 255, 255, 0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span data-i18n="pwaInstallBtn">📱 Install as Fullscreen App</span>
           </button>
-          <button class="btn-preset" id="pairing-fullscreen-btn" style="border-color: #8B5CF6; color: #8B5CF6; font-weight: 700; padding: 10px; border-radius: 10px;">
+          <button class="btn-preset" id="pairing-fullscreen-btn" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); color: var(--text-primary); font-weight: 600; padding: 10px; border-radius: 10px;">
             <span data-i18n="pwaFullscreenBtn">⛶ Switch to Fullscreen Mode</span>
           </button>
         </div>
@@ -1231,7 +1238,7 @@
             <div class="lang-selector">
               <button class="btn-lang active" data-lang="en">EN</button>
               <button class="btn-lang" data-lang="fr">FR</button>
-              <button class="btn-lang" data-lang="ar">AR</button>
+              <button class="btn-lang" data-lang="ar">عربي</button>
             </div>
           </div>
           <div class="setting-row">

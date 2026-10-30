@@ -34,9 +34,9 @@ const state = {
   soundEnabled: (localStorage.getItem('altdeck_sound') || localStorage.getItem('tabdeck_sound')) !== 'false',
   hapticEnabled: (localStorage.getItem('altdeck_haptic') || localStorage.getItem('tabdeck_haptic')) !== 'false',
   theme: (() => {
-    const t = localStorage.getItem('altdeck_theme') || localStorage.getItem('tabdeck_theme') || 'theme-instagram';
+    const t = localStorage.getItem('altdeck_theme') || localStorage.getItem('tabdeck_theme') || 'theme-x';
     const ALL = ['theme-instagram','theme-facebook','theme-youtube','theme-canva','theme-gmail','theme-claude','theme-linkedin','theme-duolingo','theme-spotify','theme-discord','theme-netflix','theme-tiktok','theme-twitch','theme-x'];
-    return ALL.includes(t) ? t : (OLD_THEME_MAP[t] || 'theme-instagram');
+    return ALL.includes(t) ? t : (OLD_THEME_MAP[t] || 'theme-x');
   })(),
   lang: localStorage.getItem('altdeck_lang') || localStorage.getItem('tabdeck_lang') || 'en',
   serverTzOffset: null,
@@ -2048,13 +2048,13 @@ function applyTelemetry(t) {
     if (barCpu) {
       barCpu.style.width = `${Math.min(100, Math.max(0, t.cpu))}%`;
       if (t.cpu > 85) {
-        barCpu.style.background = 'linear-gradient(90deg, #EF4444, #DC2626)';
-        if (badgeCpu) badgeCpu.style.color = '#EF4444';
+        barCpu.style.background = '#ef4444';
+        if (badgeCpu) badgeCpu.style.color = '#ef4444';
       } else if (t.cpu > 60) {
-        barCpu.style.background = 'linear-gradient(90deg, #F59E0B, #D97706)';
-        if (badgeCpu) badgeCpu.style.color = '#F59E0B';
+        barCpu.style.background = '#f59e0b';
+        if (badgeCpu) badgeCpu.style.color = '#f59e0b';
       } else {
-        barCpu.style.background = 'linear-gradient(90deg, #00f0ff, #3b82f6)';
+        barCpu.style.background = '#38bdf8';
         if (badgeCpu) badgeCpu.style.color = 'var(--neon-cyan)';
       }
     }
@@ -2847,7 +2847,7 @@ function renderDetectedApps(apps) {
     const iconUrl = `/api/app-icon?name=${encodeURIComponent(app.name)}&appId=${encodeURIComponent(app.appId)}`;
 
     card.innerHTML = `
-      <div class="detected-app-icon" style="background: linear-gradient(135deg, ${color}22, ${color}55); border-color: ${color}; color: ${color};">
+      <div class="detected-app-icon" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); color: ${color};">
         <img src="${iconUrl}" alt="${escapeHtml(app.name)}" class="detected-app-img" onerror="this.style.display='none'; if (this.nextElementSibling) this.nextElementSibling.style.display='inline-block';" />
         <span class="detected-app-fallback" style="display: none; color: ${color}; font-weight: 800;">${initial}</span>
       </div>

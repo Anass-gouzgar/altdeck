@@ -918,10 +918,24 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Landing Page & Showcase Documentation Route (/landing or /docs)
-  if (url.pathname === '/landing' || url.pathname.startsWith('/landing/') || url.pathname === '/docs' || url.pathname.startsWith('/docs/')) {
-    let sub = url.pathname.replace(/^\/landing/, '').replace(/^\/docs/, '');
-    if (!sub || sub === '/') sub = '/index.html';
+  // 1. Redirect /landing and /docs to include trailing slash (ensures relative CSS/JS paths resolve properly)
+  if (url.pathname === '/landing' || url.pathname === '/docs') {
+    res.writeHead(301, { 'Location': `${url.pathname}/` });
+    return res.end();
+  }
+
+  // Fallback for relative requests that missed the prefix
+  if (url.pathname === '/landing.css' || url.pathname === '/landing.js') {
+    const file = path.join(__dirname, 'docs', url.pathname.slice(1));
+    const ext = path.extname(file).toLowerCase();
+    res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] || 'text/plain' });
+    return fs.createReadStream(file).pipe(res);
+  }
+
+  // 2. Landing Page & Showcase Documentation Route (/landing/ or /docs/)
+  if (url.pathname.startsWith('/landing/') || url.pathname.startsWith('/docs/')) {
+    let sub = url.pathname.replace(/^\/landing\//, '').replace(/^\/docs\//, '') || 'index.html';
+    if (!sub || sub === '/') sub = 'index.html';
     let docPath = path.join(__dirname, 'docs', sub);
 
     // Security check against path traversal

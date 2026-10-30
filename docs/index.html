@@ -1,86 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AltDeck 🎛️⚡ — Turn Any Tablet into a Zero-Latency Stream Deck & PC Controller</title>
+  <title>AltDeck — Open Source Stream Deck & PC Controller</title>
   
   <!-- SEO & Social Meta Tags -->
-  <meta name="description" content="AltDeck is a free, open-source Stream Deck alternative and PC controller. Transform any iPad, Android tablet, or smartphone into a zero-latency hardware controller with native Windows CoreAudio, WMI brightness, 16-app launchpad, multi-touch trackpad, numpad, and AirDrop file drop.">
-  <meta name="keywords" content="stream deck alternative, tablet pc controller, elgato stream deck free, touch portal alternative, deckboard alternative, wireless trackpad, pc numpad, windows remote controller, Anass Gouzgar portfolio">
+  <meta name="description" content="An open-source Stream Deck alternative you can run on any old tablet, iPad, or smartphone over local Wi-Fi. Direct Windows CoreAudio COM, WMI brightness, and low-latency control. Zero mobile install required.">
   <meta name="author" content="Anass Gouzgar">
   
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://anass-gouzgar.github.io/altdeck/">
-  <meta property="og:title" content="AltDeck — Next-Gen Stream Deck & PC Controller">
-  <meta property="og:description" content="Zero-install hardware controller for Windows 10/11. Control master audio, brightness, launch apps, trackpad, and beam files over local Wi-Fi with <10ms latency.">
-  <meta property="og:image" content="screenshots/hero-banner.jpg">
-
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://anass-gouzgar.github.io/altdeck/">
-  <meta property="twitter:title" content="AltDeck — Next-Gen Stream Deck & PC Controller">
-  <meta property="twitter:description" content="Free, open-source Stream Deck alternative. Sub-10ms latency, native Windows CoreAudio & WMI, zero tablet install required.">
-  <meta property="twitter:image" content="screenshots/hero-banner.jpg">
-
-  <!-- Favicon & Fonts -->
+  <!-- Favicon & Typography -->
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="landing.css">
 </head>
-<body data-theme="obsidian">
-  <!-- Glowing Ambient Aura Background -->
-  <div class="glow-orb orb-1"></div>
-  <div class="glow-orb orb-2"></div>
-  <div class="glow-orb orb-3"></div>
-  <div class="grid-overlay"></div>
+<body>
+  <!-- Clean subtle ambient pattern -->
+  <div class="bg-ambient-pattern"></div>
 
   <!-- Global Navigation Header -->
   <header class="site-header" id="header">
     <div class="container nav-container">
       <a href="#hero" class="nav-brand">
-        <div class="brand-logo-wrap">
-          <img src="icon.svg" alt="AltDeck Logo" width="34" height="34" class="brand-logo-img">
-        </div>
-        <div class="brand-text">
-          <span class="brand-name">AltDeck</span>
-          <span class="brand-tag">v3.15</span>
-        </div>
+        <img src="icon.svg" alt="AltDeck Logo" class="brand-logo-img">
+        <span class="brand-name">AltDeck</span>
+        <span class="brand-tag">v3.15</span>
       </a>
 
       <nav class="nav-links">
-        <a href="#features" class="nav-link">Features</a>
-        <a href="#playground" class="nav-link">Interactive Deck</a>
-        <a href="#architecture" class="nav-link">Architecture</a>
-        <a href="#comparison" class="nav-link">Comparison</a>
-        <a href="#quickstart" class="nav-link">Quick Start</a>
+        <a href="#features" class="nav-link" data-i18n="navFeatures">Features</a>
+        <a href="#playground" class="nav-link" data-i18n="navPlayground">Interactive Deck</a>
+        <a href="#architecture" class="nav-link" data-i18n="navArchitecture">Architecture</a>
+        <a href="#comparison" class="nav-link" data-i18n="navComparison">Comparison</a>
+        <a href="#quickstart" class="nav-link" data-i18n="navQuickStart">Quick Start</a>
       </nav>
 
       <div class="nav-actions">
-        <!-- Live Theme Switcher Dropdown -->
-        <div class="theme-select-wrap">
-          <button class="theme-btn" id="theme-btn" title="Toggle Showcase Color Theme">
-            <span class="theme-dot"></span>
-            <span class="theme-label" id="current-theme-name">Obsidian</span>
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="theme-dropdown" id="theme-dropdown">
-            <button class="theme-opt active" data-theme="obsidian"><span class="dot" style="background: #00f0ff;"></span>Obsidian Cyan</button>
-            <button class="theme-opt" data-theme="oled"><span class="dot" style="background: #a855f7;"></span>Midnight OLED</button>
-            <button class="theme-opt" data-theme="cyberpunk"><span class="dot" style="background: #facc15;"></span>Cyberpunk 2077</button>
-            <button class="theme-opt" data-theme="rose"><span class="dot" style="background: #f43f5e;"></span>Neon Rose</button>
-            <button class="theme-opt" data-theme="emerald"><span class="dot" style="background: #10b981;"></span>Emerald Forest</button>
-          </div>
+        <!-- Language Switcher (EN | FR | AR) -->
+        <div class="lang-switcher">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="fr">FR</button>
+          <button class="lang-btn" data-lang="ar">عربي</button>
         </div>
 
         <a href="https://github.com/Anass-gouzgar/altdeck" target="_blank" rel="noopener noreferrer" class="btn btn-github">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-          <span>Star</span>
-          <span class="github-badge" id="github-stars">★ Repo</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span data-i18n="starGithub">GitHub</span>
         </a>
       </div>
     </div>
@@ -89,71 +57,62 @@
   <main>
     <!-- HERO SECTION -->
     <section class="hero-section" id="hero">
-      <div class="container hero-container">
+      <div class="container">
         
-        <!-- Top Pill Badge -->
+        <!-- Status Pill -->
         <div class="hero-pill-badge">
           <span class="live-dot"></span>
-          <span class="pill-text">Open Source • Zero-Latency Hardware Controller</span>
-          <span class="pill-arrow">→</span>
+          <span data-i18n="heroPill">Open Source • Windows 10 & 11 Hardware Controller</span>
         </div>
 
-        <!-- Main Title & Subtitle -->
-        <h1 class="hero-title">
-          Turn Any Tablet into a <br>
-          <span class="gradient-text">Pro Hardware Stream Deck.</span>
+        <!-- Humanized Headline & Subtitle -->
+        <h1 class="hero-title" data-i18n="heroTitle">
+          An open-source Stream Deck that runs on any old tablet.
         </h1>
-        <p class="hero-subtitle">
-          Control master volume, hardware brightness, launch desktop apps, glide a precision trackpad, type on a 4x4 numpad, and beam files over Wi-Fi — with <strong>sub-10ms hardware latency</strong>. Zero tablet install required.
+        <p class="hero-subtitle" data-i18n="heroSubtitle">
+          Control master volume, hardware monitor brightness, launch desktop apps, glide a precision trackpad, type on a 4x4 numpad, and beam files over local Wi-Fi with sub-10ms response. Zero mobile app to install.
         </p>
 
         <!-- CTA Buttons -->
         <div class="hero-cta-group">
-          <a href="#quickstart" class="btn btn-primary">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            <span>Get Started in 60s</span>
+          <a href="#quickstart" class="btn btn-primary" data-i18n="heroCtaPrimary">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span>Run Locally (60s)</span>
           </a>
-          <a href="#playground" class="btn btn-secondary">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-            <span>Interactive Live Deck</span>
+          <a href="#playground" class="btn btn-secondary" data-i18n="heroCtaSecondary">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            <span>Try Interactive Demo</span>
           </a>
-          <a href="https://github.com/Anass-gouzgar/altdeck" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-            <span>GitHub Repository</span>
+          <a href="https://github.com/Anass-gouzgar/altdeck" target="_blank" rel="noopener noreferrer" class="btn btn-outline" data-i18n="heroCtaGithub">
+            <span>View Source Code</span>
           </a>
         </div>
 
-        <!-- Quick Spec Metrics Bar -->
+        <!-- Specs Bar -->
         <div class="hero-metrics-bar">
           <div class="metric-item">
             <span class="metric-val">&lt;10ms</span>
-            <span class="metric-lbl">WebSocket Latency</span>
+            <span class="metric-lbl" data-i18n="specLatency">Local Latency</span>
           </div>
           <div class="metric-sep"></div>
           <div class="metric-item">
             <span class="metric-val">$0</span>
-            <span class="metric-lbl">100% Free & Open Source</span>
+            <span class="metric-lbl" data-i18n="specFree">100% Free & Open Source</span>
           </div>
           <div class="metric-sep"></div>
           <div class="metric-item">
-            <span class="metric-val">Zero-Install</span>
-            <span class="metric-lbl">PWA in Browser</span>
+            <span class="metric-val">PWA</span>
+            <span class="metric-lbl" data-i18n="specPwa">Runs in Mobile Browser</span>
           </div>
           <div class="metric-sep"></div>
           <div class="metric-item">
-            <span class="metric-val">Win 10/11</span>
-            <span class="metric-lbl">Native CoreAudio & WMI</span>
-          </div>
-          <div class="metric-sep"></div>
-          <div class="metric-item">
-            <span class="metric-val">100% Filled</span>
-            <span class="metric-lbl">Zero-Void Layout</span>
+            <span class="metric-val">CoreAudio & WMI</span>
+            <span class="metric-lbl" data-i18n="specNative">Direct Windows Kernel</span>
           </div>
         </div>
 
         <!-- Hero Showcase Frame -->
         <div class="hero-showcase-wrap">
-          <div class="hero-frame-glow"></div>
           <div class="hero-mockup-card">
             <div class="mockup-header-bar">
               <div class="mockup-dots">
@@ -162,34 +121,16 @@
                 <span class="dot green"></span>
               </div>
               <div class="mockup-url-bar">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 <span>http://192.168.1.100:3000 • AltDeck Controller</span>
               </div>
               <div class="mockup-status-badge">
                 <span class="status-indicator-dot"></span>
-                <span>PC ONLINE</span>
+                <span data-i18n="pcOnlineBadge">PC ONLINE</span>
               </div>
             </div>
             
             <div class="mockup-media-container">
-              <img src="screenshots/hero-banner.jpg" alt="AltDeck Stream Deck Interface Preview" class="hero-banner-img" loading="eager">
-              
-              <!-- Floating Interactive Badges over the hero -->
-              <div class="floating-badge badge-cpu">
-                <div class="badge-icon">⚡</div>
-                <div>
-                  <div class="badge-title">Telemetry Engine</div>
-                  <div class="badge-sub">CPU 24% • RAM 45% • 8 Cores</div>
-                </div>
-              </div>
-
-              <div class="floating-badge badge-audio">
-                <div class="badge-icon">🎙️</div>
-                <div>
-                  <div class="badge-title">CoreAudio COM</div>
-                  <div class="badge-sub">True Master Endpoint Mute</div>
-                </div>
-              </div>
+              <img src="screenshots/hero-banner.jpg" alt="AltDeck Stream Deck Interface Preview" class="hero-banner-img">
             </div>
           </div>
         </div>
@@ -200,34 +141,19 @@
     <!-- INTERACTIVE PLAYGROUND / MODES SHOWCASE -->
     <section class="playground-section" id="playground">
       <div class="container">
-        <div class="section-badge">Interactive Live Demonstration</div>
-        <h2 class="section-title">5 Dedicated Operating Modes in 1 Deck</h2>
-        <p class="section-desc">
-          Click any mode below to experience the tactile interface, responsiveness, and instant click audio feedback right here on your browser.
+        <div class="section-badge" data-i18n="badgePlayground">Interactive Sandbox</div>
+        <h2 class="section-title" data-i18n="playgroundTitle">5 Operating Modes in 1 Deck</h2>
+        <p class="section-desc" data-i18n="playgroundDesc">
+          Click any mode below to test the tactile controls, responsiveness, and instant click audio feedback right here on your browser.
         </p>
 
         <!-- Mode Switcher Tabs -->
         <div class="mode-tabs">
-          <button class="mode-tab active" data-mode="deck">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-            <span>1. Stream Deck</span>
-          </button>
-          <button class="mode-tab" data-mode="trackpad">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="4"/><line x1="12" y1="7" x2="12" y2="11"/></svg>
-            <span>2. Trackpad Pro</span>
-          </button>
-          <button class="mode-tab" data-mode="numpad">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="8" cy="8" r="1"/><circle cx="12" cy="8" r="1"/><circle cx="16" cy="8" r="1"/><circle cx="8" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="16" cy="12" r="1"/><circle cx="12" cy="16" r="1"/></svg>
-            <span>3. 4x4 Numpad</span>
-          </button>
-          <button class="mode-tab" data-mode="beam">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <span>4. AirDrop Beam</span>
-          </button>
-          <button class="mode-tab" data-mode="power">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
-            <span>5. Power & Rescue</span>
-          </button>
+          <button class="mode-tab active" data-mode="deck" data-i18n="tabDeck">1. Stream Deck</button>
+          <button class="mode-tab" data-mode="trackpad" data-i18n="tabTrackpad">2. Trackpad Pro</button>
+          <button class="mode-tab" data-mode="numpad" data-i18n="tabNumpad">3. 4x4 Numpad</button>
+          <button class="mode-tab" data-mode="beam" data-i18n="tabBeam">4. AirDrop Beam</button>
+          <button class="mode-tab" data-mode="power" data-i18n="tabPower">5. Power & Rescue</button>
         </div>
 
         <!-- Mode Interactive Sandbox Viewer -->
@@ -242,7 +168,7 @@
                 <div class="card-head">
                   <div class="card-head-left">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-                    <span>Master Volume & Audio</span>
+                    <span data-i18n="demoVolTitle">Master Volume & Audio</span>
                   </div>
                   <span class="card-badge" id="demo-vol-val">65%</span>
                 </div>
@@ -252,24 +178,24 @@
                 </div>
 
                 <div class="demo-btn-row">
-                  <button class="demo-btn" data-sound="preset" onclick="setDemoVol(0)">Mute</button>
-                  <button class="demo-btn" data-sound="preset" onclick="setDemoVol(25)">25%</button>
-                  <button class="demo-btn active" data-sound="preset" onclick="setDemoVol(65)">65%</button>
-                  <button class="demo-btn" data-sound="preset" onclick="setDemoVol(100)">100%</button>
+                  <button class="demo-btn" onclick="setDemoVol(0)" data-i18n="btnMute">Mute</button>
+                  <button class="demo-btn" onclick="setDemoVol(25)">25%</button>
+                  <button class="demo-btn active" onclick="setDemoVol(65)">65%</button>
+                  <button class="demo-btn" onclick="setDemoVol(100)">100%</button>
                 </div>
 
                 <!-- Mic On-Air Interactive Widget -->
                 <div class="demo-mic-widget">
                   <div class="mic-left">
                     <div class="mic-icon-circle on-air" id="demo-mic-icon">
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                     </div>
                     <div>
-                      <div class="mic-status-title" id="demo-mic-title">🔴 LIVE ON AIR</div>
-                      <div class="mic-status-desc">CoreAudio Endpoint Capture</div>
+                      <div class="mic-status-title" id="demo-mic-title" data-i18n="micOnAir">🔴 LIVE ON AIR</div>
+                      <div class="mic-status-desc" data-i18n="micDesc">CoreAudio Endpoint Capture</div>
                     </div>
                   </div>
-                  <button class="btn-toggle-mic live" id="demo-mic-toggle" onclick="toggleDemoMic()">MUTE MIC</button>
+                  <button class="btn-toggle-mic live" id="demo-mic-toggle" onclick="toggleDemoMic()" data-i18n="btnMuteMic">MUTE MIC</button>
                 </div>
               </div>
 
@@ -278,31 +204,27 @@
                 <div class="card-head">
                   <div class="card-head-left">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                    <span>Display & Quick Toggles</span>
+                    <span data-i18n="demoDisplayTitle">Display & Quick Toggles</span>
                   </div>
-                  <span class="card-badge">WMI Direct</span>
+                  <span class="card-badge" data-i18n="badgeWmi">WMI Direct</span>
                 </div>
 
                 <div class="toggles-grid">
-                  <button class="toggle-tile" onclick="triggerToast('🖥️ Screen Off Activated (PC kept awake)')">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="3" y1="3" x2="21" y2="17"/></svg>
-                    <span class="toggle-name">Screen Off</span>
-                    <span class="toggle-sub">Without Sleep</span>
+                  <button class="toggle-tile" onclick="triggerToast(t('toastScreenOff'))">
+                    <span class="toggle-name" data-i18n="toggleScreenOff">Screen Off</span>
+                    <span class="toggle-sub" data-i18n="toggleScreenOffSub">Without Sleep</span>
                   </button>
-                  <button class="toggle-tile" onclick="triggerToast('📺 Win + P Project Flyout Opened')">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                    <span class="toggle-name">Project (Win+P)</span>
-                    <span class="toggle-sub">Multi-Display</span>
+                  <button class="toggle-tile" onclick="triggerToast(t('toastProject'))">
+                    <span class="toggle-name" data-i18n="toggleProject">Project (Win+P)</span>
+                    <span class="toggle-sub" data-i18n="toggleProjectSub">Multi-Display</span>
                   </button>
-                  <button class="toggle-tile" onclick="triggerToast('🌙 Night Light Toggled')">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                    <span class="toggle-name">Night Light</span>
-                    <span class="toggle-sub">Warm Filter</span>
+                  <button class="toggle-tile" onclick="triggerToast(t('toastNightLight'))">
+                    <span class="toggle-name" data-i18n="toggleNightLight">Night Light</span>
+                    <span class="toggle-sub" data-i18n="toggleNightLightSub">Warmth Filter</span>
                   </button>
-                  <button class="toggle-tile" onclick="triggerToast('🧮 Calculator Launched on PC')">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/></svg>
-                    <span class="toggle-name">Calculator</span>
-                    <span class="toggle-sub">Instant</span>
+                  <button class="toggle-tile" onclick="triggerToast(t('toastCalc'))">
+                    <span class="toggle-name" data-i18n="toggleCalc">Calculator</span>
+                    <span class="toggle-sub" data-i18n="toggleCalcSub">Instant Launch</span>
                   </button>
                 </div>
               </div>
@@ -314,42 +236,42 @@
               <div class="card-head">
                 <div class="card-head-left">
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                  <span>16-App Desktop Launchpad with Official Branding</span>
+                  <span data-i18n="demoAppsTitle">Application Launchpad</span>
                 </div>
-                <span class="card-badge" style="color: var(--neon-cyan);">One-Tap Launch</span>
+                <span class="card-badge" data-i18n="badgeOneTap">One-Tap Launch</span>
               </div>
 
               <div class="demo-apps-grid">
-                <div class="demo-app-tile" onclick="triggerToast('🚀 Launched VS Code')">
-                  <div class="app-icon-box" style="border-color: #007ACC;"><span class="app-symbol">💻</span></div>
+                <div class="demo-app-tile" onclick="triggerToast(t('toastLaunch') + ' VS Code')">
+                  <div class="app-icon-box">💻</div>
                   <span class="app-title">VS Code</span>
                 </div>
-                <div class="demo-app-tile" onclick="triggerToast('🚀 Launched Discord')">
-                  <div class="app-icon-box" style="border-color: #5865F2;"><span class="app-symbol">💬</span></div>
+                <div class="demo-app-tile" onclick="triggerToast(t('toastLaunch') + ' Discord')">
+                  <div class="app-icon-box">💬</div>
                   <span class="app-title">Discord</span>
                 </div>
-                <div class="demo-app-tile" onclick="triggerToast('🚀 Launched Claude AI')">
-                  <div class="app-icon-box" style="border-color: #D97706;"><span class="app-symbol">✨</span></div>
+                <div class="demo-app-tile" onclick="triggerToast(t('toastLaunch') + ' Claude AI')">
+                  <div class="app-icon-box">✨</div>
                   <span class="app-title">Claude AI</span>
                 </div>
-                <div class="demo-app-tile" onclick="triggerToast('🚀 Launched Google Chrome')">
-                  <div class="app-icon-box" style="border-color: #EA4335;"><span class="app-symbol">🌐</span></div>
+                <div class="demo-app-tile" onclick="triggerToast(t('toastLaunch') + ' Chrome')">
+                  <div class="app-icon-box">🌐</div>
                   <span class="app-title">Chrome</span>
                 </div>
-                <div class="demo-app-tile" onclick="triggerToast('🚀 Launched Antigravity IDE')">
-                  <div class="app-icon-box" style="border-color: #8B5CF6;"><span class="app-symbol">⚡</span></div>
-                  <span class="app-title">Antigravity</span>
-                </div>
-                <div class="demo-app-tile" onclick="triggerToast('🚀 Launched Microsoft Word')">
-                  <div class="app-icon-box" style="border-color: #2B579A;"><span class="app-symbol">📄</span></div>
+                <div class="demo-app-tile" onclick="triggerToast(t('toastLaunch') + ' Word')">
+                  <div class="app-icon-box">📄</div>
                   <span class="app-title">Word</span>
                 </div>
-                <div class="demo-app-tile" onclick="triggerToast('🚀 Launched Microsoft Excel')">
-                  <div class="app-icon-box" style="border-color: #217346;"><span class="app-symbol">📊</span></div>
+                <div class="demo-app-tile" onclick="triggerToast(t('toastLaunch') + ' Excel')">
+                  <div class="app-icon-box">📊</div>
                   <span class="app-title">Excel</span>
                 </div>
-                <div class="demo-app-tile" onclick="triggerToast('🚀 Launched Windows Terminal')">
-                  <div class="app-icon-box" style="border-color: #64748B;"><span class="app-symbol">⬛</span></div>
+                <div class="demo-app-tile" onclick="triggerToast(t('toastLaunch') + ' Antigravity')">
+                  <div class="app-icon-box">⚡</div>
+                  <span class="app-title">Antigravity</span>
+                </div>
+                <div class="demo-app-tile" onclick="triggerToast(t('toastLaunch') + ' Terminal')">
+                  <div class="app-icon-box">⬛</div>
                   <span class="app-title">Terminal</span>
                 </div>
               </div>
@@ -363,20 +285,20 @@
                 <div class="card-head">
                   <div class="card-head-left">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="4"/><line x1="12" y1="7" x2="12" y2="11"/></svg>
-                    <span>Gyroscopic & Multi-Touch Glide Pad</span>
+                    <span data-i18n="demoTrackpadSurfaceTitle">Multi-Touch Touchpad</span>
                   </div>
-                  <span class="card-badge" style="color: var(--neon-cyan);">Interactive</span>
+                  <span class="card-badge" data-i18n="badgeInteractive">Interactive</span>
                 </div>
 
                 <div class="interactive-trackpad-surface" id="demo-trackpad-surface">
                   <div class="cursor-pointer" id="demo-cursor"></div>
-                  <div class="trackpad-label">Glide Your Finger or Cursor Here<br><span style="font-size: 0.75rem; color: var(--text-muted);">2-Finger Gesture Scroll • Tap to Left Click</span></div>
+                  <div class="trackpad-label" data-i18n="trackpadGlidePrompt">Glide finger or mouse here<br><span style="font-size: 0.75rem; color: var(--text-muted);" data-i18n="trackpadGestures">2-Finger Scroll • Tap to Left Click</span></div>
                 </div>
 
                 <div class="trackpad-click-buttons">
-                  <button class="tp-btn" onclick="triggerToast('🖱️ Left Click Triggered')">LEFT CLICK</button>
-                  <button class="tp-btn middle" onclick="triggerToast('🖱️ Middle Click (New Tab)')">MIDDLE</button>
-                  <button class="tp-btn" onclick="triggerToast('🖱️ Right Click (Context Menu)')">RIGHT CLICK</button>
+                  <button class="tp-btn" onclick="triggerToast(t('toastLeftClick'))" data-i18n="tpLeft">LEFT CLICK</button>
+                  <button class="tp-btn" onclick="triggerToast(t('toastMiddleClick'))" data-i18n="tpMiddle">MIDDLE</button>
+                  <button class="tp-btn" onclick="triggerToast(t('toastRightClick'))" data-i18n="tpRight">RIGHT CLICK</button>
                 </div>
               </div>
 
@@ -384,12 +306,12 @@
                 <div class="card-head">
                   <div class="card-head-left">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 3 10 21 13 13 21 10 3 3"/></svg>
-                    <span>Hardware Pro Companion</span>
+                    <span data-i18n="demoTrackpadProTitle">Hardware Pro Companion</span>
                   </div>
-                  <span class="card-badge" style="color: var(--neon-purple);">Pro Features</span>
+                  <span class="card-badge" data-i18n="badgePresets">4 Presets</span>
                 </div>
 
-                <div class="sub-label">Pointer Sensitivity Presets</div>
+                <div class="sub-label" data-i18n="labelPointerSpeed">Pointer Sensitivity Presets</div>
                 <div class="demo-btn-row" style="margin-bottom: 14px;">
                   <button class="demo-btn" onclick="setSpeed(this, 'Slow 0.6x')">Slow</button>
                   <button class="demo-btn active" onclick="setSpeed(this, 'Normal 1.0x')">Normal</button>
@@ -397,15 +319,15 @@
                   <button class="demo-btn" onclick="setSpeed(this, 'Turbo 2.2x')">Turbo</button>
                 </div>
 
-                <div class="sub-label">Action Triggers</div>
+                <div class="sub-label" data-i18n="labelTriggers">Actions</div>
                 <div class="toggles-grid" style="grid-template-columns: 1fr 1fr;">
-                  <button class="toggle-tile" onclick="triggerToast('⚡ Hardware Double-Click Fired')">
-                    <span class="toggle-name">Double Click</span>
-                    <span class="toggle-sub">Instant Open</span>
+                  <button class="toggle-tile" onclick="triggerToast(t('toastDoubleClick'))">
+                    <span class="toggle-name" data-i18n="actionDoubleClick">Double Click</span>
+                    <span class="toggle-sub" data-i18n="actionDoubleClickSub">Instant Trigger</span>
                   </button>
-                  <button class="toggle-tile" onclick="triggerToast('🔒 Drag & Drop Lock Toggled')">
-                    <span class="toggle-name">Drag Lock</span>
-                    <span class="toggle-sub">Hold & Move</span>
+                  <button class="toggle-tile" onclick="triggerToast(t('toastDragLock'))">
+                    <span class="toggle-name" data-i18n="actionDragLock">Drag Lock</span>
+                    <span class="toggle-sub" data-i18n="actionDragLockSub">Hold & Move</span>
                   </button>
                 </div>
               </div>
@@ -419,7 +341,7 @@
                 <div class="card-head">
                   <div class="card-head-left">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
-                    <span>4x4 Accounting Numpad</span>
+                    <span data-i18n="demoNumpadTitle">4x4 Accounting Numpad</span>
                   </div>
                   <span class="card-badge" id="numpad-screen-val">0</span>
                 </div>
@@ -454,27 +376,27 @@
                 <div class="card-head">
                   <div class="card-head-left">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
-                    <span>Remote PC Typing & Navigation</span>
+                    <span data-i18n="demoTypingTitle">Remote PC Typing & Navigation</span>
                   </div>
-                  <span class="card-badge">Instant Keystrokes</span>
+                  <span class="card-badge" data-i18n="badgeInstant">Instant</span>
                 </div>
 
-                <div class="sub-label">Remote PC Typing Streamer</div>
+                <div class="sub-label" data-i18n="labelTyping">Remote Text Injection</div>
                 <div class="remote-type-box">
-                  <input type="text" id="demo-type-input" placeholder="Type text to inject into PC..." class="demo-input">
-                  <button class="btn btn-primary btn-sm" onclick="sendDemoType()">Send</button>
+                  <input type="text" id="demo-type-input" placeholder="Type text to send to active PC cursor..." class="demo-input">
+                  <button class="btn btn-primary btn-sm" onclick="sendDemoType()" data-i18n="btnSendText">Send</button>
                 </div>
 
-                <div class="sub-label" style="margin-top: 14px;">Windows Navigation Cluster</div>
+                <div class="sub-label" style="margin-top: 14px;" data-i18n="labelNavKeys">Navigation Keys</div>
                 <div class="toggles-grid" style="grid-template-columns: repeat(4, 1fr);">
-                  <button class="toggle-tile" onclick="triggerToast('Key Sent: Arrow Up ↑')">↑</button>
-                  <button class="toggle-tile" onclick="triggerToast('Key Sent: Arrow Down ↓')">↓</button>
-                  <button class="toggle-tile" onclick="triggerToast('Key Sent: Arrow Left ←')">←</button>
-                  <button class="toggle-tile" onclick="triggerToast('Key Sent: Arrow Right →')">→</button>
-                  <button class="toggle-tile" onclick="triggerToast('Key Sent: F2 (Rename)')">F2</button>
-                  <button class="toggle-tile" onclick="triggerToast('Key Sent: F5 (Refresh)')">F5</button>
-                  <button class="toggle-tile" onclick="triggerToast('Key Sent: F11 (Fullscreen)')">F11</button>
-                  <button class="toggle-tile" onclick="triggerToast('Key Sent: Escape')">Esc</button>
+                  <button class="toggle-tile" onclick="triggerToast('Arrow Up ↑')">↑</button>
+                  <button class="toggle-tile" onclick="triggerToast('Arrow Down ↓')">↓</button>
+                  <button class="toggle-tile" onclick="triggerToast('Arrow Left ←')">←</button>
+                  <button class="toggle-tile" onclick="triggerToast('Arrow Right →')">→</button>
+                  <button class="toggle-tile" onclick="triggerToast('F2 (Rename)')">F2</button>
+                  <button class="toggle-tile" onclick="triggerToast('F5 (Refresh)')">F5</button>
+                  <button class="toggle-tile" onclick="triggerToast('F11 (Fullscreen)')">F11</button>
+                  <button class="toggle-tile" onclick="triggerToast('Escape')">Esc</button>
                 </div>
               </div>
             </div>
@@ -487,15 +409,15 @@
                 <div class="card-head">
                   <div class="card-head-left">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    <span>AltDeck Beam — AirDrop for Windows</span>
+                    <span data-i18n="demoBeamTitle">AltDeck Beam — AirDrop for PC</span>
                   </div>
-                  <span class="card-badge" style="color: var(--neon-cyan);">Wi-Fi Direct</span>
+                  <span class="card-badge" data-i18n="badgeWifi">Wi-Fi Direct</span>
                 </div>
 
                 <div class="demo-drop-zone" onclick="simulateDrop()">
                   <div class="drop-icon">📂</div>
-                  <div class="drop-title">Tap to Simulate File Drop or Snap Photo</div>
-                  <div class="drop-sub">Streams at 100+ MB/s straight into Desktop / AltDeck Transfers</div>
+                  <div class="drop-title" data-i18n="beamPrompt">Tap to Simulate File Drop or Camera Photo</div>
+                  <div class="drop-sub" data-i18n="beamSub">Streams straight into Desktop / AltDeck Transfers</div>
                   <div class="progress-bar-wrap" id="demo-drop-progress" style="display: none;">
                     <div class="progress-bar-fill" id="demo-drop-fill"></div>
                   </div>
@@ -506,23 +428,19 @@
                 <div class="card-head">
                   <div class="card-head-left">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
-                    <span>Recent Streamed Transfers</span>
+                    <span data-i18n="demoRecentTransfers">Recent Transfers</span>
                   </div>
-                  <button class="btn btn-outline btn-sm" onclick="triggerToast('📂 Opened Desktop / AltDeck Transfers folder on PC')">Open PC Folder</button>
+                  <button class="btn btn-outline btn-sm" onclick="triggerToast(t('toastOpenFolder'))" data-i18n="btnOpenFolder">Open PC Folder</button>
                 </div>
 
                 <div class="transfers-list" id="demo-transfers-list">
                   <div class="transfer-row">
-                    <span>📄 presentation_final_v2.pdf</span>
+                    <span>📄 presentation_v2.pdf</span>
                     <span class="file-size">4.2 MB</span>
                   </div>
                   <div class="transfer-row">
-                    <span>📷 IMG_20261030_Camera.jpg</span>
+                    <span>📷 photo_tablet_capture.jpg</span>
                     <span class="file-size">8.7 MB</span>
-                  </div>
-                  <div class="transfer-row">
-                    <span>📑 Full_Stack_Developer_Resume.pdf</span>
-                    <span class="file-size">0.1 MB</span>
                   </div>
                 </div>
               </div>
@@ -536,29 +454,29 @@
                 <div class="card-head">
                   <div class="card-head-left">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
-                    <span>Power Management & Safe Countdown</span>
+                    <span data-i18n="demoPowerTitle">Power Management & Safety</span>
                   </div>
-                  <span class="card-badge" style="color: var(--neon-rose);">30s Countdown</span>
+                  <span class="card-badge" data-i18n="badgeCountdown">30s Countdown</span>
                 </div>
 
                 <div class="toggles-grid" style="grid-template-columns: repeat(3, 1fr);">
-                  <button class="toggle-tile" onclick="triggerToast('🔒 Windows Workstation Locked (Win + L)')">
-                    <span class="toggle-name">Lock PC</span>
+                  <button class="toggle-tile" onclick="triggerToast(t('toastLock'))">
+                    <span class="toggle-name" data-i18n="pLock">Lock PC</span>
                   </button>
-                  <button class="toggle-tile" onclick="triggerToast('🖥️ Monitor Screens Turned Off (PC Kept Running)')">
-                    <span class="toggle-name">Screen Off</span>
+                  <button class="toggle-tile" onclick="triggerToast(t('toastScreenOff'))">
+                    <span class="toggle-name" data-i18n="pScreenOff">Screen Off</span>
                   </button>
-                  <button class="toggle-tile" onclick="triggerToast('💤 Low-Power System Sleep Engaged')">
-                    <span class="toggle-name">Sleep</span>
+                  <button class="toggle-tile" onclick="triggerToast(t('toastSleep'))">
+                    <span class="toggle-name" data-i18n="pSleep">Sleep</span>
                   </button>
                   <button class="toggle-tile" onclick="startSafetyModal('Restart')">
-                    <span class="toggle-name">Restart</span>
+                    <span class="toggle-name" data-i18n="pRestart">Restart</span>
                   </button>
                   <button class="toggle-tile" onclick="startSafetyModal('Shutdown')">
-                    <span class="toggle-name">Shutdown</span>
+                    <span class="toggle-name" data-i18n="pShutdown">Shutdown</span>
                   </button>
-                  <button class="toggle-tile" style="border-color: rgba(16, 185, 129, 0.4); color: #34d399;" onclick="triggerToast('🛑 Shutdown Cancelled (shutdown /a executed)')">
-                    <span class="toggle-name">Abort /a</span>
+                  <button class="toggle-tile" style="color: #34d399;" onclick="triggerToast(t('toastAbort'))">
+                    <span class="toggle-name" data-i18n="pAbort">Abort /a</span>
                   </button>
                 </div>
               </div>
@@ -567,26 +485,26 @@
                 <div class="card-head">
                   <div class="card-head-left">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-                    <span>Emergency Windows Rescue</span>
+                    <span data-i18n="demoRescueTitle">Emergency Windows Rescue</span>
                   </div>
-                  <span class="card-badge" style="color: #fbbf24;">Zero Reboot</span>
+                  <span class="card-badge" data-i18n="badgeNoReboot">No Reboot</span>
                 </div>
 
                 <div class="rescue-actions">
                   <div class="rescue-row">
                     <div>
-                      <div class="rescue-title">Restart Windows Explorer</div>
-                      <div class="rescue-desc">Restores frozen taskbars, start menus, or explorer crashes.</div>
+                      <div class="rescue-title" data-i18n="rescueExplorerTitle">Restart Windows Explorer</div>
+                      <div class="rescue-desc" data-i18n="rescueExplorerDesc">Restores frozen taskbars or start menus.</div>
                     </div>
-                    <button class="btn btn-outline btn-sm" onclick="triggerToast('🔄 Explorer.exe safely restarted without reboot!')">Run Fix</button>
+                    <button class="btn btn-outline btn-sm" onclick="triggerToast(t('toastRestartExplorer'))" data-i18n="btnRunFix">Run Fix</button>
                   </div>
 
                   <div class="rescue-row">
                     <div>
-                      <div class="rescue-title">Restart Audio Service (Audiosrv)</div>
-                      <div class="rescue-desc">Restores frozen audio drivers or disconnected headphones.</div>
+                      <div class="rescue-title" data-i18n="rescueAudioTitle">Restart Audio Service (Audiosrv)</div>
+                      <div class="rescue-desc" data-i18n="rescueAudioDesc">Recovers frozen sound without restarting PC.</div>
                     </div>
-                    <button class="btn btn-outline btn-sm" onclick="triggerToast('🎧 Windows Audiosrv restarted!')">Run Fix</button>
+                    <button class="btn btn-outline btn-sm" onclick="triggerToast(t('toastRestartAudio'))" data-i18n="btnRunFix">Run Fix</button>
                   </div>
                 </div>
               </div>
@@ -601,10 +519,10 @@
     <!-- BENTO GRID FEATURES SHOWCASE -->
     <section class="features-section" id="features">
       <div class="container">
-        <div class="section-badge">Engineered for Perfection</div>
-        <h2 class="section-title">Built Different. Engineered for Speed.</h2>
-        <p class="section-desc">
-          Compare the engineering behind AltDeck with proprietary hardware decks and sluggish Electron wrappers.
+        <div class="section-badge" data-i18n="badgeEngineered">Engineered for Performance</div>
+        <h2 class="section-title" data-i18n="bentoSectionTitle">Why AltDeck is Built Different</h2>
+        <p class="section-desc" data-i18n="bentoSectionDesc">
+          A lean, native Windows architecture designed to avoid proprietary hardware lock-in.
         </p>
 
         <div class="bento-grid">
@@ -612,9 +530,9 @@
           <!-- Bento 1: C# Native Core -->
           <div class="bento-card bento-wide">
             <div class="bento-icon">⚡</div>
-            <h3 class="bento-title">Sub-10ms Native C# Engine</h3>
-            <p class="bento-text">
-              Direct integration into low-level Windows APIs via a high-performance compiled companion (<code>pc-control.exe</code>). Taps directly into <code>IAudioEndpointVolume</code> CoreAudio COM interfaces, WMI physical monitor brightness, and <code>SendInput</code> hardware scancodes.
+            <h3 class="bento-title" data-i18n="bento1Title">Sub-10ms Native C# Engine</h3>
+            <p class="bento-text" data-i18n="bento1Desc">
+              Direct integration into low-level Windows APIs via a high-performance compiled companion (pc-control.exe). Taps directly into IAudioEndpointVolume CoreAudio COM interfaces, WMI physical monitor brightness, and SendInput hardware scancodes.
             </p>
             <div class="tech-pills">
               <span>IAudioEndpointVolume</span>
@@ -627,8 +545,8 @@
           <!-- Bento 2: Zero-Void Responsive -->
           <div class="bento-card">
             <div class="bento-icon">📐</div>
-            <h3 class="bento-title">Zero-Void Layout</h3>
-            <p class="bento-text">
+            <h3 class="bento-title" data-i18n="bento2Title">Zero-Void Layout</h3>
+            <p class="bento-text" data-i18n="bento2Desc">
               Mathematically balanced multi-column grid with 0 empty slots across iPad Pro, Android tablets, smartphones, split-screens, and 4K ultrawide displays.
             </p>
           </div>
@@ -636,36 +554,36 @@
           <!-- Bento 3: Telemetry & Process Killer -->
           <div class="bento-card">
             <div class="bento-icon">📊</div>
-            <h3 class="bento-title">Task Manager Deck</h3>
-            <p class="bento-text">
-              Real-time 60-second SVG load waveforms for CPU & RAM. Active scanner displaying the top 5 memory-heavy background apps with one-tap instant <strong>[Kill]</strong> buttons.
+            <h3 class="bento-title" data-i18n="bento3Title">Task Manager Deck</h3>
+            <p class="bento-text" data-i18n="bento3Desc">
+              Real-time 60-second SVG load waveforms for CPU & RAM. Active scanner displaying the top 5 memory-heavy background apps with one-tap instant Kill buttons.
             </p>
           </div>
 
           <!-- Bento 4: 16-App Launchpad -->
           <div class="bento-card">
             <div class="bento-icon">🚀</div>
-            <h3 class="bento-title">16-App Launchpad</h3>
-            <p class="bento-text">
+            <h3 class="bento-title" data-i18n="bento4Title">16-App Launchpad</h3>
+            <p class="bento-text" data-i18n="bento4Desc">
               Official high-resolution branding for VS Code, Discord, Claude AI, Chrome, Edge, Antigravity, Office 365, plus auto-scanner detecting installed PC software.
             </p>
           </div>
 
           <!-- Bento 5: 14 Themes & RTL -->
           <div class="bento-card">
-            <div class="bento-icon">🎨</div>
-            <h3 class="bento-title">14 Luxury Themes & i18n</h3>
-            <p class="bento-text">
-              Obsidian Dark, Midnight OLED, Cyberpunk 2077, Nord, and 10 more curated palettes. Trilingual dynamic localization: English, French, and native Arabic (العربية) RTL.
+            <div class="bento-icon">🌍</div>
+            <h3 class="bento-title" data-i18n="bento5Title">Trilingual & RTL First</h3>
+            <p class="bento-text" data-i18n="bento5Desc">
+              Full dynamic localization in English, French, and Arabic with native RTL layout and Cairo typography. Plus 14 luxury dark themes for any setup.
             </p>
           </div>
 
           <!-- Bento 6: NoSleep Keep Awake -->
           <div class="bento-card bento-wide">
             <div class="bento-icon">☕</div>
-            <h3 class="bento-title">Universal 24/7 Keep-Awake Engine</h3>
-            <p class="bento-text">
-              Browser-based wake lock APIs normally require HTTPS, which breaks on local Wi-Fi IP addresses. AltDeck solves this with a dual-pipeline engine combining the Native Screen WakeLock API with an invisible seamless video buffer fallback (<code>NoSleep.js</code>), keeping your tablet awake indefinitely.
+            <h3 class="bento-title" data-i18n="bento6Title">Universal 24/7 Keep-Awake Engine</h3>
+            <p class="bento-text" data-i18n="bento6Desc">
+              Browser-based wake lock APIs normally require HTTPS, which breaks on local Wi-Fi IP addresses. AltDeck solves this with a dual-pipeline engine combining the Native Screen WakeLock API with an invisible seamless video buffer fallback (NoSleep.js), keeping your tablet awake indefinitely.
             </p>
           </div>
 
@@ -676,9 +594,9 @@
     <!-- ARCHITECTURE FLOW -->
     <section class="architecture-section" id="architecture">
       <div class="container">
-        <div class="section-badge">Deep Technical Architecture</div>
-        <h2 class="section-title">How Data Flows at &lt;10ms</h2>
-        <p class="section-desc">
+        <div class="section-badge" data-i18n="badgeArchitecture">Architecture</div>
+        <h2 class="section-title" data-i18n="archTitle">How Data Flows at &lt;10ms</h2>
+        <p class="section-desc" data-i18n="archDesc">
           An ultra-lean pipeline designed with zero bloat and zero cloud dependency.
         </p>
 
@@ -686,41 +604,41 @@
           
           <div class="arch-node">
             <div class="node-icon">📱</div>
-            <div class="node-name">Tablet / iPad</div>
-            <div class="node-desc">PWA Client • Obsidian UI • Gyro Touchpad • Audio Synth</div>
+            <div class="node-name" data-i18n="archNode1">Tablet / iPad</div>
+            <div class="node-desc" data-i18n="archNode1Desc">PWA Client • WebSocket • Gyro Touchpad</div>
           </div>
 
           <div class="arch-pipe">
-            <span class="pipe-label">Binary WebSocket (&lt;10ms)</span>
+            <span class="pipe-label">&lt;10ms WS</span>
             <div class="pipe-line"></div>
           </div>
 
           <div class="arch-node">
             <div class="node-icon">🟢</div>
-            <div class="node-name">Node.js Engine</div>
-            <div class="node-desc">server.js • Port 3000 • Subprocess Dispatcher • Telemetry</div>
+            <div class="node-name" data-i18n="archNode2">Node.js Server</div>
+            <div class="node-desc" data-i18n="archNode2Desc">Local HTTP &amp; WS Dispatcher • Telemetry</div>
           </div>
 
           <div class="arch-pipe">
-            <span class="pipe-label">High-Speed Pipe</span>
+            <span class="pipe-label">Pipe</span>
             <div class="pipe-line"></div>
           </div>
 
           <div class="arch-node highlight">
             <div class="node-icon">⚡</div>
-            <div class="node-name">Native C# Core</div>
-            <div class="node-desc">pc-control.exe • CoreAudio COM • WMI • user32.dll</div>
+            <div class="node-name" data-i18n="archNode3">Native C# Core</div>
+            <div class="node-desc" data-i18n="archNode3Desc">pc-control.exe • CoreAudio COM • WMI</div>
           </div>
 
           <div class="arch-pipe">
-            <span class="pipe-label">Kernel APIs</span>
+            <span class="pipe-label">Direct COM</span>
             <div class="pipe-line"></div>
           </div>
 
           <div class="arch-node">
             <div class="node-icon">🪟</div>
-            <div class="node-name">Windows 10 / 11</div>
-            <div class="node-desc">Master Audio • Monitor Brightness • Window Snap • Power</div>
+            <div class="node-name" data-i18n="archNode4">Windows 10 / 11</div>
+            <div class="node-desc" data-i18n="archNode4Desc">Master Volume • Monitor Brightness • Window Snap</div>
           </div>
 
         </div>
@@ -730,9 +648,9 @@
     <!-- HARDWARE COMPARISON MATRIX -->
     <section class="comparison-section" id="comparison">
       <div class="container">
-        <div class="section-badge">Unrivaled Value</div>
-        <h2 class="section-title">Why AltDeck Dominates Alternatives</h2>
-        <p class="section-desc">
+        <div class="section-badge" data-i18n="badgeComparison">Comparison</div>
+        <h2 class="section-title" data-i18n="compTitle">Why AltDeck Dominates Alternatives</h2>
+        <p class="section-desc" data-i18n="compDesc">
           See how AltDeck stacks up against $150 proprietary hardware and paid tablet apps.
         </p>
 
@@ -740,8 +658,8 @@
           <table class="comparison-table">
             <thead>
               <tr>
-                <th>Feature Matrix</th>
-                <th class="col-highlight">AltDeck (Open Source)</th>
+                <th data-i18n="thFeature">Feature Matrix</th>
+                <th class="col-highlight" data-i18n="thAltDeck">AltDeck (Open Source)</th>
                 <th>Elgato Stream Deck</th>
                 <th>Touch Portal</th>
                 <th>Deckboard</th>
@@ -749,67 +667,46 @@
             </thead>
             <tbody>
               <tr>
-                <td><strong>Price</strong></td>
-                <td class="col-highlight"><span class="badge-tag free">$0 (Free Forever)</span></td>
+                <td data-i18n="rowPrice">Price</td>
+                <td class="col-highlight"><span class="badge-tag free" data-i18n="valFree">$0 (Free Forever)</span></td>
                 <td>$149.99 – $249.99</td>
-                <td>$13.99 Pro License</td>
+                <td>$13.99 Pro</td>
                 <td>$3.99 – $12.99</td>
               </tr>
               <tr>
-                <td><strong>Tablet App Required?</strong></td>
-                <td class="col-highlight"><strong>No (Zero-Install PWA)</strong></td>
-                <td>Hardware Only</td>
-                <td>Yes (Google Play / App Store)</td>
-                <td>Yes (Play Store APK)</td>
+                <td data-i18n="rowInstall">Tablet App Required?</td>
+                <td class="col-highlight"><strong data-i18n="valNoInstall">No (Zero-Install PWA)</strong></td>
+                <td data-i18n="valHardwareOnly">Hardware Only</td>
+                <td data-i18n="valYesStore">Yes (App Store / Play)</td>
+                <td data-i18n="valYesApk">Yes (Play Store APK)</td>
               </tr>
               <tr>
-                <td><strong>Hardware Master Audio Endpoint</strong></td>
-                <td class="col-highlight">✅ True CoreAudio COM</td>
-                <td>⚠️ Requires Plugin</td>
-                <td>⚠️ Requires Virtual Cable</td>
-                <td>❌ Basic Key Media</td>
+                <td data-i18n="rowAudio">Hardware Master Audio Endpoint</td>
+                <td class="col-highlight" data-i18n="valNativeCom">✅ True CoreAudio COM</td>
+                <td data-i18n="valPlugin">⚠️ Plugin Required</td>
+                <td data-i18n="valVirtualCable">⚠️ Virtual Cable</td>
+                <td data-i18n="valBasicMedia">❌ Basic Media Key</td>
               </tr>
               <tr>
-                <td><strong>Physical Monitor Brightness (WMI)</strong></td>
-                <td class="col-highlight">✅ Yes (0-100% Native)</td>
-                <td>⚠️ External Plugin</td>
-                <td>❌ No</td>
-                <td>❌ No</td>
+                <td data-i18n="rowBrightness">Monitor Hardware Brightness</td>
+                <td class="col-highlight" data-i18n="valWmiNative">✅ Yes (0-100% WMI)</td>
+                <td data-i18n="valPlugin">⚠️ Plugin Required</td>
+                <td data-i18n="valNo">❌ No</td>
+                <td data-i18n="valNo">❌ No</td>
               </tr>
               <tr>
-                <td><strong>Multi-Touch Wireless Trackpad</strong></td>
-                <td class="col-highlight">✅ Included (Pro Mode)</td>
-                <td>❌ None</td>
-                <td>❌ None</td>
-                <td>❌ None</td>
+                <td data-i18n="rowTrackpad">Wireless Touchpad &amp; Numpad</td>
+                <td class="col-highlight" data-i18n="valIncluded">✅ Included</td>
+                <td data-i18n="valNo">❌ None</td>
+                <td data-i18n="valDiy">⚠️ DIY Layout</td>
+                <td data-i18n="valDiy">⚠️ DIY Layout</td>
               </tr>
               <tr>
-                <td><strong>4x4 Accounting Numpad + Nav Keys</strong></td>
-                <td class="col-highlight">✅ Included</td>
-                <td>❌ None</td>
-                <td>⚠️ DIY Layout</td>
-                <td>⚠️ DIY Layout</td>
-              </tr>
-              <tr>
-                <td><strong>AltDeck Beam (AirDrop for PC)</strong></td>
-                <td class="col-highlight">✅ Included over Wi-Fi</td>
-                <td>❌ None</td>
-                <td>❌ None</td>
-                <td>❌ None</td>
-              </tr>
-              <tr>
-                <td><strong>Emergency Explorer & Audio Rescue</strong></td>
-                <td class="col-highlight">✅ 1-Tap Recovery</td>
-                <td>❌ None</td>
-                <td>❌ None</td>
-                <td>❌ None</td>
-              </tr>
-              <tr>
-                <td><strong>Latency</strong></td>
-                <td class="col-highlight"><strong>&lt;10ms (Local WS)</strong></td>
-                <td>~5ms (USB)</td>
-                <td>20-50ms</td>
-                <td>30-80ms</td>
+                <td data-i18n="rowBeam">Wi-Fi AirDrop File Drop</td>
+                <td class="col-highlight" data-i18n="valIncluded">✅ Included</td>
+                <td data-i18n="valNo">❌ None</td>
+                <td data-i18n="valNo">❌ None</td>
+                <td data-i18n="valNo">❌ None</td>
               </tr>
             </tbody>
           </table>
@@ -820,16 +717,16 @@
     <!-- QUICK START & INSTALLATION -->
     <section class="quickstart-section" id="quickstart">
       <div class="container">
-        <div class="section-badge">Get Started in 60 Seconds</div>
-        <h2 class="section-title">Clone, Run, and Connect.</h2>
-        <p class="section-desc">
+        <div class="section-badge" data-i18n="badgeQuickStart">Quick Start</div>
+        <h2 class="section-title" data-i18n="qsTitle">Up and Running in 60 Seconds</h2>
+        <p class="section-desc" data-i18n="qsDesc">
           No external compilers, no manual dependencies, no cloud registration required.
         </p>
 
         <div class="quickstart-card">
           <div class="code-tabs">
-            <button class="code-tab active">Git Clone (Recommended)</button>
-            <button class="code-tab" onclick="switchCodeTab()">Windows 1-Click Batch</button>
+            <button class="code-tab active" data-i18n="tabGitClone">Git Clone (Recommended)</button>
+            <button class="code-tab" onclick="switchCodeTab()" data-i18n="tabBatch">Windows 1-Click Batch</button>
           </div>
 
           <div class="code-block-container">
@@ -840,29 +737,28 @@ cd altdeck
 # 2. Install dependencies (Node.js 16+)
 npm install
 
-# 3. Start the AltDeck Server
+# 3. Start AltDeck
 npm start</code></pre>
             <button class="btn-copy" id="btn-copy" onclick="copyCodeSnippet()">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              <span id="copy-text">Copy Code</span>
+              <span id="copy-text" data-i18n="btnCopy">Copy Code</span>
             </button>
           </div>
 
           <div class="quickstart-steps-row">
             <div class="step-card">
               <div class="step-num">1</div>
-              <div class="step-title">Run Controller on PC</div>
-              <div class="step-desc">Double click <code>start-controller.bat</code> or run <code>npm start</code> in your terminal.</div>
+              <div class="step-title" data-i18n="step1Title">Run on PC</div>
+              <div class="step-desc" data-i18n="step1Desc">Double click start-controller.bat or run npm start. AltDeck auto-compiles the C# binary on first launch.</div>
             </div>
             <div class="step-card">
               <div class="step-num">2</div>
-              <div class="step-title">Open on Tablet</div>
-              <div class="step-desc">Open Chrome or Safari on your iPad/tablet and navigate to your PC's IP address.</div>
+              <div class="step-title" data-i18n="step2Title">Open on Tablet</div>
+              <div class="step-desc" data-i18n="step2Desc">Open Chrome or Safari on your tablet and type the local IP address shown in terminal.</div>
             </div>
             <div class="step-card">
               <div class="step-num">3</div>
-              <div class="step-title">Add to Home Screen</div>
-              <div class="step-desc">Install as a standalone PWA for full-screen immersive deck control.</div>
+              <div class="step-title" data-i18n="step3Title">Add to Home Screen</div>
+              <div class="step-desc" data-i18n="step3Desc">Tap Install or Add to Home Screen for a borderless, full-screen deck experience.</div>
             </div>
           </div>
 
@@ -878,18 +774,17 @@ npm start</code></pre>
             <div class="creator-avatar">AG</div>
           </div>
           <div class="creator-info">
-            <div class="creator-tag">Crafted by</div>
+            <div class="creator-tag" data-i18n="creatorTag">Crafted by</div>
             <h3 class="creator-name">Anass Gouzgar</h3>
-            <p class="creator-bio">
+            <p class="creator-bio" data-i18n="creatorBio">
               Full Stack Engineer & Systems Developer passionate about high-performance real-time software, low-level Windows APIs, and zero-latency human-computer interfaces.
             </p>
             <div class="creator-links">
               <a href="https://github.com/Anass-gouzgar" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
                 <span>GitHub Profile</span>
               </a>
               <a href="https://github.com/Anass-gouzgar/altdeck" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
-                <span>View AltDeck Repo</span>
+                <span data-i18n="btnViewAltdeck">View AltDeck Repo</span>
               </a>
             </div>
           </div>
@@ -903,18 +798,17 @@ npm start</code></pre>
     <div class="container footer-container">
       <div class="footer-left">
         <div class="footer-brand">
-          <img src="icon.svg" width="24" height="24" alt="AltDeck">
+          <img src="icon.svg" width="20" height="20" alt="AltDeck">
           <span>AltDeck PC Controller</span>
         </div>
-        <p class="footer-copy">
-          Released under the <a href="https://github.com/Anass-gouzgar/altdeck/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>. Open-source software built for creators, streamers, and developers.
+        <p class="footer-copy" data-i18n="footerCopy">
+          Released under the MIT License. Open-source software built for creators, streamers, and developers.
         </p>
       </div>
 
       <div class="footer-right">
-        <a href="#hero">Back to Top ↑</a>
-        <a href="https://github.com/Anass-gouzgar/altdeck" target="_blank" rel="noopener noreferrer">Source Code</a>
-        <a href="https://github.com/Anass-gouzgar/altdeck/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contribute</a>
+        <a href="#hero" data-i18n="footerTop">Back to Top ↑</a>
+        <a href="https://github.com/Anass-gouzgar/altdeck" target="_blank" rel="noopener noreferrer" data-i18n="footerSource">Source Code</a>
       </div>
     </div>
   </footer>
@@ -926,12 +820,12 @@ npm start</code></pre>
   <div class="modal-overlay" id="safety-modal" style="display: none;">
     <div class="modal-card">
       <div class="modal-icon">⚠️</div>
-      <h3 class="modal-title" id="modal-title">Restart System</h3>
-      <p class="modal-desc">Safe countdown initiated. In a live AltDeck deployment, your PC will safely reboot in:</p>
+      <h3 class="modal-title" id="modal-title" data-i18n="modalConfirmTitle">Restart System</h3>
+      <p class="modal-desc" data-i18n="modalConfirmDesc">Safe countdown initiated. In a live AltDeck deployment, your PC will safely reboot in:</p>
       <div class="modal-countdown" id="modal-timer">30s</div>
       <div class="modal-btn-row">
-        <button class="btn btn-primary" onclick="closeSafetyModal()">Dismiss Demo</button>
-        <button class="btn btn-danger" onclick="abortCountdownDemo()">Cancel Now (shutdown /a)</button>
+        <button class="btn btn-primary" onclick="closeSafetyModal()" data-i18n="btnDismiss">Dismiss Demo</button>
+        <button class="btn btn-secondary" onclick="abortCountdownDemo()" data-i18n="btnAbort">Cancel (shutdown /a)</button>
       </div>
     </div>
   </div>
