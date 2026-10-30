@@ -3,8 +3,9 @@
     "id": "act-1",
     "label": "GitHub",
     "type": "url",
-    "color": "#5865F2",
-    "icon": "globe",
+    "color": "#24292F",
+    "icon": "github",
+    "iconImage": "/icons/github.svg",
     "payload": {
       "url": "https://github.com"
     }
@@ -15,6 +16,7 @@
     "type": "copy",
     "color": "#10B981",
     "icon": "key",
+    "iconImage": "/icons/ssh.svg",
     "payload": {
       "text": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyForAltDeckUser"
     }
@@ -25,6 +27,7 @@
     "type": "command",
     "color": "#06B6D4",
     "icon": "terminal",
+    "iconImage": "/icons/terminal.png",
     "payload": {
       "command": "start wt.exe || start cmd.exe"
     }
@@ -33,8 +36,9 @@
     "id": "act-4",
     "label": "YouTube Music",
     "type": "url",
-    "color": "#EF4444",
+    "color": "#FF0000",
     "icon": "music",
+    "iconImage": "/icons/ytmusic.svg",
     "payload": {
       "url": "https://music.youtube.com"
     }
@@ -43,8 +47,9 @@
     "id": "app-1793197703902",
     "label": "Camera",
     "type": "app",
-    "color": "#EC4899",
-    "icon": "rocket",
+    "color": "#0078D7",
+    "icon": "camera",
+    "iconImage": "/icons/camera.png",
     "payload": {
       "appId": "Microsoft.WindowsCamera_8wekyb3d8bbwe!App"
     }
@@ -53,8 +58,9 @@
     "id": "app-1793197711776",
     "label": "Excel",
     "type": "app",
-    "color": "#EC4899",
-    "icon": "rocket",
+    "color": "#107C41",
+    "icon": "excel",
+    "iconImage": "/icons/excel.png",
     "payload": {
       "appId": "Microsoft.Office.EXCEL.EXE.15"
     }
@@ -63,8 +69,9 @@
     "id": "app-1793197730772",
     "label": "Microsoft Teams",
     "type": "app",
-    "color": "#38BDF8",
-    "icon": "rocket",
+    "color": "#464EB8",
+    "icon": "teams",
+    "iconImage": "/icons/teams.png",
     "payload": {
       "appId": "MSTeams_8wekyb3d8bbwe!MSTeams"
     }
@@ -73,8 +80,9 @@
     "id": "app-1793197742387",
     "label": "Outlook",
     "type": "app",
-    "color": "#F59E0B",
-    "icon": "rocket",
+    "color": "#0078D4",
+    "icon": "outlook",
+    "iconImage": "/icons/outlook.png",
     "payload": {
       "appId": "Microsoft.OutlookForWindows_8wekyb3d8bbwe!Microsoft.OutlookforWindows"
     }
@@ -83,8 +91,9 @@
     "id": "app-1793285809958",
     "label": "SADP",
     "type": "app",
-    "color": "#EC4899",
-    "icon": "rocket",
+    "color": "#E50914",
+    "icon": "sadp",
+    "iconImage": "/icons/sadp.png",
     "payload": {
       "appId": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\SADP\\SADP\\SADPTool.exe"
     }

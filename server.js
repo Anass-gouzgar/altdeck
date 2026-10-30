@@ -593,6 +593,50 @@ const server = http.createServer(async (req, res) => {
 
     // 1. Match against official icons in public/icons/
     const officialIconMap = {
+      github: 'github.svg',
+      ssh: 'ssh.svg',
+      copyssh: 'ssh.svg',
+      'copy ssh key': 'ssh.svg',
+      ytmusic: 'ytmusic.svg',
+      'youtube music': 'ytmusic.svg',
+      'music.youtube': 'ytmusic.svg',
+      camera: 'camera.png',
+      windowscamera: 'camera.png',
+      excel: 'excel.png',
+      access: 'access.png',
+      msaccess: 'access.png',
+      publisher: 'publisher.png',
+      mspub: 'publisher.png',
+      teams: 'teams.png',
+      msteams: 'teams.png',
+      outlook: 'outlook.png',
+      sadp: 'sadp.png',
+      sadptool: 'sadp.png',
+      word: 'word.png',
+      winword: 'word.png',
+      powerpoint: 'powerpoint.png',
+      powerpnt: 'powerpoint.png',
+      onenote: 'onenote.png',
+      paint: 'paint.png',
+      snippingtool: 'snippingtool.png',
+      screensketch: 'snippingtool.png',
+      photos: 'photos.png',
+      mediaplayer: 'mediaplayer.png',
+      zunemusic: 'mediaplayer.png',
+      xbox: 'xbox.png',
+      gamingapp: 'xbox.png',
+      store: 'store.png',
+      windowsstore: 'store.png',
+      clipchamp: 'clipchamp.png',
+      weather: 'weather.png',
+      bingweather: 'weather.png',
+      cmd: 'cmd.png',
+      commandprompt: 'cmd.png',
+      powershell: 'powershell.png',
+      git: 'git.png',
+      gitbash: 'git.png',
+      gitgui: 'git.png',
+      ollama: 'ollama.png',
       discord: 'discord.png',
       claude: 'claude.png',
       '3utools': '3utools.png',
@@ -619,7 +663,7 @@ const server = http.createServer(async (req, res) => {
 
     let matchedFile = null;
     for (const [key, iconFile] of Object.entries(officialIconMap)) {
-      if (rawName.includes(key) || rawAppId.includes(key)) {
+      if (rawName === key || rawName.includes(key) || rawAppId.includes(key)) {
         matchedFile = iconFile;
         break;
       }
@@ -649,16 +693,11 @@ const server = http.createServer(async (req, res) => {
       return fs.createReadStream(cachedFile).pipe(res);
     }
 
-    // 3. Extract on demand if target is an executable or start menu item
+    // 3. Extract on demand if target is an executable, GUID path, or UWP Appx
     const origAppId = url.searchParams.get('appId') || '';
-    let extractPath = null;
-    if (origAppId.toLowerCase().endsWith('.exe') && fs.existsSync(origAppId)) {
-      extractPath = origAppId;
-    }
-
-    if (extractPath) {
+    if (origAppId) {
       const script = path.join(__dirname, 'scripts', 'extract-icon.ps1');
-      execFile('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script, '-SourcePath', extractPath, '-TargetPath', cachedFile, '-Size', '128'], (err) => {
+      execFile('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script, '-SourcePath', origAppId, '-TargetPath', cachedFile, '-Size', '128'], (err) => {
         if (!err && fs.existsSync(cachedFile)) {
           res.writeHead(200, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
           return fs.createReadStream(cachedFile).pipe(res);
