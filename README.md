@@ -14,6 +14,11 @@
   <a href="https://microsoft.com/windows"><img src="https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-0078D6.svg" alt="Windows 10/11"></a>
   <img src="https://img.shields.io/badge/latency-%3C10ms-neon?color=00F0FF" alt="Sub-10ms Latency">
   <img src="https://img.shields.io/badge/client-Zero--Install%20(PWA)-purple?color=8B5CF6" alt="PWA Ready">
+  <img src="https://img.shields.io/badge/layout-Zero--Void%20Responsive-emerald?color=10B981" alt="Zero-Void Responsive">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/hero-banner.jpg" alt="AltDeck PC Controller Showcase" width="100%" style="border-radius: 12px; box-shadow: 0 12px 36px rgba(0,0,0,0.6);" />
 </p>
 
 ---
@@ -26,7 +31,8 @@ Most Stream Deck alternatives either require installing proprietary APKs on your
 - **Zero App Installation on Tablet**: Works instantly inside any modern mobile browser (Chrome, Samsung Internet, Edge, Safari). Add to Home Screen as a standalone PWA.
 - **Sub-10ms Hardware Latency**: Communicates over binary/JSON WebSockets directly with a high-performance native C# companion that taps into Windows CoreAudio COM (`IAudioEndpointVolume`) and WMI.
 - **Universal Tablet Keep-Awake**: Built-in `NoSleep.js` fallback keeps your tablet screen awake 24/7 on local Wi-Fi without requiring HTTPS certificates.
-- **4-in-1 Workspace**: Stream Deck + Wireless Touchpad + PC Numpad + Safe Power Center.
+- **Zero-Void Responsive Multi-Device UI**: Mathematically balanced layouts that fill 100% of the screen with zero dead spaces on iPads, Android tablets (portrait & landscape), smartphones, laptops, standard desktop monitors, and 4K ultrawide displays.
+- **5-in-1 Workspace**: Stream Deck + Wireless Touchpad Pro + PC Numpad & Navigation + AirDrop File Drop + Safe Power Center.
 - **Custom Actions & Macros**: Create interactive buttons to open URLs, run terminal commands, or copy text directly to your PC clipboard.
 - **Real-Time PC-to-Tablet Notifications**: Stream build alerts, dev notifications, and task status from PC to tablet with pleasant audio chimes.
 - **14 Curated Luxury Themes & Trilingual i18n**: 14 Cyberpunk/OLED glassmorphic themes; English, Français, and Arabic (العربية) with native RTL layout.
@@ -35,35 +41,67 @@ Most Stream Deck alternatives either require installing proprietary APKs on your
 
 ## 📸 Features at a Glance
 
+<p align="center">
+  <img src="docs/screenshots/features-modes.jpg" alt="AltDeck 3 Operating Modes: Stream Deck, Precision Trackpad, and Numeric Keypad" width="100%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />
+</p>
+
 ### 1. 🎛️ Master Hardware & Media Deck
 - **Master Audio Endpoint**: 0-100% smooth slider, one-tap instant mute with neon status indicator, and quick presets (25%, 50%, 75%, 100%).
-- **Hardware Display Brightness**: Direct WMI screen brightness slider (0-100%) and quick presets (20%, 50%, 80%, 100%).
 - **🎙️ Global Microphone Mute with Live "ON-AIR" Glow**: Low-level Windows CoreAudio endpoint capture toggle with real-time pulsing status.
 - **🎵 WinRT Media Player & Live Track Timeline**: Real-time track title, artist name, and album title from Spotify, YouTube (Chrome/Edge), spinning vinyl disc animation, 4-bar equalizer, and an interactive draggable timeline scrubber with seek support.
 - **Media Controls**: Previous, Play/Pause, and Next track using hardware extended scan codes.
-- **One-Tap App Launchpad**: Launch tools with official vector branding (Discord, Claude AI, 3uTools, Chrome, Edge, VS Code, Antigravity IDE, File Explorer, Sticky Notes, Windows Settings).
+- **16-App Instant Launchpad**: Launch top desktop apps with official high-resolution branding (Discord, Claude AI, 3uTools, Google Chrome, Microsoft Edge, VS Code, Antigravity AI IDE, File Explorer, Sticky Notes, Windows Settings, Microsoft Word, Microsoft Excel, Microsoft PowerPoint, Microsoft Outlook, Paint, and Windows Terminal).
 - **Auto-Detected Installed PC Apps**: Automatic scanner detecting installed Windows apps with search filter and one-tap "+ Add to Deck" shortcut button creation.
 - **⚡ Custom Actions & Macros Studio**: Create interactive buttons to launch apps, open URLs, copy text to PC clipboard, or run terminal commands.
 
-### 2. 🪟 Windows Snap Layouts & Multi-Screen Window Management
+### 2. 💡 Display & Quick System Toggles Deck
+- **Hardware Display Brightness**: Direct WMI screen brightness slider (0-100%) and quick presets (20%, 50%, 80%, 100%).
+- **🖥️ Screen Off Mode (Without Sleep)**: Instantly turn off your PC/laptop monitors with one tap while keeping background renders, music, and downloads active. Wake instantly by touching the tablet trackpad or the floating status banner.
+- **Project Display**: One-tap trigger for the Windows Project flyout (`Win + P`) to switch monitor mirroring or extension.
+- **Night Light**: Instant access to Windows blue-light warmth settings.
+- **Bluetooth & Wi-Fi Settings**: Rapid launch of Windows wireless connection panels.
+- **Quick Calculator & Xbox Game Bar**: One-tap launch for Windows Calculator and Xbox Game Bar (`Win + G`).
+- **Windows Settings**: One-tap shortcut to Windows Control Settings (`Win + I`).
+
+### 3. 🪟 Windows Snap Layouts & Multi-Screen Window Management
 - **Snap Layouts (4 Tiles)**: Snap active window to Left Half (`Win + Left`), Right Half (`Win + Right`), Maximize (`Win + Up`), Minimize (`Win + Down`).
 - **Multi-Monitor Display Moving**: Move active window across physical screens (`Win + Shift + Left/Right`).
 - **Virtual Desktops**: Switch virtual desktops (`Win + Ctrl + Left/Right`) and create new desktops on the fly.
 - **System Shortcuts**: Alt+Tab app switcher, Task View (`Win + Tab`), Desktop toggle (`Win + D`), Windows Snipping Tool (`Win + Shift + S`), and Close Active Window (`Alt + F4`).
 
-### 3. 📊 Live PC Hardware Telemetry Gauges
+### 4. 📊 Live PC Hardware Telemetry & Top Process Killer
 - **CPU Processor**: Real-time load % with dynamic color shift (Cyan `<60%` → Amber → Red `>85%`) and active core count.
 - **RAM Memory**: Real-time memory usage breakdown (`14.6 GB / 31.8 GB • 17.2 GB Free`) with progress gauge.
 - **Power & Battery**: Live state detection (`⚡ AC Plugged In` vs `🔋 Running on Battery`) and battery % level.
+- **Real-Time Load Waveform Sparkline**: 60-second real-time SVG load graph inside the Telemetry card for CPU (Cyan) and RAM (Purple).
+- **📋 Top Resource Apps Scanner & Instant Killer**: Scans active Windows processes, lists top RAM-consuming applications (`chrome.exe`, `Code.exe`, etc.) in MB, and allows one-tap termination with the red **[Kill]** button.
 - **Header Live Stat Pills**: CPU %, RAM %, and Battery % always visible in the top navigation bar.
-- **Task Manager Launcher**: One-tap button on the telemetry card to launch Windows Task Manager on PC.
 
-### 4. 🕒 Strict 24-Hour Military Time & Timezone Offset Correction
-- Top clock strictly formatted in 24-hour mode (`HH:mm`, e.g. `23:30`) independent of tablet browser locale.
-- Auto-synchronization with PC hardware timezone offset (`pcTzOffset`).
-- Interactive timezone offset adjuster in Config tab (`[-1h]`, `[PC Sync]`, `[+1h]`) saved to tablet storage.
+### 5. 🖱️ Wireless Precision Trackpad Pro Companion
+- **Multi-Touch Trackpad Surface**: Converts tablet into a precision touchpad with left-click, middle-click, right-click, smooth pointer motion, and two-finger scrolling.
+- **Pointer Sensitivity Presets**: 4 hardware speed profiles (`Slow 0.6x`, `Normal 1.0x`, `Fast 1.5x`, `Turbo 2.2x`).
+- **Double-Click & Drag Lock**: Dedicated hardware double-click action and drag & drop toggle.
+- **Remote Scroll Wheel**: Directional remote scroll buttons (Scroll Up, Scroll Down, Scroll Left, Scroll Right).
+- **Interactive Gesture Guide**: Built-in visual reference for multi-touch gestures.
 
-### 5. 🔔 Real-Time PC-to-Tablet Notifications
+### 6. ⌨️ Wireless PC Numpad & Remote Extended Navigation
+- **4x4 Accounting Numpad**: Full numeric keypad with arithmetic operators (`÷`, `×`, `−`, `+`), numbers `0-9`, `Enter`, `Backspace`, `Tab`, `Esc` with tactile sound and haptic click response.
+- **Remote PC Typing Bar**: Type any text on your tablet and inject it directly into the active PC cursor/window.
+- **Extended Windows Navigation Cluster**: Hardware Directional Arrow Keys (`↑`, `↓`, `←`, `→`), Page Up, Page Down, Home, End, and Windows Function Keys (`F2`, `F5`, `F11`, `F12`).
+
+### 7. ⚡ Safe Power Management & Emergency Diagnostics
+- **Lock Workstation & Low-Power Sleep**: Instant `Win + L` lock and system sleep.
+- **Safe Restart & Shutdown with 30-Second Countdown**: Protected with a visual safety countdown modal and instant **CANCEL NOW** (`shutdown /a`) override.
+- **🚨 Emergency Windows Explorer Restart**: One-tap recovery that restarts `explorer.exe` to restore frozen taskbars, start menus, or desktop icons.
+- **🎧 Emergency Audio Driver Reset**: Restarts the Windows Audio service (`Restart-Service Audiosrv`) if sound is frozen without requiring a PC reboot.
+
+### 8. 📂 AltDeck Beam — Quick File Drop (AirDrop for PC)
+- **Local Wi-Fi File Streaming**: Beam photos, screenshots, documents, and videos from your tablet straight into your PC's `Desktop/AltDeck Transfers` folder.
+- **Drag & Drop & Tablet Camera**: Tap to pick files or snap photos directly with your tablet camera.
+- **Live Upload Progress**: Real-time progress bar with upload percentage.
+- **Auto PC Notification & Folder Launcher**: Plays a synthesized chime upon arrival and features an instant **"📂 Open Folder on PC"** button.
+
+### 9. 🔔 Real-Time PC-to-Tablet Notifications
 - Push alerts from command line, build scripts, or terminal:
   ```bash
   npm run notify -- "Build Complete" "All test suites passed!" success
@@ -74,30 +112,11 @@ Most Stream Deck alternatives either require installing proprietary APKs on your
   ```
 - Instant sliding glass banner on tablet screen + Web Audio synth chime + notification history drawer.
 
-### 6. 🎨 14 Luxury Cyber Themes & Multi-Language (i18n)
+### 10. 🎨 14 Luxury Cyber Themes & Multi-Language (i18n)
 - **14 Cyberpunk/Glassmorphic Themes**: Obsidian Dark, Midnight OLED, Ocean Deep, Ember Orange, Emerald Forest, Cyber Rose, Frost Aurora, Royal Gold, Cyberpunk 2077, Matrix Code, Synthwave 80s, Dracula Purple, Crimson Red, Nord Arctic.
 - **Trilingual Language Audit (100% Dynamic Translation)**: English, Français, and Arabic (`العربية`) across every card, badge, button, placeholder, countdown modal, and real-time toast notification.
 - **Native Arabic RTL & Typography**: Full `[dir="rtl"]` layout with Cairo typography, while strictly preserving Left-to-Right orientation on hardware sliders and numpad.
-
-### 7. 🖱️ Wireless Trackpad & Numpad Modes
-- **Multi-Touch Trackpad**: Converts tablet into a touchpad with left-click, right-click, smooth pointer motion, and two-finger vertical scrolling.
-- **Wireless PC Numpad**: Full numeric keypad with arithmetic operators (`÷`, `×`, `−`, `+`), numbers `0-9`, `Enter`, `Backspace`, `Tab`, `Esc`, plus a **Remote PC Typing bar** to stream text straight into the active PC window.
-
-### 8. ⚡ Safe Power Management & Screen Off
-- **🖥️ Screen Off Mode (Without Sleep)**: Instantly turn off your PC/laptop monitors with one tap while keeping background renders, music, and downloads active. Wake instantly by touching the tablet trackpad or the floating status banner.
-- Lock workstation (`Win + L`) and low-power Sleep.
-- Safe Restart & Shutdown with a **30-second emergency countdown modal** and an instant **CANCEL NOW** (`shutdown /a`) button.
-
-### 9. 📂 AltDeck Beam — Quick File Drop (AirDrop Alternative)
-- **Local Wi-Fi File Streaming**: Beam photos, screenshots, and files from your tablet straight into your PC's `Desktop/AltDeck Transfers` folder.
-- **Drag & Drop & Tablet Camera**: Tap to pick files or snap photos directly with your tablet camera.
-- **Live Upload Progress**: Real-time progress bar with upload percentage.
-- **Auto PC Notification & Folder Launcher**: Plays a synthesized chime upon arrival and features an instant **"📂 Open Folder on PC"** button.
-
-### 10. 📋 Top Resource Apps & Live Waveform Sparklines (Task Manager Deck)
-- **Real-Time Load Waveform**: Live 60-second animated SVG load graph inside the Telemetry card for CPU (Cyan) and RAM (Purple).
-- **Active Process Scanner**: Scans active Windows processes and displays the top 5 memory-heavy applications (`chrome.exe`, `Code.exe`, etc.) with their RAM in MB.
-- **Instant Kill**: Terminate hung or heavy applications with a single tap of the red **[Kill]** button.
+- **🕒 Strict 24-Hour Military Time**: Top clock strictly formatted in 24-hour mode (`HH:mm`, e.g. `23:30`) with PC timezone auto-sync.
 
 ---
 
