@@ -918,6 +918,36 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Landing Page & Showcase Documentation Route (/landing or /docs)
+  if (url.pathname === '/landing' || url.pathname.startsWith('/landing/') || url.pathname === '/docs' || url.pathname.startsWith('/docs/')) {
+    let sub = url.pathname.replace(/^\/landing/, '').replace(/^\/docs/, '');
+    if (!sub || sub === '/') sub = '/index.html';
+    let docPath = path.join(__dirname, 'docs', sub);
+
+    // Security check against path traversal
+    if (!docPath.startsWith(path.join(__dirname, 'docs'))) {
+      res.writeHead(403);
+      return res.end('Access Denied');
+    }
+
+    fs.stat(docPath, (docErr, docStats) => {
+      if (docErr || !docStats.isFile()) {
+        docPath = path.join(__dirname, 'docs', 'index.html');
+      }
+      const docExt = path.extname(docPath).toLowerCase();
+      const docContentType = MIME_TYPES[docExt] || 'application/octet-stream';
+      fs.readFile(docPath, (readErr, content) => {
+        if (readErr) {
+          res.writeHead(500);
+          return res.end('Error loading landing page');
+        }
+        res.writeHead(200, { 'Content-Type': docContentType });
+        res.end(content);
+      });
+    });
+    return;
+  }
+
   // Static file serving from public/
   let filePath = path.join(__dirname, 'public', url.pathname === '/' ? 'index.html' : url.pathname);
 
