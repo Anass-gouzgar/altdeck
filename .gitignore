@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-package-lock.json
 
 # Local Configuration overrides (keep config.example.json tracked)
 config.json
