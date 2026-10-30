@@ -324,6 +324,32 @@ const I18N = {
     powerSleep: 'Sleep',
     powerRestart: 'Restart',
     powerShutdown: 'Shutdown',
+    keepPcRunning: 'Keep PC Awake',
+    quickProject: 'Project Display',
+    quickTogglesTitle: 'Windows Quick Toggles',
+    quickNightLight: 'Night Light',
+    quickBluetooth: 'Bluetooth',
+    quickWifi: 'Wi-Fi',
+    quickCalc: 'Calculator',
+    quickGameBar: 'Game Bar',
+    quickSettings: 'Settings',
+    powerRestartExplorer: 'Restart Explorer',
+    powerRestartAudio: 'Restart Audio Driver',
+    powerAbortCountdown: 'Abort Countdown',
+    mouseControlsTitle: 'Mouse & Gesture Controls',
+    mouseControlsBadge: 'Hardware Pro',
+    pointerSpeedTitle: 'Pointer Sensitivity',
+    mouseQuickActions: 'Quick Mouse Actions',
+    mouseDoubleClick: 'Double Click',
+    mouseDragLock: 'Drag Lock: OFF',
+    mouseScrollUp: 'Scroll Up',
+    mouseScrollDown: 'Scroll Down',
+    trackpadMiddleClick: 'MIDDLE',
+    gestureGuideTitle: 'Precision Gesture Guide',
+    navKeysTitle: 'Navigation & Function Keys',
+    catOffice: 'Office',
+    catGraphics: 'Graphics',
+    catTerminal: 'Terminal',
     trackpadTitle: 'Wireless Precision Touchpad',
     trackpadSub: 'Drag finger to move mouse',
     trackpadHint: 'Touch & Glide • Tap for Left Click • 2 Fingers to Scroll',
@@ -499,6 +525,32 @@ const I18N = {
     powerSleep: 'Veille',
     powerRestart: 'Redémarrer',
     powerShutdown: 'Éteindre',
+    keepPcRunning: 'Garder le PC actif',
+    quickProject: 'Projeter l’écran',
+    quickTogglesTitle: 'Basculeurs Rapides Windows',
+    quickNightLight: 'Éclairage nocturne',
+    quickBluetooth: 'Bluetooth',
+    quickWifi: 'Wi-Fi',
+    quickCalc: 'Calculatrice',
+    quickGameBar: 'Barre de jeu',
+    quickSettings: 'Paramètres',
+    powerRestartExplorer: 'Redémarrer Explorer',
+    powerRestartAudio: 'Redémarrer Audio',
+    powerAbortCountdown: 'Annuler le compte',
+    mouseControlsTitle: 'Contrôles Souris & Gestes',
+    mouseControlsBadge: 'Matériel Pro',
+    pointerSpeedTitle: 'Sensibilité du curseur',
+    mouseQuickActions: 'Actions Rapides Souris',
+    mouseDoubleClick: 'Double Clic',
+    mouseDragLock: 'Glisser: OFF',
+    mouseScrollUp: 'Défilement Haut',
+    mouseScrollDown: 'Défilement Bas',
+    trackpadMiddleClick: 'MILIEU',
+    gestureGuideTitle: 'Guide des Gestes de Précision',
+    navKeysTitle: 'Touches Navigation & Fonctions',
+    catOffice: 'Bureautique',
+    catGraphics: 'Graphisme',
+    catTerminal: 'Terminal',
     trackpadTitle: 'Pavé Tactile Sans Fil de Précision',
     trackpadSub: 'Glissez pour déplacer la souris',
     trackpadHint: 'Glisser pour déplacer • Taper pour clic gauche • 2 doigts pour défiler',
@@ -674,6 +726,32 @@ const I18N = {
     powerSleep: 'سكون',
     powerRestart: 'إعادة تشغيل',
     powerShutdown: 'إيقاف التشغيل',
+    keepPcRunning: 'مع إبقاء الكمبيوتر يعمل',
+    quickProject: 'عرض / مشاركة الشاشة',
+    quickTogglesTitle: 'اختصارات ويندوز السريعة',
+    quickNightLight: 'إضاءة ليلية',
+    quickBluetooth: 'بلوتوث',
+    quickWifi: 'واي فاي',
+    quickCalc: 'الآلة الحاسبة',
+    quickGameBar: 'شريط الألعاب',
+    quickSettings: 'الإعدادات',
+    powerRestartExplorer: 'إعادة تشغيل إكسبلورر',
+    powerRestartAudio: 'إعادة تشغيل درايفر الصوت',
+    powerAbortCountdown: 'إلغاء المؤقت',
+    mouseControlsTitle: 'إعدادات وإيماءات الماوس',
+    mouseControlsBadge: 'عتاد احترافي',
+    pointerSpeedTitle: 'حساسية مؤشر الماوس',
+    mouseQuickActions: 'إجراءات الماوس السريعة',
+    mouseDoubleClick: 'نقرة مزدوجة',
+    mouseDragLock: 'سحب مستمر: معطّل',
+    mouseScrollUp: 'تمرير للأعلى',
+    mouseScrollDown: 'تمرير للأسفل',
+    trackpadMiddleClick: 'وسط',
+    gestureGuideTitle: 'دليل إيماءات اللمس الدقيقة',
+    navKeysTitle: 'مفاتيح التنقل والوظائف',
+    catOffice: 'أوفيس',
+    catGraphics: 'تصميم',
+    catTerminal: 'طرفية',
     trackpadTitle: 'لوحة لمس لاسلكية دقيقة',
     trackpadSub: 'مرر إصبعك لتحريك مؤشر الماوس',
     trackpadHint: 'المس وحرك المؤشر • نقرة للنقر الأيسر • إصبعان للتمرير',
@@ -2169,6 +2247,32 @@ document.querySelectorAll('[data-win]').forEach(btn => {
   });
 });
 
+
+// Windows System Quick Toggles (Action Center)
+document.querySelectorAll('[data-quick]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    triggerHaptic();
+    const action = btn.getAttribute('data-quick');
+    sendAction({ type: 'quick-toggle', action });
+    const isAr = state.lang === 'ar';
+    const isFr = state.lang === 'fr';
+    const quickToasts = {
+      'project': isAr ? 'قائمة مشاركة الشاشة (Win + P)' : (isFr ? 'Projection d’écran (Win + P)' : 'Project Display (Win + P)'),
+      'nightlight': isAr ? 'إعدادات الإضاءة الليلية' : (isFr ? 'Éclairage nocturne' : 'Night Light Settings'),
+      'bluetooth': isAr ? 'إعدادات البلوتوث' : (isFr ? 'Paramètres Bluetooth' : 'Bluetooth Settings'),
+      'wifi': isAr ? 'إعدادات الشبكة والواي فاي' : (isFr ? 'Paramètres Réseau & Wi-Fi' : 'Wi-Fi & Network Settings'),
+      'calc': isAr ? 'الآلة الحاسبة' : (isFr ? 'Calculatrice' : 'Windows Calculator'),
+      'gamebar': isAr ? 'شريط ألعاب إكس بوكس (Win + G)' : (isFr ? 'Barre de jeu Xbox (Win + G)' : 'Xbox Game Bar (Win + G)'),
+      'settings': isAr ? 'إعدادات ويندوز (Win + I)' : (isFr ? 'Paramètres Windows (Win + I)' : 'Windows Settings (Win + I)'),
+      'restart-explorer': isAr ? 'تمت إعادة تشغيل مستكشف ويندوز وشريط المهام' : (isFr ? 'Explorateur Windows redémarré' : 'Restarted Windows Explorer & Taskbar'),
+      'restart-audio': isAr ? 'تمت إعادة تشغيل خدمة الصوت بنجاح' : (isFr ? 'Service audio Windows redémarré' : 'Restarted Windows Audio Service')
+    };
+    if (quickToasts[action]) {
+      showToast(quickToasts[action]);
+    }
+  });
+});
+
 // Power Actions with Safety Countdown
 document.querySelectorAll('[data-power]').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -2191,6 +2295,14 @@ document.querySelectorAll('[data-power]').forEach(btn => {
       const banner = document.getElementById('screen-off-banner');
       if (banner) banner.style.display = 'block';
       showToast(isAr ? 'تم إطفاء الشاشات (الحاسوب يعمل)' : (isFr ? 'Écrans éteints (PC actif)' : 'PC Displays Turned Off'));
+      return;
+    }
+    if (action === 'abort') {
+      triggerHaptic();
+      clearInterval(state.powerTimer);
+      safetyModal.classList.remove('show');
+      sendAction({ type: 'system', action: 'abort' });
+      showToast(isAr ? 'تم إلغاء مؤقت إيقاف التشغيل' : (isFr ? 'Compte à rebours annulé' : 'Scheduled Shutdown Aborted'));
       return;
     }
     triggerHaptic();
@@ -2434,8 +2546,9 @@ trackpadArea.addEventListener('touchmove', (e) => {
     const curX = e.touches[0].clientX;
     const curY = e.touches[0].clientY;
     if (lastTouchX !== null && lastTouchY !== null) {
-      const dx = Math.round((curX - lastTouchX) * 1.8);
-      const dy = Math.round((curY - lastTouchY) * 1.8);
+      const mult = (state.mouseSensitivity || 1.0) * 1.8;
+      const dx = Math.round((curX - lastTouchX) * mult);
+      const dy = Math.round((curY - lastTouchY) * mult);
       if (dx !== 0 || dy !== 0) {
         sendAction({ type: 'mouse', action: 'move', dx, dy });
       }
@@ -2467,10 +2580,87 @@ document.getElementById('mouse-left').addEventListener('click', () => {
   triggerHaptic();
 });
 
+const mouseMiddle = document.getElementById('mouse-middle');
+if (mouseMiddle) {
+  mouseMiddle.addEventListener('click', () => {
+    sendAction({ type: 'mouse', action: 'click', p1: 'middle' });
+    triggerHaptic();
+  });
+}
+
 document.getElementById('mouse-right').addEventListener('click', () => {
   sendAction({ type: 'mouse', action: 'click', p1: 'right' });
   triggerHaptic();
 });
+
+// Touchpad Pointer Sensitivity & Hardware Pro Companion
+state.mouseSensitivity = 1.0;
+document.querySelectorAll('.trackpad-speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    triggerHaptic();
+    document.querySelectorAll('.trackpad-speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.mouseSensitivity = parseFloat(btn.getAttribute('data-speed')) || 1.0;
+    const isAr = state.lang === 'ar';
+    const isFr = state.lang === 'fr';
+    showToast(isAr ? `تم ضبط سرعة الماوس: ${btn.textContent}` : (isFr ? `Sensibilité souris : ${btn.textContent}` : `Mouse Speed: ${btn.textContent}`));
+  });
+});
+
+const btnMouseDbl = document.getElementById('btn-mouse-doubleclick');
+if (btnMouseDbl) {
+  btnMouseDbl.addEventListener('click', () => {
+    triggerHaptic();
+    sendAction({ type: 'mouse', action: 'click', p1: 'left' });
+    setTimeout(() => {
+      sendAction({ type: 'mouse', action: 'click', p1: 'left' });
+    }, 80);
+    const isAr = state.lang === 'ar';
+    const isFr = state.lang === 'fr';
+    showToast(isAr ? 'نقرة مزدوجة' : (isFr ? 'Double clic' : 'Double Click Sent'));
+  });
+}
+
+let isDragLocked = false;
+const btnMouseDragLock = document.getElementById('btn-mouse-draglock');
+const dragLockText = document.getElementById('draglock-text');
+if (btnMouseDragLock) {
+  btnMouseDragLock.addEventListener('click', () => {
+    triggerHaptic();
+    isDragLocked = !isDragLocked;
+    const isAr = state.lang === 'ar';
+    const isFr = state.lang === 'fr';
+    if (isDragLocked) {
+      sendAction({ type: 'mouse', action: 'down', p1: 'left' });
+      btnMouseDragLock.style.borderColor = '#EF4444';
+      btnMouseDragLock.style.color = '#EF4444';
+      if (dragLockText) dragLockText.textContent = isAr ? 'سحب مستمر: مفعّل' : (isFr ? 'Glisser: ON' : 'Drag Lock: ON');
+      showToast(isAr ? 'تم تفعيل قفل السحب (الزر الأيسر مضغوط)' : (isFr ? 'Glisser verrouillé activé' : 'Drag Lock Engaged'));
+    } else {
+      sendAction({ type: 'mouse', action: 'up', p1: 'left' });
+      btnMouseDragLock.style.borderColor = '';
+      btnMouseDragLock.style.color = '';
+      if (dragLockText) dragLockText.textContent = isAr ? 'سحب مستمر: معطّل' : (isFr ? 'Glisser: OFF' : 'Drag Lock: OFF');
+      showToast(isAr ? 'تم إيقاف قفل السحب' : (isFr ? 'Glisser verrouillé désactivé' : 'Drag Lock Released'));
+    }
+  });
+}
+
+const btnMouseScrollUp = document.getElementById('btn-mouse-scrollup');
+if (btnMouseScrollUp) {
+  btnMouseScrollUp.addEventListener('click', () => {
+    triggerHaptic();
+    sendAction({ type: 'mouse', action: 'scroll', dy: -120 });
+  });
+}
+
+const btnMouseScrollDown = document.getElementById('btn-mouse-scrolldown');
+if (btnMouseScrollDown) {
+  btnMouseScrollDown.addEventListener('click', () => {
+    triggerHaptic();
+    sendAction({ type: 'mouse', action: 'scroll', dy: 120 });
+  });
+}
 
 // ==========================================================================
 // Numpad & Remote PC Typing (Live Keystroke Injection)

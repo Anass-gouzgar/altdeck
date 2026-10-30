@@ -504,7 +504,7 @@ async function executeAction(payload) {
   } else if (type === 'keyboard') {
     const keyOrText = payload.key || payload.value || payload.text || payload.param || '';
     result = await runNative(['keyboard', action, String(keyOrText)]);
-  } else if (type === 'system') {
+  } else if (type === 'system' || type === 'quick-toggle') {
     if (action === 'taskmgr') {
       exec('start taskmgr');
       result = { status: 'ok', action: 'taskmgr' };
@@ -515,6 +515,33 @@ async function executeAction(payload) {
         }
       });
       result = await runNative(['system', 'abort', '']);
+    } else if (action === 'project') {
+      exec('DisplaySwitch.exe');
+      result = { status: 'ok', action: 'project' };
+    } else if (action === 'nightlight') {
+      exec('start ms-settings:nightlight');
+      result = { status: 'ok', action: 'nightlight' };
+    } else if (action === 'bluetooth') {
+      exec('start ms-settings:bluetooth');
+      result = { status: 'ok', action: 'bluetooth' };
+    } else if (action === 'wifi') {
+      exec('start ms-settings:network-wifi');
+      result = { status: 'ok', action: 'wifi' };
+    } else if (action === 'calc') {
+      exec('start calc');
+      result = { status: 'ok', action: 'calc' };
+    } else if (action === 'gamebar') {
+      exec('start ms-gamebar:');
+      result = { status: 'ok', action: 'gamebar' };
+    } else if (action === 'settings') {
+      exec('start ms-settings:');
+      result = { status: 'ok', action: 'settings' };
+    } else if (action === 'restart-explorer') {
+      exec('powershell -Command "Stop-Process -ProcessName explorer -Force; Start-Process explorer"');
+      result = { status: 'ok', action: 'restart-explorer' };
+    } else if (action === 'restart-audio') {
+      exec('powershell -Command "Restart-Service Audiosrv -Force"');
+      result = { status: 'ok', action: 'restart-audio' };
     } else {
       result = await runNative(['system', action, String(value !== undefined ? value : '')]);
     }

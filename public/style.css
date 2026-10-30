@@ -476,8 +476,11 @@ body {
   margin-bottom: 16px;
 }
 
-.btn-preset {
+.preset-buttons .btn-preset {
   flex: 1;
+}
+
+.btn-preset {
   padding: 8px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-glass);
@@ -934,20 +937,28 @@ body {
   pointer-events: none;
 }
 
+.trackpad-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 16px;
+  width: 100%;
+  align-items: stretch;
+}
+
 .trackpad-buttons {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: 1fr 0.6fr 1fr;
+  gap: 10px;
   margin-top: 14px;
 }
 
 .trackpad-btn {
-  padding: 24px;
+  padding: 18px 12px;
   background: var(--bg-card);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   color: var(--text-primary);
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
   text-align: center;
@@ -960,15 +971,62 @@ body {
   transform: scale(0.98);
 }
 
+.gesture-guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.gesture-guide-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.gesture-guide-row strong {
+  color: #fff;
+}
+
 /* ==========================================================================
    Numpad & Shortcuts Mode
    ========================================================================== */
+
+.numpad-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.pairing-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 16px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.config-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 16px;
+  width: 100%;
+  align-items: stretch;
+}
 
 .numpad-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
-  max-width: 500px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -2740,22 +2798,34 @@ body.theme-midnight {
 /* 1. Ultra-Wide PC Monitors & 4K Displays (>= 1600px) */
 @media (min-width: 1600px) {
   .deck-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 22px;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 1600px;
+    margin: 0 auto;
+    gap: 20px;
+    align-items: stretch;
   }
   .app-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   }
   .custom-actions-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   }
 }
 
 /* 2. Desktop & Standard Laptops (1200px - 1599px) */
 @media (min-width: 1200px) and (max-width: 1599px) {
   .deck-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 1360px;
+    margin: 0 auto;
     gap: 18px;
+    align-items: stretch;
+  }
+  .app-grid {
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+  }
+  .custom-actions-grid {
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
   }
 }
 
@@ -2769,20 +2839,21 @@ body.theme-midnight {
     margin-bottom: 14px;
   }
   .deck-grid {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 14px;
+    align-items: stretch;
   }
   .card {
     padding: 16px;
   }
   .app-grid {
-    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
   }
   .custom-actions-grid {
-    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
   }
   .trackpad-surface {
-    height: clamp(340px, 50vh, 460px);
+    height: clamp(340px, 50vh, 440px);
   }
 }
 
@@ -2798,16 +2869,17 @@ body.theme-midnight {
   .deck-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
+    align-items: stretch;
   }
   .card {
     padding: 14px;
   }
   .app-grid {
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
     gap: 10px;
   }
   .custom-actions-grid {
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
     gap: 10px;
   }
   .snap-grid-4,

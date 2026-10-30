@@ -133,6 +133,60 @@ const DEFAULT_APPS = {
     launch: () => {
       exec('start ms-settings:');
     }
+  },
+  word: {
+    name: 'Word',
+    icon: 'word',
+    category: 'Office',
+    color: '#2B579A',
+    launch: () => {
+      exec('start winword || start word');
+    }
+  },
+  excel: {
+    name: 'Excel',
+    icon: 'excel',
+    category: 'Office',
+    color: '#217346',
+    launch: () => {
+      exec('start excel');
+    }
+  },
+  powerpoint: {
+    name: 'PowerPoint',
+    icon: 'powerpoint',
+    category: 'Office',
+    color: '#D24726',
+    launch: () => {
+      exec('start powerpnt');
+    }
+  },
+  outlook: {
+    name: 'Outlook',
+    icon: 'outlook',
+    category: 'Office',
+    color: '#0078D4',
+    launch: () => {
+      exec('start outlook');
+    }
+  },
+  paint: {
+    name: 'Paint',
+    icon: 'paint',
+    category: 'Graphics',
+    color: '#00A4EF',
+    launch: () => {
+      exec('start mspaint');
+    }
+  },
+  terminal: {
+    name: 'Terminal',
+    icon: 'terminal',
+    category: 'Development',
+    color: '#4D4D4D',
+    launch: () => {
+      exec('start wt.exe || start cmd');
+    }
   }
 };
 
