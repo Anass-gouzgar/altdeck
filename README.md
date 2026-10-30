@@ -18,6 +18,12 @@
 </p>
 
 <p align="center">
+  <a href="https://anass-gouzgar.github.io/altdeck/">
+    <img src="https://img.shields.io/badge/%F0%9F%8C%90%20Live%20Showcase-Product%20Landing%20Page-00F0FF?style=for-the-badge" alt="Live Product Landing Page">
+  </a>
+</p>
+
+<p align="center">
   <img src="docs/screenshots/hero-banner.jpg" alt="AltDeck PC Controller Showcase" width="100%" style="border-radius: 12px; box-shadow: 0 12px 36px rgba(0,0,0,0.6);" />
 </p>
 
