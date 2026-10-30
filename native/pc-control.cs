@@ -126,6 +126,12 @@ namespace AltDeckNative
         [DllImport("user32.dll")]
         static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
+        [DllImport("user32.dll")]
+        static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        const uint WM_SYSCOMMAND = 0x0112;
+        const int SC_MONITORPOWER = 0xF170;
+
         delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
         const int SW_RESTORE = 9;
@@ -195,6 +201,7 @@ namespace AltDeckNative
         const byte VK_F5 = 0x74; // Dell Latitude 7400 Backlight key
         const byte VK_F10 = 0x79; // Alternate Dell backlight key
 
+        const uint MOUSEEVENTF_MOVE = 0x0001;
         const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
         const uint MOUSEEVENTF_LEFTUP = 0x0004;
         const uint MOUSEEVENTF_RIGHTDOWN = 0x0008;
@@ -435,6 +442,11 @@ namespace AltDeckNative
                     case "battery":
                     case "power":
                         HandlePower();
+                        break;
+
+                    case "processes":
+                    case "process":
+                        HandleProcesses(action, param);
                         break;
 
                     default:
@@ -858,7 +870,7 @@ namespace AltDeckNative
 
         static void HandleSystem(string action, string param)
         {
-            switch (action)
+            switch (action.ToLowerInvariant())
             {
                 case "lock":
                     LockWorkStation();
@@ -871,26 +883,93 @@ namespace AltDeckNative
                     break;
 
                 case "shutdown":
-                    int sec = string.IsNullOrEmpty(param) ? 30 : int.Parse(param);
-                    Process.Start("shutdown.exe", "/s /t " + sec + " /c \"Shutdown requested from Tablet Controller\"");
+                    int sec = string.IsNullOrEmpty(param) ? 0 : int.Parse(param);
+                    Process.Start("shutdown.exe", "/s /t " + sec + " /c \"Shutdown requested from AltDeck Controller\"");
                     Console.WriteLine("{\"status\":\"ok\",\"action\":\"shutdown\",\"seconds\":" + sec + "}");
                     break;
 
                 case "restart":
-                    int rsec = string.IsNullOrEmpty(param) ? 30 : int.Parse(param);
-                    Process.Start("shutdown.exe", "/r /t " + rsec + " /c \"Restart requested from Tablet Controller\"");
+                    int rsec = string.IsNullOrEmpty(param) ? 0 : int.Parse(param);
+                    Process.Start("shutdown.exe", "/r /t " + rsec + " /c \"Restart requested from AltDeck Controller\"");
                     Console.WriteLine("{\"status\":\"ok\",\"action\":\"restart\",\"seconds\":" + rsec + "}");
                     break;
 
                 case "cancel-shutdown":
+                case "abort":
+                case "cancel":
                     Process.Start("shutdown.exe", "/a");
                     Console.WriteLine("{\"status\":\"ok\",\"action\":\"shutdown_cancelled\"}");
                     break;
 
+                case "screen-off":
+                case "monitor-off":
+                    SendMessage((IntPtr)0xffff, WM_SYSCOMMAND, (IntPtr)SC_MONITORPOWER, (IntPtr)2);
+                    Console.WriteLine("{\"status\":\"ok\",\"action\":\"screen_off\"}");
+                    break;
+
+                case "screen-on":
+                case "monitor-on":
+                    SendMessage((IntPtr)0xffff, WM_SYSCOMMAND, (IntPtr)SC_MONITORPOWER, (IntPtr)(-1));
+                    mouse_event(MOUSEEVENTF_MOVE, 0, 1, 0, UIntPtr.Zero);
+                    mouse_event(MOUSEEVENTF_MOVE, 0, -1, 0, UIntPtr.Zero);
+                    Console.WriteLine("{\"status\":\"ok\",\"action\":\"screen_on\"}");
+                    break;
+
                 default:
-                    Console.WriteLine("{\"status\":\"error\",\"message\":\"Unknown system action\"}");
+                    Console.WriteLine("{\"status\":\"error\",\"message\":\"Unknown system action: " + action + "\"}");
                     break;
             }
+        }
+
+        class ProcItem : IComparable<ProcItem>
+        {
+            public int Pid;
+            public string Name;
+            public long RamMb;
+            public int CompareTo(ProcItem other)
+            {
+                return other.RamMb.CompareTo(this.RamMb);
+            }
+        }
+
+        static void HandleProcesses(string action, string param)
+        {
+            if (action == "kill")
+            {
+                int pid = int.Parse(param);
+                var p = Process.GetProcessById(pid);
+                string pName = p.ProcessName;
+                p.Kill();
+                Console.WriteLine("{\"status\":\"ok\",\"action\":\"killed\",\"pid\":" + pid + ",\"name\":" + JsonString(pName) + "}");
+                return;
+            }
+
+            var list = new System.Collections.Generic.List<ProcItem>();
+            foreach (var p in Process.GetProcesses())
+            {
+                try
+                {
+                    if (p.Id <= 4 || string.IsNullOrEmpty(p.ProcessName)) continue;
+                    long mb = p.WorkingSet64 / (1024 * 1024);
+                    if (mb < 20) continue;
+                    list.Add(new ProcItem { Pid = p.Id, Name = p.ProcessName, RamMb = mb });
+                }
+                catch { }
+            }
+
+            list.Sort();
+            int count = Math.Min(5, list.Count);
+            var sb = new StringBuilder();
+            sb.Append("{\"status\":\"ok\",\"processes\":[");
+            for (int i = 0; i < count; i++)
+            {
+                if (i > 0) sb.Append(",");
+                sb.Append("{\"pid\":").Append(list[i].Pid)
+                  .Append(",\"name\":").Append(JsonString(list[i].Name))
+                  .Append(",\"ramMb\":").Append(list[i].RamMb).Append("}");
+            }
+            sb.Append("]}");
+            Console.WriteLine(sb.ToString());
         }
 
         static void HandleMouse(string action, string p1, string p2)

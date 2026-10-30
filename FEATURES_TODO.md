@@ -100,6 +100,24 @@ This document tracks all completed features, active improvements, and upcoming r
   - Fullscreen PWA manifest and installation prompt for borderless tablet display.
   - Top header **🔄 (Refresh)** button with cache-busting for Samsung Internet.
 
+- [x] **Screen Off Mode (Without Sleep)**
+  - Win32 `SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, 2)` to immediately turn off Dell laptop display while keeping background tasks, downloads, and renders running.
+  - Added dedicated **"Screen Off"** tile to Power Management grid and Card 2 (Display).
+  - Floating high-contrast status banner (`🖥️ PC Displays are OFF`) with an instant **[WAKE SCREENS]** button.
+  - Automatic display wake when touching the wireless trackpad or clicking wake.
+
+- [x] **Quick File Drop — AltDeck Beam (AirDrop for PC)** *(Feature #9 - Verified & Completed)*
+  - One-tap file picker & drag-and-drop zone on tablet to beam photos, screenshots, and documents straight to PC over local Wi-Fi.
+  - Target directory automatically created on PC: `C:\Users\Anass\Desktop\AltDeck Transfers\`.
+  - Real-time upload progress bar with % and file transfer speed.
+  - Instant PC notification banner with sound chime on arrival (`📂 File Received!`).
+  - **"📂 Open Folder on PC"** button calling Windows File Explorer to open the transfers folder with one tap.
+
+- [x] **Top Process Killer & Real-Time Waveform Sparklines (Task Manager Deck)**
+  - Live 60-second animated SVG load waveforms for CPU (Cyan) and RAM (Purple) inside the Telemetry card.
+  - Real-time Top 5 resource-consuming apps scanner (`chrome.exe`, `Code.exe`, etc.) displaying active RAM usage in MB.
+  - Instant red **[KILL]** button to terminate hung or memory-heavy apps directly from the tablet without opening Windows Task Manager.
+
 ---
 
 ## 🟡 2. Upcoming Features Roadmap (To Build Step-by-Step)
@@ -114,8 +132,8 @@ This document tracks all completed features, active improvements, and upcoming r
 - [ ] **Feature #8: OBS Studio & Streaming Controls**
   - OBS WebSocket v5 integration: Start/Stop Stream, Start/Stop Recording, Switch Scenes, Mute/Unmute audio sources.
 
-- [ ] **Feature #9: Quick File Drop (Tablet-to-PC File Transfer)**
-  - Drag-and-drop or file picker on tablet to upload photos/files straight into an `AltDeck Transfers` folder on the PC Desktop.
+- [ ] **Feature #11: Per-App Volume Mixer & Audio Output Switcher**
+  - Windows CoreAudio session mixer & playback device switcher (Speakers ↔ Bluetooth ↔ HDMI).
 
 - [ ] **Feature #10: Per-App Dynamic Adaptive Profiles**
   - Tablet Stream Deck layout automatically switches based on the focused PC app (e.g. VS Code layout, Gaming layout, Browser layout).

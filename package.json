@@ -18,6 +18,10 @@
   ],
   "author": "Anass & Contributors",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anass-gouzgar/altdeck.git"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",

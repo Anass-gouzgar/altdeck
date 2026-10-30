@@ -310,6 +310,17 @@ const I18N = {
     cardTitlePower: 'Power Management',
     powerSubtitle: 'With Safe Countdown',
     powerLock: 'Lock PC',
+    powerScreenOff: 'Screen Off',
+    turnDisplaysOff: 'Turn Displays Off (Keep PC Running)',
+    screenOffBanner: 'PC Displays are OFF (Dell is Running)',
+    btnWakeScreens: 'WAKE SCREENS',
+    fileBeamTitle: 'Quick File Drop (AirDrop for PC)',
+    btnOpenFolder: '📂 Open Folder on PC',
+    dropFilesPrompt: 'Tap to Pick Files or Drop Photos',
+    dropFilesSub: 'Sends instantly over Wi-Fi to Desktop / AltDeck Transfers',
+    liveHistory: 'Real-Time Load Waveform (Last 60s)',
+    topProcesses: 'Top Resource Apps',
+    topProcSub: 'RAM Active • Instant Kill',
     powerSleep: 'Sleep',
     powerRestart: 'Restart',
     powerShutdown: 'Shutdown',
@@ -474,6 +485,17 @@ const I18N = {
     cardTitlePower: 'Gestion de l\'Alimentation',
     powerSubtitle: 'Avec Compte à Rebours Sécurisé',
     powerLock: 'Verrouiller',
+    powerScreenOff: 'Écran Éteint',
+    turnDisplaysOff: 'Éteindre les écrans (garder le PC actif)',
+    screenOffBanner: 'Écrans PC éteints (le PC reste actif)',
+    btnWakeScreens: 'RÉVEILLER L’ÉCRAN',
+    fileBeamTitle: 'Transfert Rapide (AirDrop pour PC)',
+    btnOpenFolder: '📂 Ouvrir le dossier sur PC',
+    dropFilesPrompt: 'Appuyez pour choisir ou glissez des photos',
+    dropFilesSub: 'Envoi instantané par Wi-Fi sur le bureau / AltDeck Transfers',
+    liveHistory: 'Courbe de charge en direct (60s)',
+    topProcesses: 'Applications Gourmandes',
+    topProcSub: 'RAM Active • Arrêt Instantané',
     powerSleep: 'Veille',
     powerRestart: 'Redémarrer',
     powerShutdown: 'Éteindre',
@@ -638,6 +660,17 @@ const I18N = {
     cardTitlePower: 'التحكم بالطاقة',
     powerSubtitle: 'مع مؤقت أمان للإلغاء',
     powerLock: 'قفل الكمبيوتر',
+    powerScreenOff: 'إطفاء الشاشة',
+    turnDisplaysOff: 'إطفاء الشاشات (مع بقاء الكمبيوتر يعمل)',
+    screenOffBanner: 'الشاشات مطفأة (الكمبيوتر يعمل)',
+    btnWakeScreens: 'إيقاظ الشاشات',
+    fileBeamTitle: 'الإرسال السريع للملفات (AirDrop للكمبيوتر)',
+    btnOpenFolder: '📂 فتح المجلد على الكمبيوتر',
+    dropFilesPrompt: 'اضغط لاختيار ملفات أو صور',
+    dropFilesSub: 'إرسال فوري عبر الواي فاي إلى سطح المكتب / AltDeck Transfers',
+    liveHistory: 'مخطط الاستهلاك المباشر (آخر 60 ثانية)',
+    topProcesses: 'أكثر التطبيقات استهلاكاً',
+    topProcSub: 'الذاكرة النشطة • إنهاء فوري',
     powerSleep: 'سكون',
     powerRestart: 'إعادة تشغيل',
     powerShutdown: 'إيقاف التشغيل',
@@ -1999,6 +2032,91 @@ function applyTelemetry(t) {
       }
     }
   }
+
+  // 4. Waveform Sparkline
+  if (t.cpuHistory && t.ramHistory) {
+    updateSparkline(t.cpuHistory, t.ramHistory);
+  }
+
+  // 5. Top Resource Processes
+  if (t.topProcesses) {
+    updateTopProcesses(t.topProcesses);
+  }
+}
+
+function updateSparkline(cpuHist, ramHist) {
+  if (!cpuHist || !ramHist || cpuHist.length === 0) return;
+  const cpuLine = document.getElementById('sparkline-cpu-line');
+  const cpuArea = document.getElementById('sparkline-cpu-area');
+  const ramLine = document.getElementById('sparkline-ram-line');
+  const ramArea = document.getElementById('sparkline-ram-area');
+  if (!cpuLine || !ramLine) return;
+
+  const w = 300;
+  const h = 48;
+  const maxPoints = Math.max(cpuHist.length, ramHist.length, 2);
+  const stepX = w / (maxPoints - 1);
+
+  function makePath(data, closeArea = false) {
+    if (!data || data.length === 0) return '';
+    let d = '';
+    for (let i = 0; i < data.length; i++) {
+      const x = (i * stepX).toFixed(1);
+      const val = Math.max(0, Math.min(100, data[i]));
+      const y = (h - (val / 100) * (h - 6) - 3).toFixed(1);
+      d += (i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`);
+    }
+    if (closeArea) {
+      const lastX = ((data.length - 1) * stepX).toFixed(1);
+      d += ` L ${lastX} ${h} L 0 ${h} Z`;
+    }
+    return d;
+  }
+
+  cpuLine.setAttribute('d', makePath(cpuHist, false));
+  if (cpuArea) cpuArea.setAttribute('d', makePath(cpuHist, true));
+  ramLine.setAttribute('d', makePath(ramHist, false));
+  if (ramArea) ramArea.setAttribute('d', makePath(ramHist, true));
+}
+
+function updateTopProcesses(processes) {
+  const container = document.getElementById('top-processes-list');
+  if (!container || !Array.isArray(processes)) return;
+  if (processes.length === 0) {
+    container.innerHTML = '<div style="font-size: 0.75rem; color: var(--text-muted); padding: 4px;">No active high-resource apps</div>';
+    return;
+  }
+
+  const isAr = state.lang === 'ar';
+  const isFr = state.lang === 'fr';
+  const killText = isAr ? 'إنهاء' : (isFr ? 'Arrêter' : 'Kill');
+
+  container.innerHTML = processes.map(p => `
+    <div class="proc-row" data-pid="${p.pid}">
+      <div class="proc-info">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--neon-cyan); flex-shrink: 0;"><rect x="2" y="2" width="20" height="20" rx="3"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <span class="proc-name" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</span>
+      </div>
+      <div style="display: flex; align-items: center;">
+        <span class="proc-ram-badge">${p.ramMb} MB</span>
+        <button class="btn-kill-proc" data-pid="${p.pid}" data-name="${escapeHtml(p.name)}" title="End process immediately">${killText}</button>
+      </div>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.btn-kill-proc').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      triggerHaptic();
+      const pid = btn.getAttribute('data-pid');
+      const name = btn.getAttribute('data-name');
+      sendAction({ type: 'process', action: 'kill', pid });
+      const toastMsg = isAr ? `تم إنهاء ${name}` : (isFr ? `${name} arrêté` : `Terminated ${name}`);
+      showToast(toastMsg);
+      const row = container.querySelector(`[data-pid="${pid}"]`);
+      if (row) row.remove();
+    });
+  });
 }
 
 // App Launchpad
@@ -2061,6 +2179,14 @@ document.querySelectorAll('[data-power]').forEach(btn => {
       showToast(isAr ? 'الحاسوب ينتقل لوضع السكون...' : (isFr ? 'PC en veille...' : 'PC going to Sleep...'));
       return;
     }
+    if (action === 'screen-off') {
+      triggerHaptic();
+      sendAction({ type: 'system', action: 'screen-off' });
+      const banner = document.getElementById('screen-off-banner');
+      if (banner) banner.style.display = 'block';
+      showToast(isAr ? 'تم إطفاء الشاشات (الحاسوب يعمل)' : (isFr ? 'Écrans éteints (PC actif)' : 'PC Displays Turned Off'));
+      return;
+    }
     triggerHaptic();
     state.activePowerAction = action;
     state.powerCountdown = 30;
@@ -2079,7 +2205,7 @@ document.querySelectorAll('[data-power]').forEach(btn => {
       if (state.powerCountdown <= 0) {
         clearInterval(state.powerTimer);
         safetyModal.classList.remove('show');
-        sendAction({ type: 'system', action: state.activePowerAction });
+        sendAction({ type: 'system', action: state.activePowerAction, value: 0 });
       }
     }, 1000);
   });
@@ -2099,8 +2225,178 @@ btnForcePower.addEventListener('click', () => {
   triggerHaptic();
   clearInterval(state.powerTimer);
   safetyModal.classList.remove('show');
-  sendAction({ type: 'system', action: state.activePowerAction });
+  sendAction({ type: 'system', action: state.activePowerAction, value: 0 });
 });
+
+// ==========================================================================
+// Screen Off Mode (Without Sleep)
+// ==========================================================================
+function initScreenOffControls() {
+  const btnDispOff = document.getElementById('btn-display-screen-off');
+  const banner = document.getElementById('screen-off-banner');
+  const btnWake = document.getElementById('btn-wake-screen');
+
+  function wakeDisplays() {
+    triggerHaptic();
+    sendAction({ type: 'system', action: 'screen-on' });
+    if (banner) banner.style.display = 'none';
+    const isAr = state.lang === 'ar';
+    const isFr = state.lang === 'fr';
+    showToast(isAr ? 'تم إيقاظ الشاشات' : (isFr ? 'Écrans réveillés' : 'PC Displays Awakened'));
+  }
+
+  if (btnDispOff) {
+    btnDispOff.addEventListener('click', () => {
+      triggerHaptic();
+      sendAction({ type: 'system', action: 'screen-off' });
+      if (banner) banner.style.display = 'block';
+      const isAr = state.lang === 'ar';
+      const isFr = state.lang === 'fr';
+      showToast(isAr ? 'تم إطفاء الشاشات (الحاسوب يعمل)' : (isFr ? 'Écrans éteints (PC actif)' : 'PC Displays Turned Off'));
+    });
+  }
+
+  if (btnWake) {
+    btnWake.addEventListener('click', (e) => {
+      e.stopPropagation();
+      wakeDisplays();
+    });
+  }
+
+  if (banner) {
+    banner.addEventListener('click', () => {
+      wakeDisplays();
+    });
+  }
+}
+
+// ==========================================================================
+// Quick File Drop (AltDeck Beam - AirDrop for PC)
+// ==========================================================================
+function initFileDrop() {
+  const dropZone = document.getElementById('file-drop-zone');
+  const fileInput = document.getElementById('file-beam-input');
+  const progressWrap = document.getElementById('file-upload-progress');
+  const progressBar = document.getElementById('upload-progress-bar');
+  const progressText = document.getElementById('upload-progress-text');
+  const btnOpenFolder = document.getElementById('btn-open-transfers-folder');
+
+  if (!dropZone || !fileInput) return;
+
+  dropZone.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files && fileInput.files.length > 0) {
+      uploadFiles(fileInput.files);
+    }
+  });
+
+  ['dragenter', 'dragover'].forEach(name => {
+    dropZone.addEventListener(name, (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(name => {
+    dropZone.addEventListener(name, (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+    });
+  });
+
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      uploadFiles(e.dataTransfer.files);
+    }
+  });
+
+  if (btnOpenFolder) {
+    btnOpenFolder.addEventListener('click', () => {
+      triggerHaptic();
+      fetch('/api/open-transfers', { method: 'POST' });
+      const isAr = state.lang === 'ar';
+      const isFr = state.lang === 'fr';
+      showToast(isAr ? 'تم فتح مجلد التحويلات على الحاسوب' : (isFr ? 'Dossier ouvert sur le PC' : 'Transfers folder opened on PC'));
+    });
+  }
+
+  function uploadFiles(fileList) {
+    const files = Array.from(fileList);
+    if (files.length === 0) return;
+
+    progressWrap.style.display = 'block';
+    progressBar.style.width = '0%';
+    progressText.textContent = `Uploading 1 / ${files.length}... 0%`;
+
+    let currentIndex = 0;
+
+    function uploadNext() {
+      if (currentIndex >= files.length) {
+        progressWrap.style.display = 'none';
+        fileInput.value = '';
+        triggerHaptic();
+        loadTransfersHistory();
+        const isAr = state.lang === 'ar';
+        const isFr = state.lang === 'fr';
+        showToast(isAr ? 'تم حفظ الملفات على سطح المكتب بنجاح!' : (isFr ? 'Fichiers enregistrés sur le bureau !' : 'Files saved to PC Desktop!'));
+        return;
+      }
+
+      const file = files[currentIndex];
+      const xhr = new XMLHttpRequest();
+      const encName = encodeURIComponent(file.name);
+      xhr.open('POST', `/api/upload?filename=${encName}`);
+
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const filePct = Math.round((e.loaded / e.total) * 100);
+          progressBar.style.width = `${filePct}%`;
+          progressText.textContent = `Uploading ${currentIndex + 1}/${files.length} (${file.name}): ${filePct}%`;
+        }
+      };
+
+      xhr.onload = () => {
+        currentIndex++;
+        uploadNext();
+      };
+
+      xhr.onerror = () => {
+        currentIndex++;
+        uploadNext();
+      };
+
+      xhr.send(file);
+    }
+
+    uploadNext();
+  }
+
+  loadTransfersHistory();
+}
+
+async function loadTransfersHistory() {
+  const container = document.getElementById('transfers-recent-list');
+  if (!container) return;
+  try {
+    const res = await fetch('/api/transfers-history');
+    const data = await res.json();
+    if (data && Array.isArray(data.transfers) && data.transfers.length > 0) {
+      container.innerHTML = data.transfers.map(f => `
+        <div class="transfer-chip" title="${escapeHtml(f.name)}">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+          <span>${escapeHtml(f.name)} (${f.sizeMb} MB)</span>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = '';
+    }
+  } catch (e) {}
+}
 
 // ==========================================================================
 // Wireless Trackpad Mode
@@ -2112,6 +2408,11 @@ let isTwoFinger = false;
 let lastTwoDist = null;
 
 trackpadArea.addEventListener('touchstart', (e) => {
+  const banner = document.getElementById('screen-off-banner');
+  if (banner && banner.style.display !== 'none') {
+    sendAction({ type: 'system', action: 'screen-on' });
+    banner.style.display = 'none';
+  }
   if (e.touches.length === 1) {
     lastTouchX = e.touches[0].clientX;
     lastTouchY = e.touches[0].clientY;
@@ -2490,6 +2791,8 @@ if (btnBrowseDetected) {
 }
 
 // Final initial synchronization
+initScreenOffControls();
+initFileDrop();
 applyLanguage(state.lang);
 
 

@@ -2744,3 +2744,308 @@ body.theme-midnight {
   }
 }
 
+/* ==========================================================================
+   Screen Off Mode (Without Sleep)
+   ========================================================================== */
+.power-tile.screen-off {
+  border-color: rgba(168, 85, 247, 0.4);
+  color: #c084fc;
+}
+.power-tile.screen-off:hover, .power-tile.screen-off:active {
+  background: rgba(168, 85, 247, 0.15);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.35);
+  border-color: #a855f7;
+}
+
+.screen-off-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid #a855f7;
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.45);
+  border-radius: 40px;
+  padding: 8px 18px;
+  z-index: 1500;
+  backdrop-filter: blur(12px);
+  animation: bannerPulse 2s infinite ease-in-out;
+}
+
+@keyframes bannerPulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(168, 85, 247, 0.6); }
+}
+
+.screen-off-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.screen-off-status-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.screen-off-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a855f7;
+  box-shadow: 0 0 8px #a855f7;
+  animation: blink 1.2s infinite;
+}
+
+.btn-wake-screen {
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  border: none;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.75rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 10px rgba(168, 85, 247, 0.4);
+}
+.btn-wake-screen:active {
+  transform: scale(0.95);
+}
+
+/* ==========================================================================
+   Telemetry Sparklines & Top Resource Processes
+   ========================================================================== */
+.telemetry-sparkline-wrap {
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sparkline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.sparkline-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.legend-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.legend-dot.cpu { background: var(--neon-cyan); box-shadow: 0 0 6px var(--neon-cyan); }
+.legend-dot.ram { background: #a855f7; box-shadow: 0 0 6px #a855f7; }
+
+.sparkline-svg {
+  width: 100%;
+  height: 48px;
+  display: block;
+}
+
+/* Top Processes Container */
+.top-processes-section {
+  margin-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 12px;
+}
+
+.top-processes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.top-processes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.proc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.2s;
+}
+.proc-row:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.proc-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.proc-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.proc-ram-badge {
+  font-size: 0.7rem;
+  font-family: monospace;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  margin-inline-end: 8px;
+  shrink: 0;
+}
+
+.btn-kill-proc {
+  padding: 4px 9px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-kill-proc:hover, .btn-kill-proc:active {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+  color: #fff;
+}
+
+/* ==========================================================================
+   Quick File Drop (AltDeck Beam - AirDrop for PC)
+   ========================================================================== */
+.file-drop-zone {
+  margin-top: 10px;
+  padding: 24px 18px;
+  border: 2px dashed rgba(0, 240, 255, 0.35);
+  border-radius: 16px;
+  background: rgba(0, 240, 255, 0.03);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.file-drop-zone:hover, .file-drop-zone.dragover {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.08);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.file-drop-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-drop-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+.file-drop-text strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.file-drop-text span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Upload Progress */
+.file-upload-progress {
+  margin-top: 14px;
+  width: 100%;
+}
+.upload-progress-bg {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.upload-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-cyan), #3b82f6);
+  border-radius: 6px;
+  transition: width 0.15s ease-out;
+  box-shadow: 0 0 10px var(--neon-cyan);
+}
+.upload-progress-text {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+}
+
+/* Recent Transfers List */
+.transfers-recent-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.transfer-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  color: #cbd5e1;
+}
+.transfer-chip svg {
+  color: var(--neon-cyan);
+}
+
+

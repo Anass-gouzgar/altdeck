@@ -118,6 +118,12 @@ const BIN_PATH = fs.existsSync(path.join(__dirname, 'bin', 'pc-control.exe'))
   ? path.join(__dirname, 'bin', 'pc-control.exe')
   : path.join(__dirname, 'bin', 'altdeck-core.exe');
 
+// Quick File Drop (AltDeck Beam) storage directory on PC Desktop
+const TRANSFERS_DIR = path.join(os.homedir(), 'Desktop', 'AltDeck Transfers');
+if (!fs.existsSync(TRANSFERS_DIR)) {
+  try { fs.mkdirSync(TRANSFERS_DIR, { recursive: true }); } catch (e) {}
+}
+
 // Auto-compile native helper if missing on first run
 function ensureNativeBinary() {
   if (!fs.existsSync(BIN_PATH)) {
@@ -239,12 +245,42 @@ async function getBatteryStats() {
   return cachedBattery;
 }
 
+const cpuHistory = [];
+const ramHistory = [];
+const MAX_HISTORY = 20;
+
+let cachedProcesses = [];
+let lastProcessesFetch = 0;
+async function getTopProcesses(force = false) {
+  const now = Date.now();
+  if (!force && now - lastProcessesFetch < 3000 && cachedProcesses.length > 0) {
+    return cachedProcesses;
+  }
+  try {
+    const res = await runNative(['processes', 'list']);
+    if (res && res.status === 'ok' && Array.isArray(res.processes)) {
+      cachedProcesses = res.processes;
+      lastProcessesFetch = now;
+    }
+  } catch (e) {}
+  return cachedProcesses;
+}
+
 async function getTelemetryData() {
   const cpu = getCpuPercent();
   const ram = getRamStats();
   const battery = await getBatteryStats();
   const cores = os.cpus().length;
-  return { cpu, ram, battery, cores };
+
+  cpuHistory.push(cpu);
+  if (cpuHistory.length > MAX_HISTORY) cpuHistory.shift();
+
+  ramHistory.push(ram.percent);
+  if (ramHistory.length > MAX_HISTORY) ramHistory.shift();
+
+  const topProcesses = await getTopProcesses();
+
+  return { cpu, ram, battery, cores, cpuHistory, ramHistory, topProcesses };
 }
 
 function getSystemHostInfo() {
@@ -472,8 +508,23 @@ async function executeAction(payload) {
     if (action === 'taskmgr') {
       exec('start taskmgr');
       result = { status: 'ok', action: 'taskmgr' };
+    } else if (action === 'abort' || action === 'cancel' || action === 'cancel-shutdown') {
+      exec('shutdown /a', (err) => {
+        if (err && !err.message.includes('1116')) { // Error 1116 means no shutdown was in progress, which is fine
+          console.log('[AltDeck Power] shutdown /a notice:', err.message);
+        }
+      });
+      result = await runNative(['system', 'abort', '']);
     } else {
-      result = await runNative(['system', action, String(value || '')]);
+      result = await runNative(['system', action, String(value !== undefined ? value : '')]);
+    }
+  } else if (type === 'process') {
+    if (action === 'kill') {
+      const pid = payload.pid || value;
+      result = await runNative(['processes', 'kill', String(pid)]);
+      cachedProcesses = cachedProcesses.filter(p => p.pid !== parseInt(pid, 10));
+    } else {
+      result = await runNative(['processes', action || 'list']);
     }
   } else if (type === 'mouse') {
     result = await runNative(['mouse', action, String(payload.dx || payload.p1 || 0), String(payload.dy || payload.p2 || 0)]);
@@ -614,6 +665,86 @@ const server = http.createServer(async (req, res) => {
       }
     });
     return;
+  }
+
+  // Quick File Drop Upload (POST /api/upload)
+  if (url.pathname === '/api/upload' && req.method === 'POST') {
+    const rawFileName = url.searchParams.get('filename') || req.headers['x-filename'] || `file-${Date.now()}.bin`;
+    const sanitized = path.basename(decodeURIComponent(rawFileName)).replace(/[^a-zA-Z0-9._\- \(\)]/g, '_');
+    let destPath = path.join(TRANSFERS_DIR, sanitized);
+    let counter = 1;
+    const ext = path.extname(sanitized);
+    const base = path.basename(sanitized, ext);
+    while (fs.existsSync(destPath)) {
+      destPath = path.join(TRANSFERS_DIR, `${base}_${counter}${ext}`);
+      counter++;
+    }
+
+    const fileStream = fs.createWriteStream(destPath);
+    req.pipe(fileStream);
+
+    fileStream.on('finish', () => {
+      const stats = fs.statSync(destPath);
+      const sizeMb = (stats.size / (1024 * 1024)).toFixed(2);
+      const finalName = path.basename(destPath);
+
+      broadcastNotification({
+        id: 'transfer-' + Date.now(),
+        title: '📂 File Received!',
+        message: `${finalName} (${sizeMb} MB) saved to Desktop`,
+        level: 'success',
+        timestamp: Date.now()
+      });
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'ok', filename: finalName, sizeMb, fullPath: destPath }));
+    });
+
+    fileStream.on('error', (err) => {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'error', message: err.message }));
+    });
+    return;
+  }
+
+  // Open Transfers Folder on PC (POST /api/open-transfers)
+  if (url.pathname === '/api/open-transfers' && req.method === 'POST') {
+    exec(`explorer.exe "${TRANSFERS_DIR}"`);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ status: 'ok', dir: TRANSFERS_DIR }));
+  }
+
+  // Transfers History (GET /api/transfers-history)
+  if (url.pathname === '/api/transfers-history' && req.method === 'GET') {
+    try {
+      const files = fs.readdirSync(TRANSFERS_DIR)
+        .map(name => {
+          try {
+            const stat = fs.statSync(path.join(TRANSFERS_DIR, name));
+            return {
+              name,
+              sizeMb: (stat.size / (1024 * 1024)).toFixed(2),
+              mtime: stat.mtimeMs
+            };
+          } catch (e) { return null; }
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.mtime - a.mtime)
+        .slice(0, 10);
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ status: 'ok', transfers: files, dir: TRANSFERS_DIR }));
+    } catch (e) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ status: 'ok', transfers: [], dir: TRANSFERS_DIR }));
+    }
+  }
+
+  // Top Processes API (GET /api/top-processes)
+  if (url.pathname === '/api/top-processes' && req.method === 'GET') {
+    const procs = await getTopProcesses(true);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ status: 'ok', processes: procs }));
   }
 
   // Unified Action API

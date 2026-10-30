@@ -251,6 +251,11 @@
           <button class="btn-preset" data-bright="80">80%</button>
           <button class="btn-preset" data-bright="100">100%</button>
         </div>
+
+        <button class="btn-preset" id="btn-display-screen-off" style="margin-top: 10px; width: 100%; border-color: rgba(168, 85, 247, 0.4); color: #c084fc; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="3" y1="3" x2="21" y2="17"/></svg>
+          <span data-i18n="turnDisplaysOff">Turn Displays Off (Keep PC Running)</span>
+        </button>
       </section>
 
       <!-- CARD: LIVE PC HARDWARE TELEMETRY (Option A) -->
@@ -322,6 +327,47 @@
             <div class="telemetry-progress-bg">
               <div class="telemetry-progress-bar" id="battery-progress-bar" style="width: 100%;"></div>
             </div>
+          </div>
+        </div>
+
+        <!-- Real-Time CPU & RAM Waveform Sparkline -->
+        <div class="telemetry-sparkline-wrap">
+          <div class="sparkline-header">
+            <span data-i18n="liveHistory">Real-Time Load Waveform (Last 60s)</span>
+            <div class="sparkline-legend">
+              <div class="legend-item"><span class="legend-dot cpu"></span><span>CPU</span></div>
+              <div class="legend-item"><span class="legend-dot ram"></span><span>RAM</span></div>
+            </div>
+          </div>
+          <svg class="sparkline-svg" id="telemetry-sparkline" viewBox="0 0 300 48" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="cpuGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#00f0ff" stop-opacity="0.0"/>
+              </linearGradient>
+              <linearGradient id="ramGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#a855f7" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#a855f7" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+            <path id="sparkline-cpu-area" fill="url(#cpuGrad)" d=""/>
+            <path id="sparkline-cpu-line" fill="none" stroke="#00f0ff" stroke-width="2" stroke-linecap="round" d=""/>
+            <path id="sparkline-ram-area" fill="url(#ramGrad)" d=""/>
+            <path id="sparkline-ram-line" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-dasharray="3,2" d=""/>
+          </svg>
+        </div>
+
+        <!-- Top Resource Apps (Task Manager Deck) -->
+        <div class="top-processes-section">
+          <div class="top-processes-header">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+              <span data-i18n="topProcesses">Top Resource Apps</span>
+            </div>
+            <span style="font-size: 0.7rem; color: var(--text-muted);" data-i18n="topProcSub">RAM Active • Instant Kill</span>
+          </div>
+          <div class="top-processes-list" id="top-processes-list">
+            <!-- Populated via WebSocket / API -->
           </div>
         </div>
       </section>
@@ -640,6 +686,42 @@
         </div>
       </section>
 
+      <!-- CARD 4.5: QUICK FILE DROP (ALTDECK BEAM - AIRDROP ALTERNATIVE) -->
+      <section class="card" id="card-file-drop" style="grid-column: 1 / -1;">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span data-i18n="fileBeamTitle">Quick File Drop (AirDrop for PC)</span>
+          </div>
+          <button class="btn-preset" id="btn-open-transfers-folder" style="font-size: 0.75rem; color: var(--neon-cyan); border-color: rgba(0, 240, 255, 0.35);">
+            <span data-i18n="btnOpenFolder">📂 Open Folder on PC</span>
+          </button>
+        </div>
+
+        <div class="file-drop-zone" id="file-drop-zone">
+          <input type="file" id="file-beam-input" multiple style="display: none;">
+          <div class="file-drop-content">
+            <div class="file-drop-icon">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            </div>
+            <div class="file-drop-text">
+              <strong data-i18n="dropFilesPrompt">Tap to Pick Files or Drop Photos</strong>
+              <span data-i18n="dropFilesSub">Sends instantly over Wi-Fi to Desktop / AltDeck Transfers</span>
+            </div>
+          </div>
+          <div class="file-upload-progress" id="file-upload-progress" style="display: none;">
+            <div class="upload-progress-bg">
+              <div class="upload-progress-bar" id="upload-progress-bar" style="width: 0%;"></div>
+            </div>
+            <div class="upload-progress-text" id="upload-progress-text">Uploading... 0%</div>
+          </div>
+        </div>
+
+        <div class="transfers-recent-list" id="transfers-recent-list">
+          <!-- Populated dynamically with recent transfers -->
+        </div>
+      </section>
+
       <!-- CARD 5: SYSTEM POWER CONTROLS -->
       <section class="card">
         <div class="card-header">
@@ -654,6 +736,10 @@
           <button class="power-tile lock" data-power="lock">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             <span data-i18n="powerLock">Lock PC</span>
+          </button>
+          <button class="power-tile screen-off" data-power="screen-off">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="3" y1="3" x2="21" y2="17"/></svg>
+            <span data-i18n="powerScreenOff">Screen Off</span>
           </button>
           <button class="power-tile sleep" data-power="sleep">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -1099,9 +1185,20 @@
     </div>
   </div>
 
+  <!-- SCREEN OFF FLOATING WAKE BANNER -->
+  <div class="screen-off-banner" id="screen-off-banner" style="display: none;">
+    <div class="screen-off-banner-content">
+      <div class="screen-off-status-text">
+        <span class="screen-off-status-dot"></span>
+        <span data-i18n="screenOffBanner">PC Displays are OFF (Dell is Running)</span>
+      </div>
+      <button class="btn-wake-screen" id="btn-wake-screen" data-i18n="btnWakeScreens">WAKE SCREENS</button>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div class="toast" id="toast-msg" data-i18n="toastActionExecuted">Action Executed</div>
 
-  <script src="app.js?v=3.11"></script>
+  <script src="app.js?v=3.13"></script>
 </body>
 </html>

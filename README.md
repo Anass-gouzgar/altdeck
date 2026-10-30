@@ -83,9 +83,21 @@ Most Stream Deck alternatives either require installing proprietary APKs on your
 - **Multi-Touch Trackpad**: Converts tablet into a touchpad with left-click, right-click, smooth pointer motion, and two-finger vertical scrolling.
 - **Wireless PC Numpad**: Full numeric keypad with arithmetic operators (`÷`, `×`, `−`, `+`), numbers `0-9`, `Enter`, `Backspace`, `Tab`, `Esc`, plus a **Remote PC Typing bar** to stream text straight into the active PC window.
 
-### 8. ⚡ Safe Power Management
+### 8. ⚡ Safe Power Management & Screen Off
+- **🖥️ Screen Off Mode (Without Sleep)**: Instantly turn off your PC/laptop monitors with one tap while keeping background renders, music, and downloads active. Wake instantly by touching the tablet trackpad or the floating status banner.
 - Lock workstation (`Win + L`) and low-power Sleep.
-- Safe Restart & Shutdown with a **30-second emergency countdown modal** and an instant **CANCEL NOW** button.
+- Safe Restart & Shutdown with a **30-second emergency countdown modal** and an instant **CANCEL NOW** (`shutdown /a`) button.
+
+### 9. 📂 AltDeck Beam — Quick File Drop (AirDrop Alternative)
+- **Local Wi-Fi File Streaming**: Beam photos, screenshots, and files from your tablet straight into your PC's `Desktop/AltDeck Transfers` folder.
+- **Drag & Drop & Tablet Camera**: Tap to pick files or snap photos directly with your tablet camera.
+- **Live Upload Progress**: Real-time progress bar with upload percentage.
+- **Auto PC Notification & Folder Launcher**: Plays a synthesized chime upon arrival and features an instant **"📂 Open Folder on PC"** button.
+
+### 10. 📋 Top Resource Apps & Live Waveform Sparklines (Task Manager Deck)
+- **Real-Time Load Waveform**: Live 60-second animated SVG load graph inside the Telemetry card for CPU (Cyan) and RAM (Purple).
+- **Active Process Scanner**: Scans active Windows processes and displays the top 5 memory-heavy applications (`chrome.exe`, `Code.exe`, etc.) with their RAM in MB.
+- **Instant Kill**: Terminate hung or heavy applications with a single tap of the red **[Kill]** button.
 
 ---
 
@@ -94,7 +106,7 @@ Most Stream Deck alternatives either require installing proprietary APKs on your
 ### 1. Clone & Run on PC
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/altdeck.git
+git clone https://github.com/anass-gouzgar/altdeck.git
 cd altdeck
 
 # Install dependencies
