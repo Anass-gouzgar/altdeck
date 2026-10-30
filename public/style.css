@@ -1386,6 +1386,40 @@ body {
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.theme-brand-icon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.theme-chip:hover .theme-brand-icon {
+  transform: scale(1.12);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+}
+
+.theme-chip.active .theme-brand-icon {
+  transform: scale(1.15);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 16px var(--border-glow);
+}
+
+.theme-brand-icon svg,
+.theme-brand-icon img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+}
+
 .settings-list {
   display: flex;
   flex-direction: column;
@@ -2271,80 +2305,80 @@ html[dir="rtl"] .notif-drawer.show {
    14 World-Class Tech Brand Themes (Cartographie des Couleurs des Géants)
    ========================================================================== */
 
-/* 1. Instagram Sunset (Sunset Neon: Purple, Coral, Gold) */
+/* 1. Instagram Sunset (Meta Focus Pink, Coral, Purple & Gold - shadcn.io/design/threads) */
 body.theme-instagram,
 body.theme-obsidian,
 body.theme-rose,
 body.theme-synthwave {
-  --bg-deep: #0b0813;
-  --bg-surface: #140e22;
-  --bg-card: rgba(28, 18, 44, 0.78);
-  --bg-card-hover: rgba(42, 26, 66, 0.88);
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(225, 48, 108, 0.45);
-  --neon-cyan: #fd1d1d;
-  --neon-blue: #833ab4;
-  --neon-purple: #fcb045;
-  --gradient-cyan: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
-  --shadow-glow: 0 0 25px rgba(225, 48, 108, 0.3);
+  --bg-deep: #0c0612;
+  --bg-surface: #150c20;
+  --bg-card: rgba(26, 14, 38, 0.82);
+  --bg-card-hover: rgba(38, 20, 56, 0.92);
+  --border-glass: rgba(210, 66, 148, 0.16);
+  --border-glow: rgba(210, 66, 148, 0.5);
+  --neon-cyan: #d24294; /* Meta focus pink */
+  --neon-blue: #833ab4; /* Instagram purple */
+  --neon-purple: #fcb045; /* Sun gold */
+  --gradient-cyan: linear-gradient(135deg, #833ab4 0%, #d24294 50%, #fcb045 100%);
+  --shadow-glow: 0 0 25px rgba(210, 66, 148, 0.35);
   background-color: var(--bg-deep);
   background-image: 
-    radial-gradient(circle at 12% 12%, rgba(131, 58, 180, 0.22) 0%, transparent 45%),
-    radial-gradient(circle at 88% 85%, rgba(253, 29, 29, 0.18) 0%, transparent 48%),
+    radial-gradient(circle at 12% 12%, rgba(131, 58, 180, 0.24) 0%, transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(210, 66, 148, 0.2) 0%, transparent 48%),
     radial-gradient(circle at 50% 50%, rgba(252, 176, 69, 0.08) 0%, transparent 50%);
 }
 
-/* 2. Facebook / Meta (Meta Blue & Electric Cyan) */
+/* 2. Facebook / Meta (Meta Cobalt Blue & Facebook Blue - shadcn.io/design/meta) */
 body.theme-facebook,
 body.theme-ocean {
-  --bg-deep: #050b14;
-  --bg-surface: #0a1426;
-  --bg-card: rgba(14, 26, 48, 0.8);
-  --bg-card-hover: rgba(22, 40, 72, 0.9);
-  --border-glass: rgba(0, 194, 255, 0.14);
+  --bg-deep: #050a12;
+  --bg-surface: #0b1320;
+  --bg-card: rgba(14, 24, 40, 0.82);
+  --bg-card-hover: rgba(20, 34, 58, 0.92);
+  --border-glass: rgba(8, 102, 255, 0.16);
   --border-glow: rgba(8, 102, 255, 0.5);
-  --neon-cyan: #00c2ff;
-  --neon-blue: #0866ff;
-  --neon-purple: #4b88ff;
-  --gradient-cyan: linear-gradient(135deg, #0866ff 0%, #00c2ff 100%);
+  --neon-cyan: #0866ff; /* Facebook Blue */
+  --neon-blue: #0064e0; /* Meta Cobalt Blue */
+  --neon-purple: #0091ff; /* Primary Soft */
+  --gradient-cyan: linear-gradient(135deg, #0866ff 0%, #0091ff 100%);
   --shadow-glow: 0 0 25px rgba(8, 102, 255, 0.35);
   background-color: var(--bg-deep);
   background-image: 
-    radial-gradient(circle at 15% 15%, rgba(8, 102, 255, 0.22) 0%, transparent 45%),
-    radial-gradient(circle at 85% 85%, rgba(0, 194, 255, 0.16) 0%, transparent 50%);
+    radial-gradient(circle at 15% 15%, rgba(8, 102, 255, 0.24) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(0, 145, 255, 0.16) 0%, transparent 50%);
 }
 
-/* 3. YouTube (Studio Red & Pitch Black) */
+/* 3. YouTube (Official Studio Red #c30027 & #065fd4 - shadcn.io/design/youtube) */
 body.theme-youtube {
   --bg-deep: #080808;
-  --bg-surface: #121212;
-  --bg-card: rgba(26, 26, 26, 0.85);
-  --bg-card-hover: rgba(38, 38, 38, 0.92);
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(255, 0, 0, 0.5);
-  --neon-cyan: #ff0000;
-  --neon-blue: #ff3333;
-  --neon-purple: #ffffff;
-  --gradient-cyan: linear-gradient(135deg, #ff0000 0%, #aa0000 100%);
-  --shadow-glow: 0 0 25px rgba(255, 0, 0, 0.35);
+  --bg-surface: #0f0f0f;
+  --bg-card: rgba(24, 24, 24, 0.86);
+  --bg-card-hover: rgba(36, 36, 36, 0.93);
+  --border-glass: rgba(195, 0, 39, 0.18);
+  --border-glow: rgba(195, 0, 39, 0.5);
+  --neon-cyan: #c30027; /* YouTube Red */
+  --neon-blue: #065fd4; /* Primary Blue */
+  --neon-purple: #3ea6ff; /* Link Inverse */
+  --gradient-cyan: linear-gradient(135deg, #c30027 0%, #065fd4 100%);
+  --shadow-glow: 0 0 25px rgba(195, 0, 39, 0.35);
   background-color: var(--bg-deep);
   background-image: 
-    radial-gradient(circle at 10% 12%, rgba(255, 0, 0, 0.22) 0%, transparent 45%),
-    radial-gradient(circle at 90% 85%, rgba(255, 68, 68, 0.1) 0%, transparent 50%);
+    radial-gradient(circle at 10% 12%, rgba(195, 0, 39, 0.24) 0%, transparent 45%),
+    radial-gradient(circle at 90% 85%, rgba(6, 95, 212, 0.15) 0%, transparent 50%);
 }
 
-/* 4. Canva (Turquoise Teal & Royal Violet) */
+/* 4. Canva (Cyan #00c4cc to Royal Violet #7d2ae8 - shadcn.io/design/canva) */
 body.theme-canva,
 body.theme-frost {
-  --bg-deep: #080a18;
-  --bg-surface: #10132b;
-  --bg-card: rgba(22, 26, 56, 0.8);
-  --bg-card-hover: rgba(34, 39, 80, 0.9);
-  --border-glass: rgba(0, 196, 204, 0.16);
+  --bg-deep: #080a14;
+  --bg-surface: #0f101f;
+  --bg-card: rgba(20, 22, 44, 0.82);
+  --bg-card-hover: rgba(30, 32, 64, 0.92);
+  --border-glass: rgba(0, 196, 204, 0.18);
   --border-glow: rgba(0, 196, 204, 0.45);
-  --neon-cyan: #00c4cc;
-  --neon-blue: #4568dc;
-  --neon-purple: #7d2ae8;
+  --neon-cyan: #00c4cc; /* Primary Gradient Start */
+  --neon-blue: #8b3dff; /* Accent Violet */
+  --neon-purple: #7d2ae8; /* Primary Gradient End */
   --gradient-cyan: linear-gradient(135deg, #00c4cc 0%, #7d2ae8 100%);
   --shadow-glow: 0 0 25px rgba(0, 196, 204, 0.32);
   background-color: var(--bg-deep);
@@ -2353,60 +2387,61 @@ body.theme-frost {
     radial-gradient(circle at 88% 85%, rgba(125, 42, 232, 0.22) 0%, transparent 48%);
 }
 
-/* 5. Gmail / Google (Google 4-Color Material Dark) */
+/* 5. Gmail / Google (Google 4-Color Material Dark - shadcn.io/design/google) */
 body.theme-gmail,
 body.theme-gold {
-  --bg-deep: #0d1017;
-  --bg-surface: #151a24;
-  --bg-card: rgba(25, 31, 44, 0.8);
-  --bg-card-hover: rgba(36, 45, 62, 0.9);
-  --border-glass: rgba(66, 133, 244, 0.16);
-  --border-glow: rgba(66, 133, 244, 0.45);
-  --neon-cyan: #4285f4;
-  --neon-blue: #34a853;
-  --neon-purple: #ea4335;
-  --gradient-cyan: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
-  --shadow-glow: 0 0 25px rgba(66, 133, 244, 0.3);
+  --bg-deep: #0a0d14;
+  --bg-surface: #121722;
+  --bg-card: rgba(22, 28, 40, 0.82);
+  --bg-card-hover: rgba(32, 40, 58, 0.92);
+  --border-glass: rgba(26, 115, 232, 0.18);
+  --border-glow: rgba(26, 115, 232, 0.5);
+  --neon-cyan: #1a73e8; /* Blue 600 */
+  --neon-blue: #34a853; /* Green 500 */
+  --neon-purple: #ea4335; /* Red 500 */
+  --neon-amber: #fbbc04; /* Yellow 500 */
+  --gradient-cyan: linear-gradient(135deg, #1a73e8 0%, #34a853 50%, #fbbc04 100%);
+  --shadow-glow: 0 0 25px rgba(26, 115, 232, 0.32);
   background-color: var(--bg-deep);
   background-image: 
-    radial-gradient(circle at 10% 10%, rgba(66, 133, 244, 0.18) 0%, transparent 40%),
+    radial-gradient(circle at 10% 10%, rgba(26, 115, 232, 0.2) 0%, transparent 40%),
     radial-gradient(circle at 90% 12%, rgba(234, 67, 53, 0.16) 0%, transparent 40%),
     radial-gradient(circle at 85% 85%, rgba(52, 168, 83, 0.16) 0%, transparent 45%),
-    radial-gradient(circle at 15% 85%, rgba(251, 188, 5, 0.12) 0%, transparent 45%);
+    radial-gradient(circle at 15% 85%, rgba(251, 188, 4, 0.12) 0%, transparent 45%);
 }
 
-/* 6. Claude AI (Anthropic Warm Terracotta & Amber) */
+/* 6. Claude AI (Warm Terracotta #cc785c & Amber #e8a55a - shadcn.io/design/claude) */
 body.theme-claude,
 body.theme-ember {
-  --bg-deep: #12100e;
-  --bg-surface: #1c1815;
-  --bg-card: rgba(36, 30, 26, 0.82);
-  --bg-card-hover: rgba(50, 42, 36, 0.92);
-  --border-glass: rgba(217, 119, 87, 0.18);
-  --border-glow: rgba(217, 119, 87, 0.5);
-  --neon-cyan: #d97757;
-  --neon-blue: #e28766;
-  --neon-purple: #f59e0b;
-  --gradient-cyan: linear-gradient(135deg, #d97757 0%, #e28766 50%, #f59e0b 100%);
-  --shadow-glow: 0 0 25px rgba(217, 119, 87, 0.32);
+  --bg-deep: #141413; /* Ink */
+  --bg-surface: #181715; /* Surface Dark */
+  --bg-card: rgba(37, 35, 32, 0.85); /* Surface Dark Elevated #252320 */
+  --bg-card-hover: rgba(48, 45, 41, 0.95);
+  --border-glass: rgba(204, 120, 92, 0.18);
+  --border-glow: rgba(204, 120, 92, 0.5);
+  --neon-cyan: #cc785c; /* Primary Terracotta */
+  --neon-blue: #e8a55a; /* Accent Amber */
+  --neon-purple: #5db8a6; /* Accent Teal */
+  --gradient-cyan: linear-gradient(135deg, #cc785c 0%, #e8a55a 50%, #5db8a6 100%);
+  --shadow-glow: 0 0 25px rgba(204, 120, 92, 0.32);
   background-color: var(--bg-deep);
   background-image: 
-    radial-gradient(circle at 12% 15%, rgba(217, 119, 87, 0.22) 0%, transparent 45%),
-    radial-gradient(circle at 88% 85%, rgba(245, 158, 11, 0.16) 0%, transparent 50%);
+    radial-gradient(circle at 12% 15%, rgba(204, 120, 92, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(232, 165, 90, 0.16) 0%, transparent 50%);
 }
 
-/* 7. LinkedIn (Executive Blue & Steel) */
+/* 7. LinkedIn (Executive Blue #0a66c2 & Sky #70b5f9 - shadcn.io/design/linkedin) */
 body.theme-linkedin,
 body.theme-nord {
-  --bg-deep: #060c14;
-  --bg-surface: #0c1624;
-  --bg-card: rgba(16, 28, 44, 0.82);
-  --bg-card-hover: rgba(24, 40, 62, 0.92);
+  --bg-deep: #050a12;
+  --bg-surface: #0c1524;
+  --bg-card: rgba(16, 26, 42, 0.82);
+  --bg-card-hover: rgba(24, 38, 62, 0.92);
   --border-glass: rgba(10, 102, 194, 0.18);
   --border-glow: rgba(10, 102, 194, 0.5);
-  --neon-cyan: #70b5f9;
-  --neon-blue: #0a66c2;
-  --neon-purple: #004182;
+  --neon-cyan: #0a66c2; /* Primary */
+  --neon-blue: #70b5f9; /* Sky Blue */
+  --neon-purple: #004182; /* Primary Dark */
   --gradient-cyan: linear-gradient(135deg, #0a66c2 0%, #70b5f9 100%);
   --shadow-glow: 0 0 25px rgba(10, 102, 194, 0.32);
   background-color: var(--bg-deep);
@@ -2415,19 +2450,19 @@ body.theme-nord {
     radial-gradient(circle at 90% 85%, rgba(112, 181, 249, 0.14) 0%, transparent 50%);
 }
 
-/* 8. Duolingo (Owl Lime & Golden Feather) */
+/* 8. Duolingo (Owl Lime #58cc02 & Macaw #1cb0f6 - shadcn.io/design/duolingo) */
 body.theme-duolingo,
 body.theme-forest {
-  --bg-deep: #081216;
-  --bg-surface: #0e1e24;
-  --bg-card: rgba(20, 36, 44, 0.82);
-  --bg-card-hover: rgba(28, 50, 60, 0.92);
+  --bg-deep: #071015;
+  --bg-surface: #0c1b22;
+  --bg-card: rgba(18, 34, 42, 0.82);
+  --bg-card-hover: rgba(26, 48, 60, 0.92);
   --border-glass: rgba(88, 204, 2, 0.18);
   --border-glow: rgba(88, 204, 2, 0.5);
-  --neon-cyan: #58cc02;
-  --neon-blue: #2b70c9;
-  --neon-purple: #ffc800;
-  --gradient-cyan: linear-gradient(135deg, #58cc02 0%, #ffc800 100%);
+  --neon-cyan: #58cc02; /* Primary Owl Green */
+  --neon-blue: #1cb0f6; /* Accent Macaw */
+  --neon-purple: #ffc800; /* Accent Bee */
+  --gradient-cyan: linear-gradient(135deg, #58cc02 0%, #1cb0f6 100%);
   --shadow-glow: 0 0 25px rgba(88, 204, 2, 0.35);
   background-color: var(--bg-deep);
   background-image: 
@@ -2435,123 +2470,123 @@ body.theme-forest {
     radial-gradient(circle at 88% 85%, rgba(255, 200, 0, 0.16) 0%, transparent 50%);
 }
 
-/* 9. Spotify (Spotify Sound Green & Pitch Dark) */
+/* 9. Spotify (Brand Green #1ed760 & Charcoal #121212 - shadcn.io/design/spotify) */
 body.theme-spotify,
 body.theme-matrix {
-  --bg-deep: #070707;
-  --bg-surface: #111111;
-  --bg-card: rgba(24, 24, 24, 0.85);
-  --bg-card-hover: rgba(36, 36, 36, 0.94);
-  --border-glass: rgba(29, 185, 84, 0.18);
-  --border-glow: rgba(29, 185, 84, 0.5);
-  --neon-cyan: #1db954;
-  --neon-blue: #1ed760;
-  --neon-purple: #10843a;
-  --gradient-cyan: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
-  --shadow-glow: 0 0 25px rgba(29, 185, 84, 0.35);
+  --bg-deep: #121212; /* bg-base */
+  --bg-surface: #181818; /* surface-dark */
+  --bg-card: rgba(37, 37, 37, 0.88); /* surface-card #252525 */
+  --bg-card-hover: rgba(48, 48, 48, 0.95);
+  --border-glass: rgba(30, 215, 96, 0.18);
+  --border-glow: rgba(30, 215, 96, 0.5);
+  --neon-cyan: #1ed760; /* Brand Green */
+  --neon-blue: #1db954; /* Brand Green Border */
+  --neon-purple: #4d4d4d; /* Border Gray */
+  --gradient-cyan: linear-gradient(135deg, #1ed760 0%, #1db954 100%);
+  --shadow-glow: 0 0 25px rgba(30, 215, 96, 0.35);
   background-color: var(--bg-deep);
   background-image: 
-    radial-gradient(circle at 10% 12%, rgba(29, 185, 84, 0.22) 0%, transparent 45%),
-    radial-gradient(circle at 90% 85%, rgba(30, 215, 96, 0.12) 0%, transparent 50%);
+    radial-gradient(circle at 10% 12%, rgba(30, 215, 96, 0.2) 0%, transparent 45%),
+    radial-gradient(circle at 90% 85%, rgba(29, 185, 84, 0.14) 0%, transparent 50%);
 }
 
-/* 10. Discord (Blurple & Gamer Charcoal) */
+/* 10. Discord (Blurple #5865f2 & Navy Deep #1a2081 - shadcn.io/design/discord) */
 body.theme-discord {
-  --bg-deep: #0c0d11;
-  --bg-surface: #15161c;
-  --bg-card: rgba(28, 29, 36, 0.82);
-  --bg-card-hover: rgba(40, 42, 52, 0.92);
-  --border-glass: rgba(88, 101, 242, 0.18);
-  --border-glow: rgba(88, 101, 242, 0.5);
-  --neon-cyan: #57f287;
-  --neon-blue: #5865f2;
-  --neon-purple: #eb459e;
-  --gradient-cyan: linear-gradient(135deg, #5865f2 0%, #3c4270 100%);
+  --bg-deep: #1a2081; /* navy-deep */
+  --bg-surface: #23272a; /* not-quite-black */
+  --bg-card: rgba(36, 23, 63, 0.85); /* navy-blue #24173f */
+  --bg-card-hover: rgba(48, 32, 84, 0.92);
+  --border-glass: rgba(88, 101, 242, 0.2);
+  --border-glow: rgba(88, 101, 242, 0.55);
+  --neon-cyan: #5865f2; /* Blurple */
+  --neon-blue: #57f287; /* Spring Green */
+  --neon-purple: #eb459e; /* Fuchsia */
+  --gradient-cyan: linear-gradient(135deg, #5865f2 0%, #3442d9 100%);
   --shadow-glow: 0 0 25px rgba(88, 101, 242, 0.35);
-  background-color: var(--bg-deep);
+  background-color: #1a2081;
   background-image: 
-    radial-gradient(circle at 12% 15%, rgba(88, 101, 242, 0.24) 0%, transparent 45%),
-    radial-gradient(circle at 88% 85%, rgba(87, 242, 135, 0.14) 0%, transparent 50%);
+    radial-gradient(circle at 12% 15%, rgba(88, 101, 242, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 88% 85%, rgba(36, 23, 63, 0.85) 0%, #1a2081 100%);
 }
 
-/* 11. Netflix (Cinema Red & Film Shadow) */
+/* 11. Netflix (Cinema Red #e50914 & Burgundy #461518 - shadcn.io/design/netflix) */
 body.theme-netflix,
 body.theme-crimson {
-  --bg-deep: #060606;
-  --bg-surface: #101010;
-  --bg-card: rgba(22, 22, 22, 0.88);
-  --bg-card-hover: rgba(34, 34, 34, 0.95);
-  --border-glass: rgba(229, 9, 20, 0.2);
+  --bg-deep: #000000; /* Canvas */
+  --bg-surface: #161616; /* Surface Deep */
+  --bg-card: rgba(35, 35, 35, 0.88); /* Surface Card #232323 */
+  --bg-card-hover: rgba(48, 48, 48, 0.95);
+  --border-glass: rgba(229, 9, 20, 0.22);
   --border-glow: rgba(229, 9, 20, 0.55);
-  --neon-cyan: #e50914;
-  --neon-blue: #b81d24;
-  --neon-purple: #831010;
-  --gradient-cyan: linear-gradient(135deg, #e50914 0%, #000000 100%);
+  --neon-cyan: #e50914; /* Brand Red */
+  --neon-blue: #6f181d; /* Oxblood */
+  --neon-purple: #461518; /* Burgundy */
+  --gradient-cyan: linear-gradient(135deg, #e50914 0%, #461518 100%);
   --shadow-glow: 0 0 25px rgba(229, 9, 20, 0.38);
   background-color: var(--bg-deep);
   background-image: 
-    radial-gradient(circle at 10% 10%, rgba(229, 9, 20, 0.25) 0%, transparent 45%),
-    radial-gradient(circle at 90% 90%, rgba(184, 29, 36, 0.14) 0%, transparent 50%);
+    radial-gradient(circle at 10% 10%, rgba(229, 9, 20, 0.26) 0%, transparent 45%),
+    radial-gradient(circle at 90% 90%, rgba(70, 21, 24, 0.22) 0%, transparent 50%);
 }
 
-/* 12. TikTok (Cyber Cyan & Electro Crimson) */
+/* 12. TikTok (Primary Cyan #25f4ee & Crimson #fe2c55 - shadcn.io/design/tiktok) */
 body.theme-tiktok,
 body.theme-cyberpunk {
-  --bg-deep: #040406;
-  --bg-surface: #0e0e14;
-  --bg-card: rgba(20, 20, 30, 0.82);
-  --bg-card-hover: rgba(30, 30, 44, 0.92);
-  --border-glass: rgba(0, 242, 254, 0.18);
-  --border-glow: rgba(0, 242, 254, 0.5);
-  --neon-cyan: #00f2fe;
-  --neon-blue: #25f4ee;
+  --bg-deep: #000000; /* Canvas */
+  --bg-surface: #161823; /* Surface-1 */
+  --bg-card: rgba(22, 24, 35, 0.88);
+  --bg-card-hover: rgba(31, 31, 31, 0.95);
+  --border-glass: rgba(37, 244, 238, 0.2);
+  --border-glow: rgba(254, 44, 85, 0.55);
+  --neon-cyan: #25f4ee; /* Primary Cyan */
+  --neon-blue: #fe2c55; /* Primary Magenta */
   --neon-purple: #fe2c55;
-  --gradient-cyan: linear-gradient(135deg, #00f2fe 0%, #fe2c55 100%);
+  --gradient-cyan: linear-gradient(135deg, #25f4ee 0%, #fe2c55 100%);
   --shadow-glow: 0 0 25px rgba(254, 44, 85, 0.35);
   background-color: var(--bg-deep);
   background-image: 
-    radial-gradient(circle at 12% 15%, rgba(0, 242, 254, 0.22) 0%, transparent 45%),
-    radial-gradient(circle at 88% 85%, rgba(254, 44, 85, 0.22) 0%, transparent 45%);
+    radial-gradient(circle at 12% 15%, rgba(37, 244, 238, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(254, 44, 85, 0.24) 0%, transparent 45%);
 }
 
-/* 13. Twitch (Streamer Electric Purple) */
+/* 13. Twitch (Twitch Purple #9147ff & Live Red #eb0400 - shadcn.io/design/twitch) */
 body.theme-twitch,
 body.theme-dracula {
-  --bg-deep: #08060f;
-  --bg-surface: #110d1f;
-  --bg-card: rgba(24, 18, 42, 0.82);
-  --bg-card-hover: rgba(36, 27, 62, 0.92);
-  --border-glass: rgba(145, 70, 255, 0.18);
-  --border-glow: rgba(145, 70, 255, 0.5);
-  --neon-cyan: #bf94ff;
-  --neon-blue: #9146ff;
-  --neon-purple: #772ce8;
-  --gradient-cyan: linear-gradient(135deg, #9146ff 0%, #772ce8 100%);
-  --shadow-glow: 0 0 25px rgba(145, 70, 255, 0.35);
+  --bg-deep: #0e0e10; /* Ink */
+  --bg-surface: #18181b; /* Ink Secondary */
+  --bg-card: rgba(24, 24, 32, 0.88);
+  --bg-card-hover: rgba(38, 30, 56, 0.95);
+  --border-glass: rgba(145, 71, 255, 0.2);
+  --border-glow: rgba(145, 71, 255, 0.55);
+  --neon-cyan: #9147ff; /* Twitch Purple */
+  --neon-blue: #772ce8; /* Purple Hover */
+  --neon-purple: #eb0400; /* Live Red */
+  --gradient-cyan: linear-gradient(135deg, #9147ff 0%, #772ce8 100%);
+  --shadow-glow: 0 0 25px rgba(145, 71, 255, 0.35);
   background-color: var(--bg-deep);
   background-image: 
-    radial-gradient(circle at 10% 12%, rgba(145, 70, 255, 0.25) 0%, transparent 45%),
-    radial-gradient(circle at 90% 85%, rgba(191, 148, 255, 0.14) 0%, transparent 50%);
+    radial-gradient(circle at 10% 12%, rgba(145, 71, 255, 0.25) 0%, transparent 45%),
+    radial-gradient(circle at 90% 85%, rgba(119, 44, 232, 0.16) 0%, transparent 50%);
 }
 
-/* 14. X / Twitter (Jet Black & Electric Bird Blue) */
+/* 14. X / Twitter (Jet Black #000000 & Link Blue #1d9bf0 - shadcn.io/design/x) */
 body.theme-x,
 body.theme-midnight {
-  --bg-deep: #000000;
-  --bg-surface: #0a0d13;
-  --bg-card: rgba(16, 20, 28, 0.88);
-  --bg-card-hover: rgba(26, 32, 44, 0.95);
-  --border-glass: rgba(29, 161, 242, 0.18);
-  --border-glow: rgba(29, 161, 242, 0.45);
-  --neon-cyan: #1da1f2;
-  --neon-blue: #38bdf8;
-  --neon-purple: #94a3b8;
-  --gradient-cyan: linear-gradient(135deg, #ffffff 0%, #1da1f2 100%);
-  --shadow-glow: 0 0 25px rgba(29, 161, 242, 0.3);
+  --bg-deep: #000000; /* Canvas */
+  --bg-surface: #0f1419; /* Ink Text */
+  --bg-card: rgba(22, 24, 28, 0.9);
+  --bg-card-hover: rgba(32, 35, 39, 0.95);
+  --border-glass: rgba(29, 155, 240, 0.18);
+  --border-glow: rgba(29, 155, 240, 0.5);
+  --neon-cyan: #1d9bf0; /* Link Blue */
+  --neon-blue: #ffffff;
+  --neon-purple: #536471; /* Ink Muted */
+  --gradient-cyan: linear-gradient(135deg, #1d9bf0 0%, #0f1419 100%);
+  --shadow-glow: 0 0 25px rgba(29, 155, 240, 0.3);
   background-color: #000000;
   background-image: 
     radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 90% 85%, rgba(29, 161, 242, 0.14) 0%, transparent 50%);
+    radial-gradient(circle at 90% 85%, rgba(29, 155, 240, 0.16) 0%, transparent 50%);
 }
 
 /* ==========================================================================
